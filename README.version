@@ -1,0 +1,9 @@
+URL:
+Version:
+License: GPLv2
+License File: Licenses/README
+BugComponent: 164615
+Owners: deymo, leecam
+
+Description:
+Das U-Boot is an open-source bootloader widely used in embedded devices.
