@@ -982,4 +982,10 @@ int fdtdec_decode_display_timing(const void *blob, int node, int index,
  */
 int fdtdec_setup(void);
 
+/**
+ * Board-specific FDT initialization. Returns the address to a device tree blob.
+ * Called when CONFIG_OF_BOARD is defined.
+ */
+void *board_fdt_blob_setup(void);
+
 #endif
