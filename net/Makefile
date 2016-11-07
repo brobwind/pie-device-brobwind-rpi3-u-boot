@@ -25,3 +25,4 @@ obj-$(CONFIG_CMD_PING) += ping.o
 obj-$(CONFIG_CMD_RARP) += rarp.o
 obj-$(CONFIG_CMD_SNTP) += sntp.o
 obj-$(CONFIG_CMD_NET)  += tftp.o
+obj-$(CONFIG_UDP_FUNCTION_FASTBOOT)  += fastboot.o

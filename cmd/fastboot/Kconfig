@@ -11,13 +11,21 @@ config USB_FUNCTION_FASTBOOT
 	help
 	  This enables the USB part of the fastboot gadget.
 
+config UDP_FUNCTION_FASTBOOT
+	select NET
+	bool "Enable fastboot protocol over UDP"
+	help
+	  This enables the fastboot protocol over UDP.
+
 config CMD_FASTBOOT
 	bool "Enable FASTBOOT command"
+	depends on USB_FUNCTION_FASTBOOT || UDP_FUNCTION_FASTBOOT
 	help
 	  This enables the command "fastboot" which enables the Android
-	  fastboot mode for the platform's USB device. Fastboot is a USB
-	  protocol for downloading images, flashing and device control
-	  used on Android devices.
+	  fastboot mode for the platform. Fastboot is a protocol for
+	  downloading images, flashing and device control used on
+	  Android devices. Fastboot requires either network stack
+	  enabled or support for acting as a USB device.
 
 config ANDROID_BOOT_IMAGE
 	bool "Enable support for Android Boot Images"
@@ -25,7 +33,7 @@ config ANDROID_BOOT_IMAGE
 	  This enables support for booting images which use the Android
 	  image format header.
 
-if USB_FUNCTION_FASTBOOT
+if USB_FUNCTION_FASTBOOT || UDP_FUNCTION_FASTBOOT
 
 config FASTBOOT_BUF_ADDR
 	hex "Define FASTBOOT buffer address"
@@ -55,6 +63,6 @@ config FASTBOOT_FLASH_MMC_DEV
 	  regarding the non-volatile storage device. Define this to
 	  the eMMC device that fastboot should use to store the image.
 
-endif # USB_FUNCTION_FASTBOOT
+endif # USB_FUNCTION_FASTBOOT || UDP_FUNCTION_FASTBOOT
 
 endmenu
