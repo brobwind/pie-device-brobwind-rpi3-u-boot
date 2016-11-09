@@ -1181,6 +1181,17 @@ The following options need to be configured:
 		entering dfuMANIFEST state. Host waits this timeout, before
 		sending again an USB request to the device.
 
+- Android Bootloader support:
+		CONFIG_ANDROID_BOOTLOADER
+		This enables support for the Android bootloader flow. Android
+		devices can boot in normal mode, recovery mode or bootloader
+		mode. The normal mode is the most common boot mode, but
+		recovery mode is often used to perform factory reset and OTA
+		(over-the-air) updates in the legacy updater. Also it is
+		possible for an Android system to request a reboot to the
+		"bootloader", which often means reboot to fastboot but may also
+		include a UI with a menu.
+
 - Journaling Flash filesystem support:
 		CONFIG_JFFS2_NAND
 		Define these for a default partition on a NAND device
