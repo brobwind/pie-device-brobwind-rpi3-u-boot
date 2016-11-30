@@ -109,10 +109,12 @@
 
 /* Console UART */
 #ifdef CONFIG_BCM2837
+/* Raspberry Pi 3 uses the miniuart by default unless the device tree re-assigns
+ * the PL01X from Bluetooth to the pin headers. We enabled support for both in
+ * the Raspberry Pi 3 only and disable the unused one on runtime. */
 #define CONFIG_BCM283X_MU_SERIAL
-#else
-#define CONFIG_PL01X_SERIAL
 #endif
+#define CONFIG_PL01X_SERIAL
 #define CONFIG_CONS_INDEX		0
 #define CONFIG_BAUDRATE			115200
 

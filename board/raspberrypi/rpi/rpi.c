@@ -35,7 +35,7 @@ U_BOOT_DEVICE(bcm2835_gpios) = {
 };
 
 #ifdef CONFIG_PL01X_SERIAL
-static const struct pl01x_serial_platdata serial_platdata = {
+static struct pl01x_serial_platdata serial_platdata_pl01x = {
 #ifndef CONFIG_BCM2835
 	.base = 0x3f201000,
 #else
@@ -47,10 +47,12 @@ static const struct pl01x_serial_platdata serial_platdata = {
 
 U_BOOT_DEVICE(bcm2835_serials) = {
 	.name = "serial_pl01x",
-	.platdata = &serial_platdata,
+	.platdata = &serial_platdata_pl01x,
 };
-#else
-static struct bcm283x_mu_serial_platdata serial_platdata = {
+#endif  /* CONFIG_PL01X_SERIAL */
+
+#ifdef CONFIG_BCM283X_MU_SERIAL
+static struct bcm283x_mu_serial_platdata serial_platdata_bcm283x_mu = {
 	.base = 0x3f215040,
 	.clock = 250000000,
 	.skip_init = true,
@@ -58,9 +60,9 @@ static struct bcm283x_mu_serial_platdata serial_platdata = {
 
 U_BOOT_DEVICE(bcm2837_serials) = {
 	.name = "serial_bcm283x_mu",
-	.platdata = &serial_platdata,
+	.platdata = &serial_platdata_bcm283x_mu,
 };
-#endif
+#endif  /* CONFIG_BCM283X_MU_SERIAL */
 
 struct msg_get_arm_mem {
 	struct bcm2835_mbox_hdr hdr;
@@ -513,8 +515,8 @@ int board_init(void)
 	return power_on_module(BCM2835_MBOX_POWER_DEVID_USB_HCD);
 }
 
-#ifndef CONFIG_PL01X_SERIAL
-static bool rpi_is_serial_active(void)
+#ifdef CONFIG_BCM283X_MU_SERIAL
+static bool rpi_is_miniuart_active(void)
 {
 	int serial_gpio = 15;
 	struct udevice *dev;
@@ -536,10 +538,13 @@ static bool rpi_is_serial_active(void)
 
 int board_early_init_f(void)
 {
-#ifndef CONFIG_PL01X_SERIAL
+#ifdef CONFIG_BCM283X_MU_SERIAL
 	/* Disable mini-UART I/O if it's not pinmuxed to our pins */
-	if (!rpi_is_serial_active())
-		serial_platdata.disabled = true;
+	if (!rpi_is_miniuart_active()) {
+		serial_platdata_bcm283x_mu.disabled = true;
+	} else {
+		serial_platdata_pl01x.disabled = true;
+	}
 #endif
 
 	return 0;
