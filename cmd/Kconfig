@@ -1136,6 +1136,16 @@ config CMD_AB_SELECT
 	  is used by the new A/B update model where one slot is updated in the
 	  background while running from the other slot.
 
+config CMD_BOOT_ANDROID
+	bool "boot_android"
+	default n
+	depends on ANDROID_BOOTLOADER
+	help
+	  Performs the Android Bootloader boot flow, loading the appropriate
+	  Android image (normal kernel, recovery kernel or "bootloader" mode)
+	  and booting it. The boot mode is determined by the contents of the
+	  Android Bootloader Message.
+
 endmenu
 
 if NET

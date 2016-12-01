@@ -126,12 +126,17 @@ static int android_part_get_info_by_name_suffix(struct blk_desc *dev_desc,
 {
 	char *part_name;
 	int part_num;
+	size_t part_name_len;
 
-	part_name = malloc(strlen(base_name) + strlen(slot_suffix) + 1);
+	part_name_len = strlen(base_name) + 1;
+	if (slot_suffix)
+		part_name_len += strlen(slot_suffix);
+	part_name = malloc(part_name_len);
 	if (!part_name)
 		return -1;
 	strcpy(part_name, base_name);
-	strcat(part_name, slot_suffix);
+	if (slot_suffix)
+		strcat(part_name, slot_suffix);
 
 	part_num = part_get_info_by_name(dev_desc, part_name, part_info);
 	if (part_num < 0) {
@@ -156,7 +161,8 @@ static int android_bootloader_boot_kernel(unsigned long kernel_address)
 {
 	char kernel_addr_str[12];
 	char *fdt_addr = env_get("fdt_addr");
-	char *bootm_args[] = { "bootm", kernel_addr_str, "-", fdt_addr, NULL };
+	char *bootm_args[] = {
+		"bootm", kernel_addr_str, kernel_addr_str, fdt_addr, NULL };
 
 	sprintf(kernel_addr_str, "0x%lx", kernel_address);
 
@@ -256,6 +262,7 @@ static char *android_assemble_cmdline(const char *slot_suffix,
 
 int android_bootloader_boot_flow(struct blk_desc *dev_desc,
 				 const disk_partition_t *misc_part_info,
+				 const char *slot,
 				 unsigned long kernel_address)
 {
 	enum android_boot_mode mode;
@@ -264,8 +271,7 @@ int android_bootloader_boot_flow(struct blk_desc *dev_desc,
 	int boot_part_num, system_part_num;
 	int ret;
 	char *command_line;
-	/* TODO: lookup the slot_suffix based on the BCB. */
-	const char *slot_suffix = "_a";
+	char slot_suffix[3];
 	const char *mode_cmdline = NULL;
 
 	/* Determine the boot mode and clear its value for the next boot if
@@ -293,6 +299,13 @@ int android_bootloader_boot_flow(struct blk_desc *dev_desc,
 		 * switching to another slot.
 		 */
 		return android_bootloader_boot_bootloader();
+	}
+
+	slot_suffix[0] = '\0';
+	if (slot && slot[0]) {
+		slot_suffix[0] = '_';
+		slot_suffix[1] = slot[0];
+		slot_suffix[2] = '\0';
 	}
 
 	/* Load the kernel from the desired "boot" partition. */
