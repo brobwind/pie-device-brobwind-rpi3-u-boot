@@ -297,9 +297,6 @@ static int pl01x_serial_probe(struct udevice *dev)
 	struct pl01x_serial_platdata *plat = dev_get_platdata(dev);
 	struct pl01x_priv *priv = dev_get_priv(dev);
 
-	if (plat->disabled)
-		return -ENODEV;
-
 	priv->regs = (struct pl01x_regs *)plat->base;
 	priv->type = plat->type;
 	if (!plat->skip_init)
