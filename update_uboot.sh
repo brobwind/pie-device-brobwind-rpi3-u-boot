@@ -75,6 +75,31 @@ setup_git() {
 }
 
 
+# Show a friendly
+show_merge_error() {
+  local tag="$1"
+  echo "Merge failed." >&2
+
+  local conflict_files=($(git diff --name-only --diff-filter=U))
+  echo >&2
+  echo "List merge conflict files:" >&2
+  local fn
+  for fn in "${conflict_files[@]}"; do
+    echo " * ${fn}" >&2
+  done
+
+  echo >&2
+  echo "List local commits not in upstream for those files:" >&2
+  git --no-pager log HEAD --not "${tag}" --oneline --no-merges -- \
+    "${conflict_files[@]}" >&2
+
+
+  echo >&2
+  echo "Run 'git merge --abort' to cancel the merge." >&2
+  exit 1
+}
+
+
 main() {
   setup_git
 
@@ -118,7 +143,7 @@ main() {
 Bug: [COMPLETE]
 Test: [COMPLETE]
 
-"
+" || show_merge_error "${latest_tag}"
   update_readme "${latest_version}"
   git add "README.version"
   git commit --amend --no-edit -- "README.version"
