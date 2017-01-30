@@ -71,7 +71,7 @@ setup_git() {
 
   echo "Fetching latest upstream code..."
   git fetch --quiet "${OUR_REMOTE}" "${REPLICATION_BRANCH}"
-  git fetch --quiet "${UPSTREAM}" master
+  git fetch --quiet --tags "${UPSTREAM}" master
 }
 
 
