@@ -18,6 +18,7 @@
 #include <asm/arch/mbox.h>
 #include <asm/arch/sdhci.h>
 #include <asm/global_data.h>
+#include <dm/platform_data/serial_pl01x.h>
 #include <dm/platform_data/serial_bcm283x_mu.h>
 #ifdef CONFIG_ARM64
 #include <asm/armv8/mmu.h>
@@ -436,8 +437,19 @@ static void get_board_rev(void)
 	printf("RPI %s (0x%x)\n", model->name, revision);
 }
 
-#ifndef CONFIG_PL01X_SERIAL
-static bool rpi_is_serial_active(void)
+/* An enum describing the pin muxing selection for the UART RX/TX pins. */
+enum rpi_uart_mux {
+	/* The pin is associated with the internal "miniuart" block. */
+	RPI_UART_BCM283X_MU,
+
+	/* The pin is associated with the PL01X uart driver. */
+	RPI_UART_PL01X,
+
+	/* The pin is associated with a different function. */
+	RPI_UART_OTHER,
+};
+
+static enum rpi_uart_mux rpi_get_uart_mux_setting(void)
 {
 	int serial_gpio = 15;
 	struct udevice *dev;
@@ -446,41 +458,61 @@ static bool rpi_is_serial_active(void)
 	 * The RPi3 disables the mini uart by default. The easiest way to find
 	 * out whether it is available is to check if the RX pin is muxed.
 	 */
-
 	if (uclass_first_device(UCLASS_GPIO, &dev) || !dev)
-		return true;
+		return RPI_UART_OTHER;
 
-	if (bcm2835_gpio_get_func_id(dev, serial_gpio) != BCM2835_GPIO_ALT5)
-		return false;
-
-	return true;
+	switch (bcm2835_gpio_get_func_id(dev, serial_gpio)) {
+	case BCM2835_GPIO_ALT5:
+		return RPI_UART_BCM283X_MU;
+	case BCM2835_GPIO_ALT0:
+		return RPI_UART_PL01X;
+	}
+	return RPI_UART_OTHER;
 }
 
-/* Disable mini-UART I/O if it's not pinmuxed to our pins.
- * The firmware only enables it if explicitly done in config.txt: enable_uart=1
+/* Disable UART I/O for the mini-UART and PL01X UART if they are not pinmuxed to
+ * the Raspberry Pi header. The mini-UART is only enabled in the header if
+ * explicitly done in config.txt: enable_uart=1, and the PL01X is only enabled
+ * if not used for Bluetooth and explicitly exposed in config.txt as either
+ * dtoverlay=pi3-disable-bt or dtoverlay=pi3-miniuart-bt.
  */
-static void rpi_disable_inactive_uart(void)
+static void rpi_disable_inactive_uarts(void)
 {
 	struct udevice *dev;
-	struct bcm283x_mu_serial_platdata *plat;
+	enum rpi_uart_mux mux;
 
-	if (uclass_get_device_by_driver(UCLASS_SERIAL,
-					DM_GET_DRIVER(serial_bcm283x_mu),
-					&dev) || !dev)
-		return;
+	mux = rpi_get_uart_mux_setting();
 
-	if (!rpi_is_serial_active()) {
-		plat = dev_get_platdata(dev);
-		plat->disabled = true;
+#ifdef CONFIG_BCM283X_MU_SERIAL
+	struct bcm283x_mu_serial_platdata *bcm283x_mu_plat;
+
+	if (mux != RPI_UART_BCM283X_MU &&
+	    !uclass_get_device_by_driver(UCLASS_SERIAL,
+					 DM_GET_DRIVER(serial_bcm283x_mu),
+					 &dev) &&
+	    dev) {
+		bcm283x_mu_plat = dev_get_platdata(dev);
+		bcm283x_mu_plat->disabled = true;
 	}
+#endif  /* CONFIG_BCM283X_MU_SERIAL */
+
+#ifdef CONFIG_PL01X_SERIAL
+	struct pl01x_serial_platdata *pl01x_plat;
+
+	if (mux != RPI_UART_PL01X &&
+	    !uclass_get_device_by_driver(UCLASS_SERIAL,
+					 DM_GET_DRIVER(serial_pl01x),
+					 &dev) &&
+	    dev) {
+		pl01x_plat = dev_get_platdata(dev);
+		pl01x_plat->disabled = true;
+	}
+#endif  /* CONFIG_PL01X_SERIAL */
 }
-#endif
 
 int board_init(void)
 {
-#ifndef CONFIG_PL01X_SERIAL
-	rpi_disable_inactive_uart();
-#endif
+	rpi_disable_inactive_uarts();
 
 	get_board_rev();
 
