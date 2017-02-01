@@ -181,6 +181,34 @@ config CMD_BOOTEFI
 	help
 	  Boot an EFI image from memory.
 
+config CMD_BOOTEFI_HELLO_COMPILE
+	bool "Compile a standard EFI hello world binary for testing"
+	depends on CMD_BOOTEFI && (ARM || X86)
+	default y
+	help
+	  This compiles a standard EFI hello world application with U-Boot so
+	  that it can be used with the test/py testing framework. This is useful
+	  for testing that EFI is working at a basic level, and for bringing
+	  up EFI support on a new architecture.
+
+	  No additional space will be required in the resulting U-Boot binary
+	  when this option is enabled.
+
+config CMD_BOOTEFI_HELLO
+	bool "Allow booting a standard EFI hello world for testing"
+	depends on CMD_BOOTEFI_HELLO_COMPILE
+	help
+	  This adds a standard EFI hello world application to U-Boot so that
+	  it can be used with the 'bootefi hello' command. This is useful
+	  for testing that EFI is working at a basic level, and for bringing
+	  up EFI support on a new architecture.
+
+config CMD_BOOTMENU
+	bool "bootmenu"
+	select MENU
+	help
+	  Add an ANSI terminal boot menu command.
+
 config CMD_ELF
 	bool "bootelf, bootvx"
 	default y
@@ -281,7 +309,7 @@ config CMD_MEMORY
 	bool "md, mm, nm, mw, cp, cmp, base, loop"
 	default y
 	help
-	  Memeory commands.
+	  Memory commands.
 	    md - memory display
 	    mm - memory modify (auto-incrementing address)
 	    nm - memory modify (constant address)
@@ -289,7 +317,7 @@ config CMD_MEMORY
 	    cp - memory copy
 	    cmp - memory compare
 	    base - print or set address offset
-	    loop - initinite loop on address range
+	    loop - initialize loop on address range
 
 config CMD_CRC32
 	bool "crc32"
@@ -413,6 +441,7 @@ config CMD_USB
 
 config CMD_DFU
 	bool "dfu"
+	select USB_FUNCTION_DFU
 	help
 	  Enables the command "dfu" which is used to have U-Boot create a DFU
 	  class device via USB.
@@ -504,6 +533,12 @@ config CMD_DHCP
 	help
 	  Boot image via network using DHCP/TFTP protocol
 
+config CMD_PXE
+	bool "pxe"
+	select MENU
+	help
+	  Boot image via network using PXE protocol
+
 config CMD_NFS
 	bool "nfs"
 	default y
@@ -557,6 +592,15 @@ config SYS_AMBAPP_PRINT_ON_STARTUP
 	default n
 	help
 	  Show AMBA Plug-n-Play information on startup.
+
+config CMD_BKOPS_ENABLE
+	bool "mmc bkops enable"
+	depends on CMD_MMC
+	default n
+	help
+	  Enable command for setting manual background operations handshake
+	  on a eMMC device. The feature is optionally available on eMMC devices
+	  conforming to standard >= 4.41.
 
 config CMD_BLOCK_CACHE
 	bool "blkcache - control and stats for block cache"
@@ -618,6 +662,9 @@ config CMD_QFW
 	  This provides access to the QEMU firmware interface.  The main
 	  feature is to allow easy loading of files passed to qemu-system
 	  via -kernel / -initrd
+
+source "cmd/mvebu/Kconfig"
+
 endmenu
 
 config CMD_BOOTSTAGE
@@ -685,6 +732,19 @@ config CMD_TPM_TEST
 
 endmenu
 
+menu "Firmware commands"
+config CMD_CROS_EC
+	bool "Enable crosec command"
+	depends on CROS_EC
+	default y
+	help
+	  Enable command-line access to the Chrome OS EC (Embedded
+	  Controller). This provides the 'crosec' command which has
+	  a number of sub-commands for performing EC tasks such as
+	  updating its flash, accessing a small saved context area
+	  and talking to the I2C bus behind the EC (if there is one).
+endmenu
+
 menu "Filesystem commands"
 config CMD_EXT2
 	bool "ext2 command support"
@@ -713,5 +773,17 @@ config CMD_FS_GENERIC
 	  Enables filesystem commands (e.g. load, ls) that work for multiple
 	  fs types.
 endmenu
+
+config CMD_UBI
+	tristate "Enable UBI - Unsorted block images commands"
+	select CRC32
+	select MTD_UBI
+	help
+	  UBI is a software layer above MTD layer which admits use of LVM-like
+	  logical volumes on top of MTD devices, hides some complexities of
+	  flash chips like wear and bad blocks and provides some other useful
+	  capabilities. Please, consult the MTD web site for more details
+	  (www.linux-mtd.infradead.org). Activate this option if you want
+	  to use U-Boot UBI commands.
 
 endmenu

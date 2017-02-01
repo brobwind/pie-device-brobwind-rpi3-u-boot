@@ -23,7 +23,6 @@
 #define CONFIG_MACH_TYPE		MACH_TYPE_PAZ00
 
 /* SD/MMC */
-#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_TEGRA_MMC
 
@@ -45,7 +44,6 @@
 
 /* LCD support */
 #define CONFIG_SYS_WHITE_ON_BLACK
-#define CONFIG_CONSOLE_SCROLL_LINES	10
 
 #include "tegra-common-post.h"
 

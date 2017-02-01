@@ -64,6 +64,10 @@ u32 spl_boot_device(void)
 	}
 
 fallback:
+#elif defined(CONFIG_TARGET_CHROMEBOOK_JERRY) || \
+		defined(CONFIG_TARGET_CHROMEBIT_MICKEY) || \
+		defined(CONFIG_TARGET_CHROMEBOOK_MINNIE)
+	return BOOT_DEVICE_SPI;
 #endif
 	return BOOT_DEVICE_MMC1;
 }
@@ -206,7 +210,7 @@ void board_init_f(ulong dummy)
 		debug("DRAM init failed: %d\n", ret);
 		return;
 	}
-#ifdef CONFIG_ROCKCHIP_SPL_BACK_TO_BROM
+#if defined(CONFIG_ROCKCHIP_SPL_BACK_TO_BROM) && !defined(CONFIG_SPL_BOARD_INIT)
 	back_to_bootrom();
 #endif
 }
@@ -273,14 +277,13 @@ void spl_board_init(void)
 	}
 
 	preloader_console_init();
+#ifdef CONFIG_ROCKCHIP_SPL_BACK_TO_BROM
+	back_to_bootrom();
+#endif
 	return;
 err:
 	printf("spl_board_init: Error %d\n", ret);
 
 	/* No way to report error here */
 	hang();
-}
-
-void lowlevel_init(void)
-{
 }

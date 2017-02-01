@@ -35,10 +35,6 @@
  */
 #define CONFIG_SYS_LONGHELP
 
-/* Display CPU and Board information */
-#define CONFIG_DISPLAY_CPUINFO
-#define CONFIG_DISPLAY_BOARDINFO
-
 /* Allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 
@@ -51,15 +47,10 @@
  */
 
 /* MMC */
-#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_OMAP_HSMMC
 
 /* SPL */
-#define CONFIG_SPL_MMC_SUPPORT
-#define CONFIG_SPL_FAT_SUPPORT
-#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300 /* address 0x60000 */
-#define CONFIG_SYS_U_BOOT_MAX_SIZE_SECTORS	0x200 /* 256 KB */
 #define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION	1
 #define CONFIG_SPL_FS_LOAD_PAYLOAD_NAME	"u-boot.img"
 
@@ -78,7 +69,6 @@
 
 /* NAND SPL */
 #define CONFIG_SPL_NAND_SIMPLE
-#define CONFIG_SPL_NAND_SUPPORT
 #define CONFIG_SPL_NAND_BASE
 #define CONFIG_SPL_NAND_DRIVERS
 #define CONFIG_SPL_NAND_ECC
@@ -101,7 +91,6 @@
  */
 #define CONFIG_OMAP			/* This is TI OMAP core */
 #define CONFIG_OMAP_GPIO
-#define CONFIG_OMAP_COMMON
 /* Common ARM Erratas */
 #define CONFIG_ARM_ERRATA_454179
 #define CONFIG_ARM_ERRATA_430973
@@ -247,7 +236,6 @@
 /* USB device configuration */
 #define CONFIG_USB_DEVICE
 #define CONFIG_USB_TTY
-#define CONFIG_SYS_CONSOLE_IS_IN_ENV
 
 /* Change these to suit your needs */
 #define CONFIG_USBD_VENDORID		0x0451
@@ -349,14 +337,8 @@
 #define CONFIG_SPL_BSS_MAX_SIZE		0x80000		/* 512 KB */
 
 #define CONFIG_SPL_BOARD_INIT
-#define CONFIG_SPL_LIBCOMMON_SUPPORT
-#define CONFIG_SPL_LIBDISK_SUPPORT
-#define CONFIG_SPL_I2C_SUPPORT
-#define CONFIG_SPL_LIBGENERIC_SUPPORT
-#define CONFIG_SPL_SERIAL_SUPPORT
-#define CONFIG_SPL_POWER_SUPPORT
 #define CONFIG_SPL_OMAP3_ID_NAND
-#define CONFIG_SPL_LDSCRIPT		"$(CPUDIR)/omap-common/u-boot-spl.lds"
+#define CONFIG_SPL_LDSCRIPT		"arch/arm/mach-omap2/u-boot-spl.lds"
 
 /*
  * 1MB into the SDRAM to allow for SPL's bss at the beginning of SDRAM

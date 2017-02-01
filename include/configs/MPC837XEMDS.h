@@ -8,8 +8,6 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#define CONFIG_DISPLAY_BOARDINFO
-
 /*
  * High Level Configuration Options
  */
@@ -383,8 +381,6 @@ extern int board_pci_host_broken(void);
 #define CONFIG_USB_EHCI_FSL
 #define CONFIG_EHCI_HCD_INIT_AFTER_RESET
 
-#define CONFIG_PCI_PNP		/* do pci plug-and-play */
-
 #undef CONFIG_EEPRO100
 #undef CONFIG_PCI_SCAN_SHOW	/* show pci devices on startup */
 #define CONFIG_SYS_PCI_SUBSYS_VENDORID 0x1957	/* Freescale */
@@ -486,8 +482,6 @@ extern int board_pci_host_broken(void);
 #define CONFIG_AUTO_COMPLETE		/* add autocompletion support   */
 
 #undef CONFIG_WATCHDOG		/* watchdog disabled */
-
-#define CONFIG_MMC     1
 
 #ifdef CONFIG_MMC
 #define CONFIG_FSL_ESDHC

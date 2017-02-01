@@ -289,7 +289,7 @@ static void fb_getvar(char *response)
 		dev_desc = blk_get_dev("mmc", 0);
 		if (dev_desc == NULL) {
 			write_fb_response("FAIL", "block device not found", response);
-		} else if (part_get_info_efi_by_name(dev_desc, part_name, &part_info) < 0) {
+		} else if (part_get_info_by_name(dev_desc, part_name, &part_info) < 0) {
 			write_fb_response("FAIL", "partition not found", response);
 		} else {
 			write_fb_response("OKAY", (char*)part_info.type, response);

@@ -19,7 +19,6 @@
 /* High Level Configuration Options */
 #define CONFIG_SYS_THUMB_BUILD
 #define CONFIG_OMAP			/* in a TI OMAP core */
-#define CONFIG_OMAP_COMMON
 /* Common ARM Erratas */
 #define CONFIG_ARM_ERRATA_454179
 #define CONFIG_ARM_ERRATA_430973
@@ -38,12 +37,6 @@
 
 #include <asm/arch/cpu.h>		/* get chip and board defs */
 #include <asm/arch/omap.h>
-
-/* Display CPU and Board information */
-#define CONFIG_DISPLAY_CPUINFO
-#define CONFIG_DISPLAY_BOARDINFO
-
-#define CONFIG_SILENT_CONSOLE
 
 /* Clock Defines */
 #define V_OSCK				26000000 /* Clock output from T2 */
@@ -96,7 +89,6 @@
 
 /* MMC */
 #define CONFIG_GENERIC_MMC
-#define CONFIG_MMC
 #define CONFIG_OMAP_HSMMC
 #define CONFIG_DOS_PARTITION
 
@@ -146,7 +138,6 @@
 #define CONFIG_CMD_MTDPARTS		/* Enable MTD parts commands */
 #define CONFIG_CMD_NAND			/* NAND support */
 #define CONFIG_CMD_NAND_LOCK_UNLOCK	/* nand (un)lock commands */
-#define CONFIG_CMD_UBI			/* UBI commands */
 #define CONFIG_CMD_UBIFS		/* UBIFS commands */
 #define CONFIG_LZO			/* LZO is needed for UBIFS */
 
@@ -319,23 +310,12 @@
 #define CONFIG_SPL_NAND_SIMPLE
 
 #define CONFIG_SPL_BOARD_INIT
-#define CONFIG_SPL_GPIO_SUPPORT
-#define CONFIG_SPL_LIBCOMMON_SUPPORT
-#define CONFIG_SPL_LIBDISK_SUPPORT
-#define CONFIG_SPL_I2C_SUPPORT
-#define CONFIG_SPL_LIBGENERIC_SUPPORT
-#define CONFIG_SPL_SERIAL_SUPPORT
-#define CONFIG_SPL_POWER_SUPPORT
-#define CONFIG_SPL_NAND_SUPPORT
 #define CONFIG_SPL_NAND_BASE
 #define CONFIG_SPL_NAND_DRIVERS
 #define CONFIG_SPL_NAND_ECC
-#define CONFIG_SPL_MMC_SUPPORT
-#define CONFIG_SPL_FAT_SUPPORT
-#define CONFIG_SPL_LDSCRIPT		"$(CPUDIR)/omap-common/u-boot-spl.lds"
+#define CONFIG_SPL_LDSCRIPT		"arch/arm/mach-omap2/u-boot-spl.lds"
 #define CONFIG_SPL_FS_LOAD_PAYLOAD_NAME        "u-boot.img"
 #define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION     1
-#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR 0x300 /* address 0x60000 */
 
 #define CONFIG_SPL_TEXT_BASE		0x40200000 /*CONFIG_SYS_SRAM_START*/
 #define CONFIG_SPL_MAX_SIZE		(SRAM_SCRATCH_SPACE_ADDR - \

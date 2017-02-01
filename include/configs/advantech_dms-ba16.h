@@ -13,10 +13,9 @@
 #include <asm/imx-common/gpio.h>
 
 #define CONFIG_BOARD_NAME	"Advantech DMS-BA16"
-#define CONFIG_DEFAULT_FDT_FILE	"imx6q-dms-ba16.dtb"
 
 #define CONFIG_MXC_UART_BASE	UART4_BASE
-#define CONFIG_CONSOLE_DEV	"ttymxc3"
+#define CONSOLE_DEV	"ttymxc3"
 #define CONFIG_EXTRA_BOOTARGS	"panic=10"
 
 #define CONFIG_BOOT_DIR	""
@@ -27,9 +26,6 @@
 
 #include "mx6_common.h"
 #include <linux/sizes.h>
-
-#define CONFIG_DISPLAY_CPUINFO
-#define CONFIG_DISPLAY_BOARDINFO
 
 #define CONFIG_CMDLINE_TAG
 #define CONFIG_SETUP_MEMORY_TAGS
@@ -59,7 +55,6 @@
 #define CONFIG_FSL_ESDHC
 #define CONFIG_FSL_USDHC
 #define CONFIG_SYS_FSL_ESDHC_ADDR      0
-#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_BOUNCE_BUFFER
 #define CONFIG_DOS_PARTITION
@@ -72,7 +67,6 @@
 #define CONFIG_EHCI_HCD_INIT_AFTER_RESET
 #define CONFIG_MXC_USB_PORTSC	(PORT_PTS_UTMI | PORT_PTS_PTW)
 #define CONFIG_MXC_USB_FLAGS	0
-#define CONFIG_USB_KEYBOARD
 #define CONFIG_SYS_USB_EVENT_POLL_VIA_CONTROL_EP
 
 #define CONFIG_USBD_HS
@@ -117,7 +111,7 @@
 	"fdt_addr=0x18000000\0" \
 	"boot_fdt=yes\0" \
 	"ip_dyn=yes\0" \
-	"console=" CONFIG_CONSOLE_DEV "\0" \
+	"console=" CONSOLE_DEV "\0" \
 	"fdt_high=0xffffffff\0"	  \
 	"initrd_high=0xffffffff\0" \
 	"sddev=0\0" \
@@ -275,12 +269,7 @@
 #define CONFIG_SYS_FSL_USDHC_NUM        3
 
 /* Framebuffer */
-#define CONFIG_VIDEO
 #define CONFIG_VIDEO_IPUV3
-#define CONFIG_CFB_CONSOLE
-#define CONFIG_VGA_AS_SINGLE_DEVICE
-#define CONFIG_SYS_CONSOLE_IS_IN_ENV
-#define CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE
 #define CONFIG_VIDEO_BMP_RLE8
 #define CONFIG_SPLASH_SCREEN
 #define CONFIG_SPLASH_SCREEN_ALIGN
@@ -296,8 +285,6 @@
 
 #undef CONFIG_CMD_PCI
 #ifdef CONFIG_CMD_PCI
-#define CONFIG_PCI
-#define CONFIG_PCI_PNP
 #define CONFIG_PCI_SCAN_SHOW
 #define CONFIG_PCIE_IMX
 #define CONFIG_PCIE_IMX_PERST_GPIO      IMX_GPIO_NR(7, 12)
