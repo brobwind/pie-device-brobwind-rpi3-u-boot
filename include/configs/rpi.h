@@ -16,7 +16,6 @@
 
 /* Architecture, CPU, etc.*/
 #define CONFIG_ARCH_CPU_INIT
-#define CONFIG_BOARD_EARLY_INIT_F
 
 /* Use SoC timer for AArch32, but architected timer for AArch64 */
 #ifndef CONFIG_ARM64
@@ -71,9 +70,8 @@
 /* GPIO */
 #define CONFIG_BCM2835_GPIO
 /* LCD */
-#define CONFIG_LCD
 #define CONFIG_LCD_DT_SIMPLEFB
-#define LCD_BPP				LCD_COLOR16
+#define LCD_BPP				LCD_COLOR32
 /*
  * Prevent allocation of RAM for FB; the real FB address is queried
  * dynamically from the VideoCore co-processor, and comes from RAM
@@ -82,14 +80,9 @@
 #define CONFIG_FB_ADDR			0
 #define CONFIG_VIDEO_BCM2835
 #define CONFIG_SYS_WHITE_ON_BLACK
-#define CONFIG_CONSOLE_SCROLL_LINES	10
 
 /* SD/MMC configuration */
 #define CONFIG_GENERIC_MMC
-#define CONFIG_MMC
-#define CONFIG_SDHCI
-#define CONFIG_MMC_SDHCI_IO_ACCESSORS
-#define CONFIG_BCM2835_SDHCI
 
 #ifdef CONFIG_CMD_USB
 #define CONFIG_USB_DWC2
@@ -102,9 +95,7 @@
 #define CONFIG_USB_ETHER_SMSC95XX
 #define CONFIG_TFTP_TSIZE
 #define CONFIG_MISC_INIT_R
-#define CONFIG_USB_KEYBOARD
 #define CONFIG_SYS_USB_EVENT_POLL
-#define CONFIG_SYS_STDIO_DEREGISTER
 #endif
 
 /* Console UART */
@@ -130,8 +121,6 @@
 #define CONFIG_FAT_WRITE
 #define CONFIG_ENV_VARS_UBOOT_CONFIG
 #define CONFIG_SYS_LOAD_ADDR		0x1000000
-#define CONFIG_CONSOLE_MUX
-#define CONFIG_SYS_CONSOLE_IS_IN_ENV
 #define CONFIG_PREBOOT			"usb start"
 
 /* Shell */

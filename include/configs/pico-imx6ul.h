@@ -14,9 +14,6 @@
 #include "mx6_common.h"
 #include <asm/imx-common/gpio.h>
 
-#define CONFIG_DISPLAY_CPUINFO
-#define CONFIG_DISPLAY_BOARDINFO
-
 /* Network support */
 
 #define CONFIG_FEC_MXC
@@ -40,7 +37,6 @@
 #define CONFIG_FSL_ESDHC
 #define CONFIG_SYS_FSL_ESDHC_ADDR	USDHC1_BASE_ADDR
 
-#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_DOS_PARTITION
 #define CONFIG_SUPPORT_EMMC_BOOT
@@ -58,12 +54,8 @@
 #define CONFIG_USB_FUNCTION_MASS_STORAGE
 #define CONFIG_USB_GADGET_VBUS_DRAW	2
 
-#define CONFIG_USB_FUNCTION_DFU
-#define CONFIG_DFU_MMC
 #define CONFIG_SYS_DFU_DATA_BUF_SIZE SZ_16M
 #define DFU_DEFAULT_POLL_TIMEOUT 300
-
-#define CONFIG_DEFAULT_FDT_FILE		"imx6ul-pico-hobbit.dtb"
 
 #define CONFIG_SYS_MMC_IMG_LOAD_PART	1
 

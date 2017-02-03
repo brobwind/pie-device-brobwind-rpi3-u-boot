@@ -19,12 +19,22 @@ extern void c_runtime_cpu_setup(void);
 #define SEC_FIRMWARE_LOADED	0x1
 #define SEC_FIRMWARE_RUNNING	0x2
 #define SEC_FIRMWARE_ADDR_MASK	(~0x3)
-	/*
-	 * Secure firmware load addr
-	 * Flags used: 0x1 secure firmware has been loaded to secure memory
-	 *             0x2 secure firmware is running
-	 */
-	phys_addr_t sec_firmware_addr;
+/*
+ * Secure firmware load addr
+ * Flags used: 0x1 secure firmware has been loaded to secure memory
+ *             0x2 secure firmware is running
+ */
+phys_addr_t sec_firmware_addr;
+
+#ifndef SEC_FIRMWARE_FIT_IMAGE
+#define SEC_FIRMWARE_FIT_IMAGE		"firmware"
+#endif
+#ifndef SEC_FIRMEWARE_FIT_CNF_NAME
+#define SEC_FIRMEWARE_FIT_CNF_NAME	"config@1"
+#endif
+#ifndef SEC_FIRMWARE_TARGET_EL
+#define SEC_FIRMWARE_TARGET_EL		2
+#endif
 
 static int sec_firmware_get_data(const void *sec_firmware_img,
 				const void **data, size_t *size)
@@ -199,7 +209,7 @@ __weak bool sec_firmware_is_valid(const void *sec_firmware_img)
 	return true;
 }
 
-#ifdef CONFIG_ARMV8_PSCI
+#ifdef CONFIG_FSL_PPA_ARMV8_PSCI
 /*
  * The PSCI_VERSION function is added from PSCI v0.2. When the PSCI
  * v0.1 received this function, the NOT_SUPPORTED (0xffff_ffff) error

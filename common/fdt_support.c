@@ -381,6 +381,7 @@ void do_fixup_by_compat_u32(void *fdt, const char *compat,
 	do_fixup_by_compat(fdt, compat, prop, &tmp, 4, create);
 }
 
+#ifdef CONFIG_ARCH_FIXUP_FDT_MEMORY
 /*
  * fdt_pack_reg - pack address and size array into the "reg"-suitable stream
  */
@@ -459,6 +460,7 @@ int fdt_fixup_memory_banks(void *blob, u64 start[], u64 size[], int banks)
 	}
 	return 0;
 }
+#endif
 
 int fdt_fixup_memory(void *blob, u64 start, u64 size)
 {
@@ -523,7 +525,7 @@ void fdt_fixup_ethernet(void *fdt)
 }
 
 /* Resize the fdt to its actual size + a bit of padding */
-int fdt_shrink_to_minimum(void *blob)
+int fdt_shrink_to_minimum(void *blob, uint extrasize)
 {
 	int i;
 	uint64_t addr, size;
@@ -551,6 +553,7 @@ int fdt_shrink_to_minimum(void *blob)
 	actualsize = fdt_off_dt_strings(blob) +
 		fdt_size_dt_strings(blob) + 5 * sizeof(struct fdt_reserve_entry);
 
+	actualsize += extrasize;
 	/* Make it so the fdt ends on a page boundary */
 	actualsize = ALIGN(actualsize + ((uintptr_t)blob & 0xfff), 0x1000);
 	actualsize = actualsize - ((uintptr_t)blob & 0xfff);

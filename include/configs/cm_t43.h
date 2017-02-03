@@ -90,11 +90,7 @@
 #define CONFIG_HSMMC2_8BIT
 
 #include <configs/ti_armv7_omap.h>
-#undef CONFIG_SPL_OS_BOOT
-#undef CONFIG_SPL_GPIO_SUPPORT
-#undef CONFIG_SPL_NAND_SUPPORT
 #undef CONFIG_SYS_MONITOR_LEN
-#undef CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR
 
 #define CONFIG_ENV_SIZE			(16 * 1024)
 #define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
@@ -107,7 +103,7 @@
 #define CONFIG_ENV_OFFSET		(768 * 1024)
 #define CONFIG_ENV_SPI_MAX_HZ           48000000
 
-#define CONFIG_SPL_LDSCRIPT		"$(CPUDIR)/omap-common/u-boot-spl.lds"
+#define CONFIG_SPL_LDSCRIPT		"arch/arm/mach-omap2/u-boot-spl.lds"
 
 /* Enhance our eMMC support / experience. */
 #define CONFIG_CMD_GPT
@@ -153,15 +149,9 @@
 /* SPL defines. */
 #define CONFIG_SPL_TEXT_BASE		0x40300350
 #define CONFIG_SYS_SPL_ARGS_ADDR	(CONFIG_SYS_SDRAM_BASE + (128 << 20))
-#define CONFIG_SPL_POWER_SUPPORT
 #define CONFIG_SYS_SPI_U_BOOT_OFFS	(256 * 1024)
 #define CONFIG_SYS_MONITOR_LEN		(512 * 1024)
-#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x480
-#define CONFIG_SPL_SPI_SUPPORT
-#define CONFIG_SPL_SPI_FLASH_SUPPORT
 #define CONFIG_SPL_SPI_LOAD
-#define CONFIG_SPL_I2C_SUPPORT
-#define CONFIG_SPL_POWER_SUPPORT
 
 /* EEPROM */
 #define CONFIG_CMD_EEPROM

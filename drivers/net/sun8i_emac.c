@@ -180,8 +180,8 @@ static int sun8i_mdio_write(struct mii_dev *bus, int addr, int devad, int reg,
 	miiaddr |= MDIO_CMD_MII_WRITE;
 	miiaddr |= MDIO_CMD_MII_BUSY;
 
-	writel(miiaddr, priv->mac_reg + EMAC_MII_CMD);
 	writel(val, priv->mac_reg + EMAC_MII_DATA);
+	writel(miiaddr, priv->mac_reg + EMAC_MII_CMD);
 
 	start = get_timer(0);
 	while (get_timer(start) < timeout) {
@@ -456,8 +456,9 @@ static int parse_phy_pins(struct udevice *dev)
 	for (i = 0; ; i++) {
 		int pin;
 
-		if (fdt_get_string_index(gd->fdt_blob, offset,
-					 "allwinner,pins", i, &pin_name))
+		pin_name = fdt_stringlist_get(gd->fdt_blob, offset,
+					      "allwinner,pins", i, NULL);
+		if (!pin_name)
 			break;
 		if (pin_name[0] != 'P')
 			continue;

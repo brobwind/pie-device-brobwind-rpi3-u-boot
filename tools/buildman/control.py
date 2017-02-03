@@ -237,7 +237,7 @@ def DoBuildman(options, args, toolchains=None, make_func=None, boards=None,
         options.step = len(series.commits) - 1
 
     gnu_make = command.Output(os.path.join(options.git,
-                                           'scripts/show-gnu-make')).rstrip()
+            'scripts/show-gnu-make'), raise_on_error=False).rstrip()
     if not gnu_make:
         sys.exit('GNU Make not found')
 
@@ -258,7 +258,9 @@ def DoBuildman(options, args, toolchains=None, make_func=None, boards=None,
             no_subdirs=options.no_subdirs, full_path=options.full_path,
             verbose_build=options.verbose_build,
             incremental=options.incremental,
-            per_board_out_dir=options.per_board_out_dir,)
+            per_board_out_dir=options.per_board_out_dir,
+            config_only=options.config_only,
+            squash_config_y=not options.preserve_config_y)
     builder.force_config_on_failure = not options.quick
     if make_func:
         builder.do_make = make_func
