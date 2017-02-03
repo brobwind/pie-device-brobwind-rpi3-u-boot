@@ -11,10 +11,6 @@
 
 #ifdef CONFIG_LS2080A
 enum srds_prtcl {
-	/*
-	 * Nobody will check whether the device 'NONE' has been configured,
-	 * So use it to indicate if the serdes_prtcl_map has been initialized.
-	 */
 	NONE = 0,
 	PCIE1,
 	PCIE2,
@@ -61,10 +57,6 @@ enum srds {
 };
 #elif defined(CONFIG_FSL_LSCH2)
 enum srds_prtcl {
-	/*
-	 * Nobody will check whether the device 'NONE' has been configured,
-	 * So use it to indicate if the serdes_prtcl_map has been initialized.
-	 */
 	NONE = 0,
 	PCIE1,
 	PCIE2,

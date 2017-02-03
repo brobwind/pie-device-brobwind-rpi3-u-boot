@@ -15,6 +15,7 @@
  */
 #define CONFIG_OMAP	/* in a TI OMAP core */
 #define CONFIG_CM_T3517	/* working with CM-T3517 */
+#define CONFIG_OMAP_COMMON
 /* Common ARM Erratas */
 #define CONFIG_ARM_ERRATA_454179
 #define CONFIG_ARM_ERRATA_430973
@@ -34,6 +35,12 @@
 #include <asm/arch/omap.h>
 
 #define CONFIG_MACH_TYPE                MACH_TYPE_CM_T3517
+
+/*
+ * Display CPU and Board information
+ */
+#define CONFIG_DISPLAY_CPUINFO
+#define CONFIG_DISPLAY_BOARDINFO
 
 /* Clock Defines */
 #define V_OSCK			26000000	/* Clock output from T2 */
@@ -78,6 +85,7 @@
 #define CONFIG_CONS_INDEX		3
 #define CONFIG_SYS_NS16550_COM3		OMAP34XX_UART3
 #define CONFIG_SERIAL3			3	/* UART3 */
+#define CONFIG_SYS_CONSOLE_IS_IN_ENV
 
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
@@ -88,6 +96,7 @@
 #define CONFIG_OMAP_GPIO
 
 #define CONFIG_GENERIC_MMC
+#define CONFIG_MMC
 #define CONFIG_OMAP_HSMMC
 #define CONFIG_DOS_PARTITION
 
@@ -279,6 +288,7 @@
 #define CONFIG_VIDEO_OMAP3
 #define LCD_BPP		LCD_COLOR16
 
+#define CONFIG_LCD
 #define CONFIG_SPLASH_SCREEN
 #define CONFIG_SPLASHIMAGE_GUARD
 #define CONFIG_CMD_BMP

@@ -1,7 +1,5 @@
 /*
- * Copyright (C) 2014      Panasonic Corporation
- * Copyright (C) 2015-2016 Socionext Inc.
- *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+ * Copyright (C) 2014-2015 Masahiro Yamada <yamada.masahiro@socionext.com>
  *
  * SPDX-License-Identifier:	GPL-2.0+
  */
@@ -30,27 +28,33 @@ static void nand_denali_wp_disable(void)
 #endif
 }
 
+#define VENDOR_PREFIX		"socionext,"
+#define DTB_FILE_PREFIX		"uniphier-"
+
 static int uniphier_set_fdt_file(void)
 {
 	DECLARE_GLOBAL_DATA_PTR;
 	const char *compat;
 	char dtb_name[256];
-	int buf_len = sizeof(dtb_name);
+	int buf_len = 256;
+	int ret;
 
 	if (getenv("fdt_file"))
 		return 0;	/* do nothing if it is already set */
 
-	compat = fdt_stringlist_get(gd->fdt_blob, 0, "compatible", 0, NULL);
-	if (!compat)
+	ret = fdt_get_string(gd->fdt_blob, 0, "compatible", &compat);
+	if (ret)
 		return -EINVAL;
 
-	/* rip off the vendor prefix "socionext,"  */
-	compat = strchr(compat, ',');
-	if (!compat)
+	if (strncmp(compat, VENDOR_PREFIX, strlen(VENDOR_PREFIX)))
 		return -EINVAL;
-	compat++;
 
-	strncpy(dtb_name, compat, buf_len);
+	compat += strlen(VENDOR_PREFIX);
+
+	strncat(dtb_name, DTB_FILE_PREFIX, buf_len);
+	buf_len -= strlen(DTB_FILE_PREFIX);
+
+	strncat(dtb_name, compat, buf_len);
 	buf_len -= strlen(compat);
 
 	strncat(dtb_name, ".dtb", buf_len);

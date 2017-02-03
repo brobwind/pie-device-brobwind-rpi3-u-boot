@@ -8,11 +8,6 @@
 
 #ifndef __ASM_ARM_MACRO_H__
 #define __ASM_ARM_MACRO_H__
-
-#ifdef CONFIG_ARM64
-#include <asm/system.h>
-#endif
-
 #ifdef __ASSEMBLY__
 
 /*
@@ -140,21 +135,13 @@ lr	.req	x30
 #endif
 .endm
 
-/*
- * Switch from EL3 to EL2 for ARMv8
- * @ep:     kernel entry point
- * @flag:   The execution state flag for lower exception
- *          level, ES_TO_AARCH64 or ES_TO_AARCH32
- * @tmp:    temporary register
- *
- * For loading 32-bit OS, x1 is machine nr and x2 is ftaddr.
- * For loading 64-bit OS, x0 is physical address to the FDT blob.
- * They will be passed to the guest.
- */
-.macro armv8_switch_to_el2_m, ep, flag, tmp
+.macro armv8_switch_to_el2_m, xreg1
+	/* 64bit EL2 | HCE | SMD | RES1 (Bits[5:4]) | Non-secure EL0/EL1 */
+	mov	\xreg1, #0x5b1
+	msr	scr_el3, \xreg1
 	msr	cptr_el3, xzr		/* Disable coprocessor traps to EL3 */
-	mov	\tmp, #CPTR_EL2_RES1
-	msr	cptr_el2, \tmp		/* Disable coprocessor traps to EL2 */
+	mov	\xreg1, #0x33ff
+	msr	cptr_el2, \xreg1	/* Disable coprocessor traps to EL2 */
 
 	/* Initialize Generic Timers */
 	msr	cntvoff_el2, xzr
@@ -165,96 +152,45 @@ lr	.req	x30
 	 * and RES0 bits (31,30,27,26,24,21,20,17,15-13,10-6) +
 	 * EE,WXN,I,SA,C,A,M to 0
 	 */
-	ldr	\tmp, =(SCTLR_EL2_RES1 | SCTLR_EL2_EE_LE |\
-			SCTLR_EL2_WXN_DIS | SCTLR_EL2_ICACHE_DIS |\
-			SCTLR_EL2_SA_DIS | SCTLR_EL2_DCACHE_DIS |\
-			SCTLR_EL2_ALIGN_DIS | SCTLR_EL2_MMU_DIS)
-	msr	sctlr_el2, \tmp
-
-	mov	\tmp, sp
-	msr	sp_el2, \tmp		/* Migrate SP */
-	mrs	\tmp, vbar_el3
-	msr	vbar_el2, \tmp		/* Migrate VBAR */
-
-	/* Check switch to AArch64 EL2 or AArch32 Hypervisor mode */
-	cmp	\flag, #ES_TO_AARCH32
-	b.eq	1f
-
-	/*
-	 * The next lower exception level is AArch64, 64bit EL2 | HCE |
-	 * RES1 (Bits[5:4]) | Non-secure EL0/EL1.
-	 * and the SMD depends on requirements.
-	 */
-#ifdef CONFIG_ARMV8_PSCI
-	ldr	\tmp, =(SCR_EL3_RW_AARCH64 | SCR_EL3_HCE_EN |\
-			SCR_EL3_RES1 | SCR_EL3_NS_EN)
-#else
-	ldr	\tmp, =(SCR_EL3_RW_AARCH64 | SCR_EL3_HCE_EN |\
-			SCR_EL3_SMD_DIS | SCR_EL3_RES1 |\
-			SCR_EL3_NS_EN)
-#endif
-	msr	scr_el3, \tmp
+	mov	\xreg1, #0x0830
+	movk	\xreg1, #0x30C5, lsl #16
+	msr	sctlr_el2, \xreg1
 
 	/* Return to the EL2_SP2 mode from EL3 */
-	ldr	\tmp, =(SPSR_EL_DEBUG_MASK | SPSR_EL_SERR_MASK |\
-			SPSR_EL_IRQ_MASK | SPSR_EL_FIQ_MASK |\
-			SPSR_EL_M_AARCH64 | SPSR_EL_M_EL2H)
-	msr	spsr_el3, \tmp
-	msr	elr_el3, \ep
-	eret
-
-1:
-	/*
-	 * The next lower exception level is AArch32, 32bit EL2 | HCE |
-	 * SMD | RES1 (Bits[5:4]) | Non-secure EL0/EL1.
-	 */
-	ldr	\tmp, =(SCR_EL3_RW_AARCH32 | SCR_EL3_HCE_EN |\
-			SCR_EL3_SMD_DIS | SCR_EL3_RES1 |\
-			SCR_EL3_NS_EN)
-	msr	scr_el3, \tmp
-
-	/* Return to AArch32 Hypervisor mode */
-	ldr     \tmp, =(SPSR_EL_END_LE | SPSR_EL_ASYN_MASK |\
-			SPSR_EL_IRQ_MASK | SPSR_EL_FIQ_MASK |\
-			SPSR_EL_T_A32 | SPSR_EL_M_AARCH32 |\
-			SPSR_EL_M_HYP)
-	msr	spsr_el3, \tmp
-	msr     elr_el3, \ep
+	mov	\xreg1, sp
+	msr	sp_el2, \xreg1		/* Migrate SP */
+	mrs	\xreg1, vbar_el3
+	msr	vbar_el2, \xreg1	/* Migrate VBAR */
+	mov	\xreg1, #0x3c9
+	msr	spsr_el3, \xreg1	/* EL2_SP2 | D | A | I | F */
+	msr	elr_el3, lr
 	eret
 .endm
 
-/*
- * Switch from EL2 to EL1 for ARMv8
- * @ep:     kernel entry point
- * @flag:   The execution state flag for lower exception
- *          level, ES_TO_AARCH64 or ES_TO_AARCH32
- * @tmp:    temporary register
- *
- * For loading 32-bit OS, x1 is machine nr and x2 is ftaddr.
- * For loading 64-bit OS, x0 is physical address to the FDT blob.
- * They will be passed to the guest.
- */
-.macro armv8_switch_to_el1_m, ep, flag, tmp
+.macro armv8_switch_to_el1_m, xreg1, xreg2
 	/* Initialize Generic Timers */
-	mrs	\tmp, cnthctl_el2
-	/* Enable EL1 access to timers */
-	orr	\tmp, \tmp, #(CNTHCTL_EL2_EL1PCEN_EN |\
-		CNTHCTL_EL2_EL1PCTEN_EN)
-	msr	cnthctl_el2, \tmp
+	mrs	\xreg1, cnthctl_el2
+	orr	\xreg1, \xreg1, #0x3	/* Enable EL1 access to timers */
+	msr	cnthctl_el2, \xreg1
 	msr	cntvoff_el2, xzr
 
 	/* Initilize MPID/MPIDR registers */
-	mrs	\tmp, midr_el1
-	msr	vpidr_el2, \tmp
-	mrs	\tmp, mpidr_el1
-	msr	vmpidr_el2, \tmp
+	mrs	\xreg1, midr_el1
+	mrs	\xreg2, mpidr_el1
+	msr	vpidr_el2, \xreg1
+	msr	vmpidr_el2, \xreg2
 
 	/* Disable coprocessor traps */
-	mov	\tmp, #CPTR_EL2_RES1
-	msr	cptr_el2, \tmp		/* Disable coprocessor traps to EL2 */
+	mov	\xreg1, #0x33ff
+	msr	cptr_el2, \xreg1	/* Disable coprocessor traps to EL2 */
 	msr	hstr_el2, xzr		/* Disable coprocessor traps to EL2 */
-	mov	\tmp, #CPACR_EL1_FPEN_EN
-	msr	cpacr_el1, \tmp		/* Enable FP/SIMD at EL1 */
+	mov	\xreg1, #3 << 20
+	msr	cpacr_el1, \xreg1	/* Enable FP/SIMD at EL1 */
+
+	/* Initialize HCR_EL2 */
+	mov	\xreg1, #(1 << 31)		/* 64bit EL1 */
+	orr	\xreg1, \xreg1, #(1 << 29)	/* Disable HVC */
+	msr	hcr_el2, \xreg1
 
 	/* SCTLR_EL1 initialization
 	 *
@@ -263,50 +199,18 @@ lr	.req	x30
 	 * UCI,EE,EOE,WXN,nTWE,nTWI,UCT,DZE,I,UMA,SED,ITD,
 	 * CP15BEN,SA0,SA,C,A,M to 0
 	 */
-	ldr	\tmp, =(SCTLR_EL1_RES1 | SCTLR_EL1_UCI_DIS |\
-			SCTLR_EL1_EE_LE | SCTLR_EL1_WXN_DIS |\
-			SCTLR_EL1_NTWE_DIS | SCTLR_EL1_NTWI_DIS |\
-			SCTLR_EL1_UCT_DIS | SCTLR_EL1_DZE_DIS |\
-			SCTLR_EL1_ICACHE_DIS | SCTLR_EL1_UMA_DIS |\
-			SCTLR_EL1_SED_EN | SCTLR_EL1_ITD_EN |\
-			SCTLR_EL1_CP15BEN_DIS | SCTLR_EL1_SA0_DIS |\
-			SCTLR_EL1_SA_DIS | SCTLR_EL1_DCACHE_DIS |\
-			SCTLR_EL1_ALIGN_DIS | SCTLR_EL1_MMU_DIS)
-	msr	sctlr_el1, \tmp
-
-	mov	\tmp, sp
-	msr	sp_el1, \tmp		/* Migrate SP */
-	mrs	\tmp, vbar_el2
-	msr	vbar_el1, \tmp		/* Migrate VBAR */
-
-	/* Check switch to AArch64 EL1 or AArch32 Supervisor mode */
-	cmp	\flag, #ES_TO_AARCH32
-	b.eq	1f
-
-	/* Initialize HCR_EL2 */
-	ldr	\tmp, =(HCR_EL2_RW_AARCH64 | HCR_EL2_HCD_DIS)
-	msr	hcr_el2, \tmp
+	mov	\xreg1, #0x0800
+	movk	\xreg1, #0x30d0, lsl #16
+	msr	sctlr_el1, \xreg1
 
 	/* Return to the EL1_SP1 mode from EL2 */
-	ldr	\tmp, =(SPSR_EL_DEBUG_MASK | SPSR_EL_SERR_MASK |\
-			SPSR_EL_IRQ_MASK | SPSR_EL_FIQ_MASK |\
-			SPSR_EL_M_AARCH64 | SPSR_EL_M_EL1H)
-	msr	spsr_el2, \tmp
-	msr     elr_el2, \ep
-	eret
-
-1:
-	/* Initialize HCR_EL2 */
-	ldr	\tmp, =(HCR_EL2_RW_AARCH32 | HCR_EL2_HCD_DIS)
-	msr	hcr_el2, \tmp
-
-	/* Return to AArch32 Supervisor mode from EL2 */
-	ldr	\tmp, =(SPSR_EL_END_LE | SPSR_EL_ASYN_MASK |\
-			SPSR_EL_IRQ_MASK | SPSR_EL_FIQ_MASK |\
-			SPSR_EL_T_A32 | SPSR_EL_M_AARCH32 |\
-			SPSR_EL_M_SVC)
-	msr     spsr_el2, \tmp
-	msr     elr_el2, \ep
+	mov	\xreg1, sp
+	msr	sp_el1, \xreg1		/* Migrate SP */
+	mrs	\xreg1, vbar_el2
+	msr	vbar_el1, \xreg1	/* Migrate VBAR */
+	mov	\xreg1, #0x3c5
+	msr	spsr_el2, \xreg1	/* EL1_SP1 | D | A | I | F */
+	msr	elr_el2, lr
 	eret
 .endm
 

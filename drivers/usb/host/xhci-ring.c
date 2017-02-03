@@ -18,7 +18,7 @@
 #include <asm/byteorder.h>
 #include <usb.h>
 #include <asm/unaligned.h>
-#include <linux/errno.h>
+#include <asm-generic/errno.h>
 
 #include "xhci.h"
 

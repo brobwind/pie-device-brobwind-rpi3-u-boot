@@ -16,7 +16,7 @@
 #include <linux/mtd/nand_ecc.h>
 
 #include <asm/io.h>
-#include <linux/errno.h>
+#include <asm/errno.h>
 #include <fsl_ifc.h>
 
 #ifndef CONFIG_SYS_FSL_IFC_BANK_COUNT

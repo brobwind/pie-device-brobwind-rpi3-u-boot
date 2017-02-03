@@ -160,11 +160,9 @@ long trailing_strtoln(const char *str, const char *end)
 
 	if (!end)
 		end = str + strlen(str);
-	if (isdigit(end[-1])) {
-		for (p = end - 1; p > str; p--) {
-			if (!isdigit(*p))
-				return simple_strtoul(p + 1, NULL, 10);
-		}
+	for (p = end - 1; p > str; p--) {
+		if (!isdigit(*p))
+			return simple_strtoul(p + 1, NULL, 10);
 	}
 
 	return -1;

@@ -1,4 +1,4 @@
-if TARGET_T2080RDB
+if TARGET_T208XRDB
 
 config SYS_BOARD
 	default "t208xrdb"

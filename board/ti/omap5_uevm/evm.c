@@ -245,7 +245,10 @@ int ehci_hcd_init(int index, enum usb_init_type init,
 
 int ehci_hcd_stop(void)
 {
-	return omap_ehci_hcd_stop();
+	int ret;
+
+	ret = omap_ehci_hcd_stop();
+	return ret;
 }
 
 void usb_hub_reset_devices(int port)

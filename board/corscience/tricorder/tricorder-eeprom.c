@@ -190,8 +190,13 @@ int do_tricorder_eeprom(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	if (argc == 3) {
 		ulong dev_addr = simple_strtoul(argv[2], NULL, 16);
 
-		if (strcmp(argv[1], "read") == 0)
-			return tricorder_eeprom_read(dev_addr);
+		if (strcmp(argv[1], "read") == 0) {
+			int rcode;
+
+			rcode = tricorder_eeprom_read(dev_addr);
+
+			return rcode;
+		}
 	} else if (argc == 6 || argc == 7) {
 		ulong dev_addr = simple_strtoul(argv[2], NULL, 16);
 		char *name = argv[3];
@@ -202,9 +207,14 @@ int do_tricorder_eeprom(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		if (argc == 7)
 			interface = argv[6];
 
-		if (strcmp(argv[1], "write") == 0)
-			return tricorder_eeprom_write(dev_addr, name, version,
-						      serial, interface);
+		if (strcmp(argv[1], "write") == 0) {
+			int rcode;
+
+			rcode = tricorder_eeprom_write(dev_addr, name, version,
+					serial, interface);
+
+			return rcode;
+		}
 	}
 
 	return CMD_RET_USAGE;

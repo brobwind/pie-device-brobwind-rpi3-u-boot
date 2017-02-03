@@ -10,9 +10,6 @@ config TARGET_OPENRD
 config TARGET_DREAMPLUG
 	bool "DreamPlug Board"
 
-config TARGET_DS109
-	bool "Synology DS109"
-
 config TARGET_GURUPLUG
 	bool "GuruPlug Board"
 
@@ -62,7 +59,6 @@ config SYS_SOC
 
 source "board/Marvell/openrd/Kconfig"
 source "board/Marvell/dreamplug/Kconfig"
-source "board/Synology/ds109/Kconfig"
 source "board/Marvell/guruplug/Kconfig"
 source "board/Marvell/sheevaplug/Kconfig"
 source "board/buffalo/lsxl/Kconfig"

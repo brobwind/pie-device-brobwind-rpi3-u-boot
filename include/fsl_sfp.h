@@ -78,16 +78,9 @@ struct ccsr_sfp_regs {
 	u32 fsl_uid;	/* 0xB0  FSL Unique ID */
 };
 #endif
-
 #define ITS_MASK	0x00000004
 #define ITS_BIT		2
-
-#if defined(CONFIG_SYS_FSL_SFP_VER_3_4)
-#define OSPR_KEY_REVOC_SHIFT    9
-#define OSPR_KEY_REVOC_MASK     0x0000fe00
-#else
-#define OSPR_KEY_REVOC_SHIFT    13
-#define OSPR_KEY_REVOC_MASK     0x0000e000
-#endif /* CONFIG_SYS_FSL_SFP_VER_3_4 */
+#define OSPR_KEY_REVOC_SHIFT	13
+#define OSPR_KEY_REVOC_MASK	0x0000e000
 
 #endif

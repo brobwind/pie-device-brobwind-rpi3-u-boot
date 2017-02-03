@@ -9,6 +9,7 @@
 #ifndef	__CONFIG_PXA_COMMON_H__
 #define	__CONFIG_PXA_COMMON_H__
 
+#define	CONFIG_DISPLAY_CPUINFO
 #define	CONFIG_SYS_ARM_CACHE_WRITETHROUGH
 
 /*
@@ -22,6 +23,7 @@
  * MMC Card Configuration
  */
 #ifdef	CONFIG_CMD_MMC
+#define	CONFIG_MMC
 #define	CONFIG_GENERIC_MMC
 #define	CONFIG_PXA_MMC_GENERIC
 #define	CONFIG_DOS_PARTITION

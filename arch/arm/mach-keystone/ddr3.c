@@ -65,8 +65,9 @@ void ddr3_init_ddrphy(u32 base, struct ddr3_phy_config *phy_cfg)
 	while ((__raw_readl(base + KS2_DDRPHY_PGSR0_OFFSET) & 0x1) != 0x1)
 		;
 
+	/* Disable ECC for K2G */
 	if (cpu_is_k2g()) {
-		setbits_le32(base + KS2_DDRPHY_DATX8_4_OFFSET, 0x1);
+		clrbits_le32(base + KS2_DDRPHY_DATX8_4_OFFSET, 0x1);
 		clrbits_le32(base + KS2_DDRPHY_DATX8_5_OFFSET, 0x1);
 		clrbits_le32(base + KS2_DDRPHY_DATX8_6_OFFSET, 0x1);
 		clrbits_le32(base + KS2_DDRPHY_DATX8_7_OFFSET, 0x1);
@@ -138,10 +139,7 @@ static void ddr3_reset_data(u32 base, u32 ddr3_size)
 	puts("\nClear entire DDR3 memory to enable ECC\n");
 
 	/* save the SES MPAX regs */
-	if (cpu_is_k2g())
-		msmc_get_ses_mpax(K2G_MSMC_SEGMENT_ARM, 0, mpax);
-	else
-		msmc_get_ses_mpax(K2HKLE_MSMC_SEGMENT_ARM, 0, mpax);
+	msmc_get_ses_mpax(8, 0, mpax);
 
 	/* setup edma slot 1 configuration */
 	slot.opt = EDMA3_SLOPT_TRANS_COMP_INT_ENB |
@@ -172,17 +170,8 @@ static void ddr3_reset_data(u32 base, u32 ddr3_size)
 	for (seg = 0; seg < seg_num; seg += KS2_MSMC_MAP_SEG_NUM) {
 		/* map 2GB 36-bit DDR address to 32-bit DDR address in EMIF
 		   access slave interface so that edma driver can access */
-		if (cpu_is_k2g()) {
-			msmc_map_ses_segment(K2G_MSMC_SEGMENT_ARM, 0,
-					     base >> KS2_MSMC_SEG_SIZE_SHIFT,
-					     KS2_MSMC_DST_SEG_BASE + seg,
-					     MPAX_SEG_2G);
-		} else {
-			msmc_map_ses_segment(K2HKLE_MSMC_SEGMENT_ARM, 0,
-					     base >> KS2_MSMC_SEG_SIZE_SHIFT,
-					     KS2_MSMC_DST_SEG_BASE + seg,
-					     MPAX_SEG_2G);
-		}
+		msmc_map_ses_segment(8, 0, base >> KS2_MSMC_SEG_SIZE_SHIFT,
+				     KS2_MSMC_DST_SEG_BASE + seg, MPAX_SEG_2G);
 
 		if ((seg_num - seg) > KS2_MSMC_MAP_SEG_NUM)
 			edma_blks = KS2_MSMC_MAP_SEG_NUM <<
@@ -209,10 +198,7 @@ static void ddr3_reset_data(u32 base, u32 ddr3_size)
 	qedma3_stop(KS2_EDMA0_BASE, &edma_channel);
 
 	/* restore the SES MPAX regs */
-	if (cpu_is_k2g())
-		msmc_set_ses_mpax(K2G_MSMC_SEGMENT_ARM, 0, mpax);
-	else
-		msmc_set_ses_mpax(K2HKLE_MSMC_SEGMENT_ARM, 0, mpax);
+	msmc_set_ses_mpax(8, 0, mpax);
 }
 
 static void ddr3_ecc_init_range(u32 base)

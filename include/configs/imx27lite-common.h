@@ -16,6 +16,9 @@
 #define CONFIG_MX27
 #define CONFIG_MX27_CLK32	32768		/* OSC32K frequency */
 
+#define CONFIG_DISPLAY_BOARDINFO
+#define CONFIG_DISPLAY_CPUINFO
+
 #define CONFIG_SYS_TEXT_BASE		0xc0000000
 
 #define CONFIG_CMDLINE_TAG		1	/* enable passing of ATAGs */
@@ -137,6 +140,7 @@
 /*
  * SD/MMC
  */
+#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_MXC_MMC
 #define CONFIG_DOS_PARTITION

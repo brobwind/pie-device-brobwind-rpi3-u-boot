@@ -140,7 +140,9 @@ int dpm_wrp(u8 r, u8 d)
 /* Uses the DPM command RRP */
 u8 zm_read(uchar reg)
 {
-	return dpm_rrp(reg);
+	u8 d;
+	d = dpm_rrp(reg);
+	return d;
 }
 
 /* ZM_write --

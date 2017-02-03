@@ -125,6 +125,7 @@
  */
 #define CONFIG_MMC_SPI
 #ifdef CONFIG_MMC_SPI
+#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #endif
 

@@ -19,6 +19,8 @@
  * (easy to change)
  */
 
+#define CONFIG_DISPLAY_BOARDINFO
+
 #define CONFIG_MCFUART
 #define CONFIG_SYS_UART_PORT		(0)
 #define CONFIG_BAUDRATE		115200
@@ -91,6 +93,8 @@
 
 /* PCI */
 #ifdef CONFIG_CMD_PCI
+#define CONFIG_PCI		1
+#define CONFIG_PCI_PNP		1
 #define CONFIG_PCIAUTO_SKIP_HOST_BRIDGE	1
 
 #define CONFIG_SYS_PCI_MEM_BUS		0x80000000

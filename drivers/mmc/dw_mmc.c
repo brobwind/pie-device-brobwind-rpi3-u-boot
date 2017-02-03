@@ -120,9 +120,9 @@ static int dwmci_data_transfer(struct dwmci_host *host, struct mmc_data *data)
 
 		if (host->fifo_mode && size) {
 			len = 0;
-			if (data->flags == MMC_DATA_READ &&
-			    (mask & DWMCI_INTMSK_RXDR)) {
-				while (size) {
+			if (data->flags == MMC_DATA_READ) {
+				if ((dwmci_readl(host, DWMCI_RINTSTS) &
+				     DWMCI_INTMSK_RXDR)) {
 					len = dwmci_readl(host, DWMCI_STATUS);
 					len = (len >> DWMCI_FIFO_SHIFT) &
 						    DWMCI_FIFO_MASK;
@@ -130,13 +130,12 @@ static int dwmci_data_transfer(struct dwmci_host *host, struct mmc_data *data)
 					for (i = 0; i < len; i++)
 						*buf++ =
 						dwmci_readl(host, DWMCI_DATA);
-					size = size > len ? (size - len) : 0;
+					dwmci_writel(host, DWMCI_RINTSTS,
+						     DWMCI_INTMSK_RXDR);
 				}
-				dwmci_writel(host, DWMCI_RINTSTS,
-					     DWMCI_INTMSK_RXDR);
-			} else if (data->flags == MMC_DATA_WRITE &&
-				   (mask & DWMCI_INTMSK_TXDR)) {
-				while (size) {
+			} else {
+				if ((dwmci_readl(host, DWMCI_RINTSTS) &
+				     DWMCI_INTMSK_TXDR)) {
 					len = dwmci_readl(host, DWMCI_STATUS);
 					len = fifo_depth - ((len >>
 						   DWMCI_FIFO_SHIFT) &
@@ -145,11 +144,11 @@ static int dwmci_data_transfer(struct dwmci_host *host, struct mmc_data *data)
 					for (i = 0; i < len; i++)
 						dwmci_writel(host, DWMCI_DATA,
 							     *buf++);
-					size = size > len ? (size - len) : 0;
+					dwmci_writel(host, DWMCI_RINTSTS,
+						     DWMCI_INTMSK_TXDR);
 				}
-				dwmci_writel(host, DWMCI_RINTSTS,
-					     DWMCI_INTMSK_TXDR);
 			}
+			size = size > len ? (size - len) : 0;
 		}
 
 		/* Data arrived correctly. */
@@ -488,10 +487,10 @@ static const struct mmc_ops dwmci_ops = {
 };
 #endif
 
-void dwmci_setup_cfg(struct mmc_config *cfg, struct dwmci_host *host,
-		u32 max_clk, u32 min_clk)
+void dwmci_setup_cfg(struct mmc_config *cfg, const char *name, int buswidth,
+		     uint caps, u32 max_clk, u32 min_clk)
 {
-	cfg->name = host->name;
+	cfg->name = name;
 #ifndef CONFIG_DM_MMC_OPS
 	cfg->ops = &dwmci_ops;
 #endif
@@ -500,9 +499,9 @@ void dwmci_setup_cfg(struct mmc_config *cfg, struct dwmci_host *host,
 
 	cfg->voltages = MMC_VDD_32_33 | MMC_VDD_33_34 | MMC_VDD_165_195;
 
-	cfg->host_caps = host->caps;
+	cfg->host_caps = caps;
 
-	if (host->buswidth == 8) {
+	if (buswidth == 8) {
 		cfg->host_caps |= MMC_MODE_8BIT;
 		cfg->host_caps &= ~MMC_MODE_4BIT;
 	} else {
@@ -522,7 +521,8 @@ int dwmci_bind(struct udevice *dev, struct mmc *mmc, struct mmc_config *cfg)
 #else
 int add_dwmci(struct dwmci_host *host, u32 max_clk, u32 min_clk)
 {
-	dwmci_setup_cfg(&host->cfg, host, max_clk, min_clk);
+	dwmci_setup_cfg(&host->cfg, host->name, host->buswidth, host->caps,
+			max_clk, min_clk);
 
 	host->mmc = mmc_create(&host->cfg, host);
 	if (host->mmc == NULL)

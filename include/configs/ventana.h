@@ -21,6 +21,7 @@
 #define CONFIG_MACH_TYPE		MACH_TYPE_VENTANA
 
 /* SD/MMC */
+#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_TEGRA_MMC
 
@@ -41,9 +42,11 @@
 /* General networking support */
 
 /* USB keyboard */
+#define CONFIG_USB_KEYBOARD
 
 /* LCD support */
 #define CONFIG_SYS_WHITE_ON_BLACK
+#define CONFIG_CONSOLE_SCROLL_LINES	10
 
 #include "tegra-common-post.h"
 

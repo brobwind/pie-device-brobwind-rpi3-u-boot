@@ -48,7 +48,6 @@ struct cpsw_platform_data {
 	void	(*control)(int enabled);
 	u32	host_port_num;
 	u32	active_slave;
-	bool	rmii_clock_external;
 	u8	version;
 };
 

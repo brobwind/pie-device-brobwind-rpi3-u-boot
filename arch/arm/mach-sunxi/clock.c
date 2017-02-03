@@ -13,14 +13,9 @@
 #include <asm/arch/clock.h>
 #include <asm/arch/gpio.h>
 #include <asm/arch/prcm.h>
-#include <asm/arch/gtbus.h>
 #include <asm/arch/sys_proto.h>
 
 __weak void clock_init_sec(void)
-{
-}
-
-__weak void gtbus_init(void)
 {
 }
 
@@ -28,7 +23,6 @@ int clock_init(void)
 {
 #ifdef CONFIG_SPL_BUILD
 	clock_init_safe();
-	gtbus_init();
 #endif
 	clock_init_uart();
 	clock_init_sec();

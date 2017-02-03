@@ -19,9 +19,7 @@ SECTIONS
 
 	. = ALIGN(4);
 	.text : {
-		__text_start = .;
 		*(.text*)
-		__text_end = .;
 	}
 
 	. = ALIGN(4);

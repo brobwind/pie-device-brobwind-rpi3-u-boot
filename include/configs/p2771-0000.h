@@ -18,6 +18,7 @@
 #define CONFIG_SYS_I2C_TEGRA
 
 /* SD/MMC */
+#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_TEGRA_MMC
 
@@ -28,6 +29,8 @@
 #define CONFIG_ENV_OFFSET		(-CONFIG_ENV_SIZE)
 
 /* PCI host support */
+#define CONFIG_PCI
+#define CONFIG_PCI_PNP
 #define CONFIG_CMD_PCI
 
 #include "tegra-common-post.h"

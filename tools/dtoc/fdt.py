@@ -6,26 +6,17 @@
 # SPDX-License-Identifier:      GPL-2.0+
 #
 
-import struct
+import fdt_util
+import libfdt
 import sys
 
-import fdt_util
+# This deals with a device tree, presenting it as a list of Node and Prop
+# objects, representing nodes and properties, respectively.
+#
+# This implementation uses a libfdt Python library to access the device tree,
+# so it is fairly efficient.
 
-# This deals with a device tree, presenting it as an assortment of Node and
-# Prop objects, representing nodes and properties, respectively. This file
-# contains the base classes and defines the high-level API. Most of the
-# implementation is in the FdtFallback and FdtNormal subclasses. See
-# fdt_select.py for how to create an Fdt object.
-
-# A list of types we support
-(TYPE_BYTE, TYPE_INT, TYPE_STRING, TYPE_BOOL) = range(4)
-
-def CheckErr(errnum, msg):
-    if errnum:
-        raise ValueError('Error %d: %s: %s' %
-            (errnum, libfdt.fdt_strerror(errnum), msg))
-
-class PropBase:
+class Prop:
     """A device tree property
 
     Properties:
@@ -34,11 +25,14 @@ class PropBase:
             bytes
         type: Value type
     """
-    def __init__(self, node, offset, name):
-        self._node = node
-        self._offset = offset
+    def __init__(self, name, bytes):
         self.name = name
         self.value = None
+        if not bytes:
+            self.type = fdt_util.TYPE_BOOL
+            self.value = True
+            return
+        self.type, self.value = fdt_util.BytesToValue(bytes)
 
     def GetPhandle(self):
         """Get a (single) phandle value from a property
@@ -77,85 +71,12 @@ class PropBase:
             self.value = [self.value]
 
         if type(self.value) == list and len(newprop.value) > len(self.value):
-            val = self.GetEmpty(self.type)
+            val = fdt_util.GetEmpty(self.type)
             while len(self.value) < len(newprop.value):
                 self.value.append(val)
 
-    def BytesToValue(self, bytes):
-        """Converts a string of bytes into a type and value
 
-        Args:
-            A string containing bytes
-
-        Return:
-            A tuple:
-                Type of data
-                Data, either a single element or a list of elements. Each element
-                is one of:
-                    TYPE_STRING: string value from the property
-                    TYPE_INT: a byte-swapped integer stored as a 4-byte string
-                    TYPE_BYTE: a byte stored as a single-byte string
-        """
-        size = len(bytes)
-        strings = bytes.split('\0')
-        is_string = True
-        count = len(strings) - 1
-        if count > 0 and not strings[-1]:
-            for string in strings[:-1]:
-                if not string:
-                    is_string = False
-                    break
-                for ch in string:
-                    if ch < ' ' or ch > '~':
-                        is_string = False
-                        break
-        else:
-            is_string = False
-        if is_string:
-            if count == 1:
-                return TYPE_STRING, strings[0]
-            else:
-                return TYPE_STRING, strings[:-1]
-        if size % 4:
-            if size == 1:
-                return TYPE_BYTE, bytes[0]
-            else:
-                return TYPE_BYTE, list(bytes)
-        val = []
-        for i in range(0, size, 4):
-            val.append(bytes[i:i + 4])
-        if size == 4:
-            return TYPE_INT, val[0]
-        else:
-            return TYPE_INT, val
-
-    def GetEmpty(self, type):
-        """Get an empty / zero value of the given type
-
-        Returns:
-            A single value of the given type
-        """
-        if type == TYPE_BYTE:
-            return chr(0)
-        elif type == TYPE_INT:
-            return struct.pack('<I', 0);
-        elif type == TYPE_STRING:
-            return ''
-        else:
-            return True
-
-    def GetOffset(self):
-        """Get the offset of a property
-
-        This can be implemented by subclasses.
-
-        Returns:
-            The offset of the property (struct fdt_property) within the
-            file, or None if not known.
-        """
-        return None
-
-class NodeBase:
+class Node:
     """A device tree node
 
     Properties:
@@ -168,42 +89,32 @@ class NodeBase:
             Keyed by property name
     """
     def __init__(self, fdt, offset, name, path):
-        self._fdt = fdt
-        self._offset = offset
+        self.offset = offset
         self.name = name
         self.path = path
+        self._fdt = fdt
         self.subnodes = []
         self.props = {}
 
-    def _FindNode(self, name):
-        """Find a node given its name
-
-        Args:
-            name: Node name to look for
-        Returns:
-            Node object if found, else None
-        """
-        for subnode in self.subnodes:
-            if subnode.name == name:
-                return subnode
-        return None
-
     def Scan(self):
-        """Scan the subnodes of a node
+        """Scan a node's properties and subnodes
 
-        This should be implemented by subclasses
+        This fills in the props and subnodes properties, recursively
+        searching into subnodes so that the entire tree is built.
         """
-        raise NotImplementedError()
+        self.props = self._fdt.GetProps(self.path)
 
-    def DeleteProp(self, prop_name):
-        """Delete a property of a node
+        offset = libfdt.fdt_first_subnode(self._fdt.GetFdt(), self.offset)
+        while offset >= 0:
+            sep = '' if self.path[-1] == '/' else '/'
+            name = libfdt.Name(self._fdt.GetFdt(), offset)
+            path = self.path + sep + name
+            node = Node(self._fdt, offset, name, path)
+            self.subnodes.append(node)
 
-        This should be implemented by subclasses
+            node.Scan()
+            offset = libfdt.fdt_next_subnode(self._fdt.GetFdt(), offset)
 
-        Args:
-            prop_name: Name of the property to delete
-        """
-        raise NotImplementedError()
 
 class Fdt:
     """Provides simple access to a flat device tree blob.
@@ -212,20 +123,26 @@ class Fdt:
       fname: Filename of fdt
       _root: Root of device tree (a Node object)
     """
-    def __init__(self, fname):
-        self._fname = fname
 
-    def Scan(self, root='/'):
+    def __init__(self, fname):
+        self.fname = fname
+        with open(fname) as fd:
+            self._fdt = fd.read()
+
+    def GetFdt(self):
+        """Get the contents of the FDT
+
+        Returns:
+            The FDT contents as a string of bytes
+        """
+        return self._fdt
+
+    def Scan(self):
         """Scan a device tree, building up a tree of Node objects
 
         This fills in the self._root property
-
-        Args:
-            root: Ignored
-
-        TODO(sjg@chromium.org): Implement the 'root' parameter
         """
-        self._root = self.Node(self, 0, '/', '/')
+        self._root = Node(self, 0, '/', '/')
         self._root.Scan()
 
     def GetRoot(self):
@@ -236,34 +153,28 @@ class Fdt:
         """
         return self._root
 
-    def GetNode(self, path):
-        """Look up a node from its path
+    def GetProps(self, node):
+        """Get all properties from a node.
 
         Args:
-            path: Path to look up, e.g. '/microcode/update@0'
+            node: Full path to node name to look in.
+
         Returns:
-            Node object, or None if not found
+            A dictionary containing all the properties, indexed by node name.
+            The entries are Prop objects.
+
+        Raises:
+            ValueError: if the node does not exist.
         """
-        node = self._root
-        for part in path.split('/')[1:]:
-            node = node._FindNode(part)
-            if not node:
-                return None
-        return node
+        offset = libfdt.fdt_path_offset(self._fdt, node)
+        if offset < 0:
+            libfdt.Raise(offset)
+        props_dict = {}
+        poffset = libfdt.fdt_first_property_offset(self._fdt, offset)
+        while poffset >= 0:
+            dprop, plen = libfdt.fdt_get_property_by_offset(self._fdt, poffset)
+            prop = Prop(libfdt.String(self._fdt, dprop.nameoff), libfdt.Data(dprop))
+            props_dict[prop.name] = prop
 
-    def Flush(self):
-        """Flush device tree changes back to the file
-
-        If the device tree has changed in memory, write it back to the file.
-        Subclasses can implement this if needed.
-        """
-        pass
-
-    def Pack(self):
-        """Pack the device tree down to its minimum size
-
-        When nodes and properties shrink or are deleted, wasted space can
-        build up in the device tree binary. Subclasses can implement this
-        to remove that spare space.
-        """
-        pass
+            poffset = libfdt.fdt_next_property_offset(self._fdt, poffset)
+        return props_dict

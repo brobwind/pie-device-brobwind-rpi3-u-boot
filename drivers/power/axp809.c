@@ -217,7 +217,13 @@ int axp_set_sw(bool on)
 
 int axp_init(void)
 {
-	return pmic_bus_init();
+	int ret;
+
+	ret = pmic_bus_init();
+	if (ret)
+		return ret;
+
+	return 0;
 }
 
 int do_poweroff(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])

@@ -31,6 +31,7 @@
 #define CONFIG_SYS_I2C_TEGRA
 
 /* SD/MMC */
+#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_TEGRA_MMC
 
@@ -55,6 +56,8 @@
 #define CONFIG_USB_ETHER_ASIX
 
 /* PCI host support */
+#define CONFIG_PCI
+#define CONFIG_PCI_PNP
 #define CONFIG_CMD_PCI
 
 /* General networking support */

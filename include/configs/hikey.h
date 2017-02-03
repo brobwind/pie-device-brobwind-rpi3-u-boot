@@ -21,6 +21,8 @@
 
 #define CONFIG_SUPPORT_RAW_INITRD
 
+#define CONFIG_IDENT_STRING		"hikey"
+
 #define CONFIG_BOARD_EARLY_INIT_F
 
 /* Physical Memory Map */
@@ -72,6 +74,7 @@
 
 /* SD/MMC configuration */
 #define CONFIG_GENERIC_MMC
+#define CONFIG_MMC
 #define CONFIG_DWMMC
 #define CONFIG_HIKEY_DWMMC
 #define CONFIG_BOUNCE_BUFFER
@@ -79,6 +82,7 @@
 #define CONFIG_FS_EXT4
 
 /* Command line configuration */
+#define CONFIG_MENU
 #define CONFIG_CMD_UNZIP
 #define CONFIG_CMD_ENV
 

@@ -706,7 +706,11 @@ int ddr3_tip_ext_write(u32 dev_num, u32 if_id, u32 reg_addr,
 
 int ddr3_silicon_pre_init(void)
 {
-	return ddr3_silicon_init();
+	int result;
+
+	result = ddr3_silicon_init();
+
+	return result;
 }
 
 int ddr3_post_run_alg(void)

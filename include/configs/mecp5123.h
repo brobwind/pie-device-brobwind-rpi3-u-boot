@@ -15,6 +15,7 @@
 #define __CONFIG_H
 
 #define CONFIG_MECP5123 1
+#define CONFIG_DISPLAY_BOARDINFO
 
 /*
  * Memory map for the MECP5123 board:

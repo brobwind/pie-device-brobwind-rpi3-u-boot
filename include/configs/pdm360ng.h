@@ -13,6 +13,7 @@
 #define __CONFIG_H
 
 #define CONFIG_PDM360NG 1
+#define CONFIG_DISPLAY_BOARDINFO
 
 /*
  * Memory map for the PDM360NG board:
@@ -36,10 +37,14 @@
 
 /* Used for silent command in environment */
 #define CONFIG_SYS_DEVICE_NULLDEV
+#define CONFIG_SILENT_CONSOLE
 
 /* Video */
+#define CONFIG_VIDEO
 
 #if defined(CONFIG_VIDEO)
+#define CONFIG_CFB_CONSOLE
+#define CONFIG_VGA_AS_SINGLE_DEVICE
 #define CONFIG_SPLASH_SCREEN
 #define CONFIG_VIDEO_LOGO
 #define CONFIG_VIDEO_BMP_RLE8
@@ -244,6 +249,14 @@
 						"51m(userfs ubi);"	\
 					"f8000000.flash:-(unused);"	\
 					"MPC5121 NAND:1024m(extended-userfs)"
+
+/*
+ * Override partitions in device tree using info
+ * in "mtdparts" environment variable
+ */
+#ifdef CONFIG_CMD_MTDPARTS
+#define CONFIG_FDT_FIXUP_PARTITIONS
+#endif
 
 #define CONFIG_SYS_MONITOR_BASE		CONFIG_SYS_TEXT_BASE	/* Start of monitor */
 #define CONFIG_SYS_MONITOR_LEN		(512 * 1024)	/* 512 kB for monitor */

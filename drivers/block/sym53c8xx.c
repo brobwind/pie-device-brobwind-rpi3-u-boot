@@ -284,8 +284,9 @@ void scsi_low_level_init(int busdevfunc)
  */
 unsigned long swap_script(unsigned long val)
 {
-	return ((val >> 24) & 0xff) | ((val >> 8) & 0xff00) |
-		((val << 8) & 0xff0000) | ((val << 24) & 0xff000000);
+	unsigned long tmp;
+	tmp = ((val>>24)&0xff) | ((val>>8)&0xff00) | ((val<<8)&0xff0000) | ((val<<24)&0xff000000);
+	return tmp;
 }
 
 

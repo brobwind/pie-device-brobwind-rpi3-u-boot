@@ -54,8 +54,7 @@
 	"ramdisk_addr_r=0x88080000\0" \
 	"scriptaddr=0x80000000\0" \
 	"pxefile_addr_r=0x80100000\0" \
-	"bootm_size=0x10000000\0" \
-	"boot_fdt=try\0"
+	"bootm_size=0x10000000\0"
 
 #define DEFAULT_MMC_TI_ARGS \
 	"mmcdev=0\0" \
@@ -72,8 +71,6 @@
 	"importbootenv=echo Importing environment from mmc${mmcdev} ...; " \
 		"env import -t ${loadaddr} ${filesize}\0" \
 	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenvfile}\0" \
-	"loadimage=load ${devtype} ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
-	"loadfdt=load ${devtype} ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
 	"envboot=mmc dev ${mmcdev}; " \
 		"if mmc rescan; then " \
 			"echo SD/MMC found on device ${mmcdev};" \
@@ -90,42 +87,6 @@
 				"fi;" \
 			"fi;" \
 		"fi;\0" \
-	"mmcloados=run args_mmc; " \
-		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
-			"if run loadfdt; then " \
-				"bootz ${loadaddr} - ${fdtaddr}; " \
-			"else " \
-				"if test ${boot_fdt} = try; then " \
-					"bootz; " \
-				"else " \
-					"echo WARN: Cannot load the DT; " \
-				"fi; " \
-			"fi; " \
-		"else " \
-			"bootz; " \
-		"fi;\0" \
-	"mmcboot=mmc dev ${mmcdev}; " \
-		"setenv devnum ${mmcdev}; " \
-		"setenv devtype mmc; " \
-		"if mmc rescan; then " \
-			"echo SD/MMC found on device ${mmcdev};" \
-			"if run loadimage; then " \
-				"if test ${boot_fit} -eq 1; then " \
-					"run loadfit; " \
-				"else " \
-					"run mmcloados;" \
-				"fi;" \
-			"fi;" \
-		"fi;\0" \
-
-#define DEFAULT_FIT_TI_ARGS \
-	"boot_fit=0\0" \
-	"fit_loadaddr=0x88000000\0" \
-	"fit_bootfile=fitImage.itb\0" \
-	"update_to_fit=setenv loadaddr ${fit_loadaddr}; setenv bootfile ${fit_bootfile}\0" \
-	"args_fit=setenv bootargs console=${console} \0" \
-	"loadfit=run args_fit; bootm ${loadaddr}:kernel@1 " \
-		"${loadaddr}:ramdisk@1 ${loadaddr}:${fdtfile};\0" \
 
 /*
  * DDR information.  If the CONFIG_NR_DRAM_BANKS is not defined,
@@ -168,6 +129,7 @@
 #endif
 
 /* MMC/SD IP block */
+#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 
 /* McSPI IP block */
@@ -184,7 +146,12 @@
  * we are on so we do not need to rely on the command prompt.  We set a
  * console baudrate of 115200 and use the default baud rate table.
  */
-#define CONFIG_SYS_MALLOC_LEN		SZ_32M
+#ifdef CONFIG_DFU_MMC
+#define CONFIG_SYS_MALLOC_LEN	((16 << 20) + CONFIG_SYS_DFU_DATA_BUF_SIZE)
+#else
+#define CONFIG_SYS_MALLOC_LEN	(16 << 20)
+#endif
+#define CONFIG_SYS_CONSOLE_INFO_QUIET
 #define CONFIG_BAUDRATE			115200
 #define CONFIG_ENV_VARS_UBOOT_CONFIG	/* Strongly encouraged */
 #define CONFIG_ENV_OVERWRITE		/* Overwrite ethaddr / serial# */
@@ -198,7 +165,7 @@
 #define CONFIG_SYS_MAXARGS		64
 
 /* Console I/O Buffer Size */
-#define CONFIG_SYS_CBSIZE		1024
+#define CONFIG_SYS_CBSIZE		512
 /* Print Buffer Size */
 #define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE \
 					+ sizeof(CONFIG_SYS_PROMPT) + 16)
@@ -230,18 +197,16 @@
 
 /*
  * Our platforms make use of SPL to initalize the hardware (primarily
- * memory) enough for full U-Boot to be loaded. We make use of the general
- * SPL framework found under common/spl/.  Given our generally common memory
- * map, we set a number of related defaults and sizes here.
+ * memory) enough for full U-Boot to be loaded.  We also support Falcon
+ * Mode so that the Linux kernel can be booted directly from SPL
+ * instead, if desired.  We make use of the general SPL framework found
+ * under common/spl/.  Given our generally common memory map, we set a
+ * number of related defaults and sizes here.
  */
 #if !defined(CONFIG_NOR_BOOT) && \
 	!(defined(CONFIG_QSPI_BOOT) && defined(CONFIG_AM43XX))
 #define CONFIG_SPL_FRAMEWORK
-
-/*
- * We also support Falcon Mode so that the Linux kernel can be booted
- * directly from SPL. This is not currently available on HS devices.
- */
+#define CONFIG_SPL_OS_BOOT
 
 /*
  * Place the image at the start of the ROM defined image space (per
@@ -265,13 +230,17 @@
 #ifndef CONFIG_SYS_SPL_MALLOC_START
 #define CONFIG_SYS_SPL_MALLOC_START	(CONFIG_SPL_BSS_START_ADDR + \
 					 CONFIG_SPL_BSS_MAX_SIZE)
-#define CONFIG_SYS_SPL_MALLOC_SIZE	SZ_8M
+#define CONFIG_SYS_SPL_MALLOC_SIZE	CONFIG_SYS_MALLOC_LEN
 #endif
 #ifndef CONFIG_SPL_MAX_SIZE
 #define CONFIG_SPL_MAX_SIZE		(SRAM_SCRATCH_SPACE_ADDR - \
 					 CONFIG_SPL_TEXT_BASE)
 #endif
 
+
+/* RAW SD card / eMMC locations. */
+#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300 /* address 0x60000 */
+#define CONFIG_SYS_U_BOOT_MAX_SIZE_SECTORS	0x200 /* 256 KB */
 
 /* FAT sd card locations. */
 #define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION	1
@@ -291,15 +260,30 @@
 #define CONFIG_CMD_SPL
 #endif
 
+#ifdef CONFIG_MMC
+#define CONFIG_SPL_LIBDISK_SUPPORT
+#define CONFIG_SPL_MMC_SUPPORT
+#define CONFIG_SPL_FAT_SUPPORT
+#define CONFIG_SPL_EXT_SUPPORT
+#endif
+
 #define CONFIG_SYS_THUMB_BUILD
 
 /* General parts of the framework, required. */
+#define CONFIG_SPL_I2C_SUPPORT
+#define CONFIG_SPL_LIBCOMMON_SUPPORT
+#define CONFIG_SPL_LIBGENERIC_SUPPORT
+#define CONFIG_SPL_SERIAL_SUPPORT
+#define CONFIG_SPL_POWER_SUPPORT
+#define CONFIG_SPL_GPIO_SUPPORT
 #define CONFIG_SPL_BOARD_INIT
 
 #ifdef CONFIG_NAND
+#define CONFIG_SPL_NAND_SUPPORT
 #define CONFIG_SPL_NAND_BASE
 #define CONFIG_SPL_NAND_DRIVERS
 #define CONFIG_SPL_NAND_ECC
+#define CONFIG_SPL_MTD_SUPPORT
 #define CONFIG_SYS_NAND_U_BOOT_START	CONFIG_SYS_TEXT_BASE
 #endif
 #endif /* !CONFIG_NOR_BOOT */

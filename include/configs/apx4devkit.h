@@ -21,6 +21,7 @@
 
 /* U-Boot Commands */
 #define CONFIG_SYS_NO_FLASH
+#define CONFIG_DISPLAY_CPUINFO
 #define CONFIG_DOS_PARTITION
 
 #define CONFIG_CMD_DATE
@@ -56,6 +57,7 @@
 
 /* UBI and NAND partitioning */
 #ifdef CONFIG_CMD_NAND
+#define CONFIG_CMD_UBI
 #define CONFIG_CMD_UBIFS
 #define CONFIG_CMD_MTDPARTS
 #define CONFIG_RBTREE

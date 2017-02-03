@@ -115,6 +115,7 @@
 /*
  * SPI_MMC Settings
  */
+#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_MMC_SPI
 

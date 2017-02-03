@@ -9,4 +9,4 @@
 #
 
 obj-y	:= sh7763rdp.o
-extra-y	+= lowlevel_init.o
+obj-y	+= lowlevel_init.o

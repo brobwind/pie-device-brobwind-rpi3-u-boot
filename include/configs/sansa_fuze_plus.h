@@ -11,7 +11,10 @@
 
 /* U-Boot Commands */
 #define CONFIG_SYS_NO_FLASH
+#define CONFIG_DISPLAY_CPUINFO
 #define CONFIG_DOS_PARTITION
+
+#define CONFIG_VIDEO
 
 /* Memory configuration */
 #define CONFIG_NR_DRAM_BANKS		1		/* 1 bank of DRAM */

@@ -6,7 +6,7 @@
 #include <common.h>
 #include <div64.h>
 
-#include <linux/errno.h>
+#include <asm/errno.h>
 #include <asm/io.h>
 #include <asm/processor.h>
 #include <asm/sysreg.h>

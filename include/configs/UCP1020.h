@@ -14,7 +14,10 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#define CONFIG_DISPLAY_BOARDINFO
+
 #define CONFIG_FSL_ELBC
+#define CONFIG_PCI
 #define CONFIG_PCIE1	/* PCIE controller 1 (slot 1) */
 #define CONFIG_PCIE2	/* PCIE controller 2 (slot 2) */
 #define CONFIG_FSL_PCI_INIT	/* Use common FSL init code */
@@ -27,6 +30,7 @@
 #define CONFIG_UCP1020_REV_1_3
 
 #define CONFIG_BOARDNAME "uCP1020-64EE512-0U1-XR-T1"
+#define CONFIG_P1020
 
 #define CONFIG_TSEC_ENET
 #define CONFIG_TSEC1
@@ -45,9 +49,14 @@
 #endif
 #define CONFIG_SYS_REDUNDAND_ENVIRONMENT
 
+#define CONFIG_MMC
 #define CONFIG_SYS_L2_SIZE	(256 << 10)
 
 #define CONFIG_LAST_STAGE_INIT
+
+#if !defined(CONFIG_DONGLE)
+#define CONFIG_SILENT_CONSOLE
+#endif
 
 #endif
 
@@ -57,6 +66,7 @@
 #define CONFIG_UCP1020_REV_1_3
 
 #define CONFIG_BOARDNAME_LOCAL "uCP1020-64EEE512-OU1-XR"
+#define CONFIG_P1020
 
 #define CONFIG_TSEC_ENET
 #define CONFIG_TSEC1
@@ -80,6 +90,7 @@
 #endif
 #define CONFIG_SYS_REDUNDAND_ENVIRONMENT
 
+#define CONFIG_MMC
 #define CONFIG_SYS_L2_SIZE	(256 << 10)
 
 #define CONFIG_LAST_STAGE_INIT
@@ -115,7 +126,14 @@
 #define CONFIG_SYS_MONITOR_BASE	CONFIG_SYS_TEXT_BASE	/* start of monitor */
 #endif
 
+/* High Level Configuration Options */
+#define CONFIG_BOOKE
+#define CONFIG_E500
+/* #define CONFIG_MPC85xx */
+
 #define CONFIG_MP
+
+#define CONFIG_FSL_LAW
 
 #define CONFIG_ENV_OVERWRITE
 
@@ -176,6 +194,7 @@
 
 /* DDR Setup */
 #define CONFIG_DDR_ECC_ENABLE
+#define CONFIG_SYS_FSL_DDR3
 #ifndef CONFIG_DDR_ECC_ENABLE
 #define CONFIG_SYS_DDR_RAW_TIMING
 #define CONFIG_DDR_SPD
@@ -189,6 +208,7 @@
 #define CONFIG_SYS_DDR_SDRAM_BASE	0x00000000
 #define CONFIG_SYS_SDRAM_BASE		CONFIG_SYS_DDR_SDRAM_BASE
 
+#define CONFIG_NUM_DDR_CONTROLLERS	1
 #define CONFIG_DIMM_SLOTS_PER_CTLR	1
 
 /* Default settings for DDR3 */
@@ -377,6 +397,7 @@
 #define CONFIG_SYS_PCIE1_IO_PHYS	0xffc00000
 #define CONFIG_SYS_PCIE1_IO_SIZE	0x00010000	/* 64k */
 
+#define CONFIG_PCI_PNP	/* do pci plug-and-play */
 #define CONFIG_CMD_PCI
 
 #define CONFIG_PCI_SCAN_SHOW	/* show pci devices on startup */

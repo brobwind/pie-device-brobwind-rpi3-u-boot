@@ -26,6 +26,11 @@
 #endif
 
 /*
+ * Version number information
+ */
+#define CONFIG_IDENT_STRING	"\nMarvell-DreamPlug"
+
+/*
  * High Level Configuration Options (easy to change)
  */
 #define CONFIG_SHEEVA_88SV131	1	/* CPU Core subversion */

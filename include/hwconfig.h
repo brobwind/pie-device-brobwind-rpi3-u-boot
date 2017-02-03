@@ -13,7 +13,7 @@
 #define _HWCONFIG_H
 
 #include <linux/types.h>
-#include <linux/errno.h>
+#include <asm/errno.h>
 
 #ifdef CONFIG_HWCONFIG
 

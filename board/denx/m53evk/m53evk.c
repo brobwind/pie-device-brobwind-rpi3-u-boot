@@ -15,7 +15,7 @@
 #include <asm/arch/iomux-mx53.h>
 #include <asm/imx-common/mx5_video.h>
 #include <asm/spl.h>
-#include <linux/errno.h>
+#include <asm/errno.h>
 #include <netdev.h>
 #include <i2c.h>
 #include <mmc.h>

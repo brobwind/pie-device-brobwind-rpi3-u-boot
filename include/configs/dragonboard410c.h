@@ -12,6 +12,8 @@
 #include <linux/sizes.h>
 #include <asm/arch/sysmap-apq8016.h>
 
+#define CONFIG_IDENT_STRING		"\nQualcomm-DragonBoard 410C"
+
 #define CONFIG_MISC_INIT_R /* To stop autoboot */
 
 /* Physical Memory Map */
@@ -32,7 +34,9 @@
 #define COUNTER_FREQUENCY		19000000
 
 /* This are needed to have proper mmc support */
+#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
+#define CONFIG_SDHCI
 
 #define CONFIG_SYS_LDSCRIPT "board/qualcomm/dragonboard410c/u-boot.lds"
 

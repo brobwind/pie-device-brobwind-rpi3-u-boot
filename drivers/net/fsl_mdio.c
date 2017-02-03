@@ -11,7 +11,7 @@
 #include <phy.h>
 #include <fsl_mdio.h>
 #include <asm/io.h>
-#include <linux/errno.h>
+#include <asm/errno.h>
 
 void tsec_local_mdio_write(struct tsec_mii_mng __iomem *phyregs, int port_addr,
 		int dev_addr, int regnum, int value)

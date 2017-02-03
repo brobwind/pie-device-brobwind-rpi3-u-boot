@@ -20,6 +20,8 @@
 
 #define CONFIG_SYS_DCACHE_OFF
 
+#define CONFIG_DISPLAY_CPUINFO
+
 /* Only in case the value is not present in mach-types.h */
 #ifndef MACH_TYPE_FLEA3
 #define MACH_TYPE_FLEA3                3668
@@ -60,6 +62,7 @@
 #define CONFIG_RTC_MC13XXX
 
 /* mmc driver */
+#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_FSL_ESDHC
 #define CONFIG_SYS_FSL_ESDHC_ADDR	0

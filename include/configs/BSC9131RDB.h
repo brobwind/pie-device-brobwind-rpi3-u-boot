@@ -11,7 +11,12 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#define CONFIG_DISPLAY_BOARDINFO
+
+#ifdef CONFIG_BSC9131RDB
+#define CONFIG_BSC9131
 #define CONFIG_NAND_FSL_IFC
+#endif
 
 #ifdef CONFIG_SPIFLASH
 #define CONFIG_RAMBOOT_SPIFLASH
@@ -23,6 +28,8 @@
 
 #ifdef CONFIG_NAND
 #define CONFIG_SPL_INIT_MINIMAL
+#define CONFIG_SPL_SERIAL_SUPPORT
+#define CONFIG_SPL_NAND_SUPPORT
 #define CONFIG_SPL_NAND_BOOT
 #define CONFIG_SPL_FLUSH_IMAGE
 #define CONFIG_SPL_TARGET		"u-boot-with-spl.bin"
@@ -46,9 +53,12 @@
 #endif
 
 /* High Level Configuration Options */
+#define CONFIG_BOOKE			/* BOOKE */
+#define CONFIG_E500			/* BOOKE e500 family */
 #define CONFIG_FSL_IFC			/* Enable IFC Support */
 #define CONFIG_FSL_CAAM			/* Enable SEC/CAAM */
 
+#define CONFIG_FSL_LAW			/* Use common FSL init code */
 #define CONFIG_TSEC_ENET
 #define CONFIG_ENV_OVERWRITE
 
@@ -70,6 +80,7 @@
 #define CONFIG_SYS_MEMTEST_END		0x01ffffff
 
 /* DDR Setup */
+#define CONFIG_SYS_FSL_DDR3
 #undef CONFIG_SYS_DDR_RAW_TIMING
 #undef CONFIG_DDR_SPD
 #define CONFIG_SYS_SPD_BUS_NUM		0
@@ -84,6 +95,7 @@ extern unsigned long get_sdram_size(void);
 #define CONFIG_SYS_DDR_SDRAM_BASE	0x00000000
 #define CONFIG_SYS_SDRAM_BASE		CONFIG_SYS_DDR_SDRAM_BASE
 
+#define CONFIG_NUM_DDR_CONTROLLERS	1
 #define CONFIG_DIMM_SLOTS_PER_CTLR	1
 #define CONFIG_CHIP_SELECTS_PER_CTRL	1
 
@@ -221,6 +233,8 @@ extern unsigned long get_sdram_size(void);
 #define CONFIG_NS16550_MIN_FUNCTIONS
 #endif
 
+#define CONFIG_SYS_CONSOLE_IS_IN_ENV	/* determine from environment */
+
 #define CONFIG_SYS_BAUDRATE_TABLE	\
 	{300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200}
 
@@ -357,6 +371,13 @@ extern unsigned long get_sdram_size(void);
 #define MTDIDS_DEFAULT "nand0=ff800000.flash,"
 #define MTDPARTS_DEFAULT "mtdparts=ff800000.flash:1m(uboot)," \
 			"8m(kernel),512k(dtb),-(fs)"
+/*
+ * Override partitions in device tree using info
+ * in "mtdparts" environment variable
+ */
+#ifdef CONFIG_CMD_MTDPARTS
+#define CONFIG_FDT_FIXUP_PARTITIONS
+#endif
 
 /*
  * Environment Configuration

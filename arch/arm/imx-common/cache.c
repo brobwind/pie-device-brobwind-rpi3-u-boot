@@ -8,7 +8,6 @@
 #include <asm/armv7.h>
 #include <asm/pl310.h>
 #include <asm/io.h>
-#include <asm/imx-common/sys_proto.h>
 
 #ifndef CONFIG_SYS_DCACHE_OFF
 void enable_caches(void)
@@ -40,7 +39,6 @@ void enable_caches(void)
 void v7_outer_cache_enable(void)
 {
 	struct pl310_regs *const pl310 = (struct pl310_regs *)L2_PL310_BASE;
-	struct iomuxc *iomux = (struct iomuxc *)IOMUXC_BASE_ADDR;
 	unsigned int val;
 
 
@@ -57,14 +55,15 @@ void v7_outer_cache_enable(void)
 	 */
 	setbits_le32(&pl310->pl310_aux_ctrl, L310_SHARED_ATT_OVERRIDE_ENABLE);
 
-	if (is_mx6sl() || is_mx6sll()) {
-		val = readl(&iomux->gpr[11]);
-		if (val & IOMUXC_GPR11_L2CACHE_AS_OCRAM) {
-			/* L2 cache configured as OCRAM, reset it */
-			val &= ~IOMUXC_GPR11_L2CACHE_AS_OCRAM;
-			writel(val, &iomux->gpr[11]);
-		}
+#if defined CONFIG_MX6SL
+	struct iomuxc *iomux = (struct iomuxc *)IOMUXC_BASE_ADDR;
+	val = readl(&iomux->gpr[11]);
+	if (val & IOMUXC_GPR11_L2CACHE_AS_OCRAM) {
+		/* L2 cache configured as OCRAM, reset it */
+		val &= ~IOMUXC_GPR11_L2CACHE_AS_OCRAM;
+		writel(val, &iomux->gpr[11]);
 	}
+#endif
 
 	writel(0x132, &pl310->pl310_tag_latency_ctrl);
 	writel(0x132, &pl310->pl310_data_latency_ctrl);

@@ -12,19 +12,22 @@
  * High Level Configuration Options
  * (easy to change)
  */
-#if defined(CONFIG_SPEAR300)
+#if defined(CONFIG_spear300)
 #define CONFIG_SPEAR3XX
-#elif defined(CONFIG_SPEAR310)
+#define CONFIG_SPEAR300
+#elif defined(CONFIG_spear310)
 #define CONFIG_SPEAR3XX
-#elif defined(CONFIG_SPEAR320)
+#define CONFIG_SPEAR310
+#elif defined(CONFIG_spear320)
 #define CONFIG_SPEAR3XX
+#define CONFIG_SPEAR320
 #endif
 
-#if defined(CONFIG_USBTTY)
+#if defined(CONFIG_usbtty)
 #define CONFIG_SPEAR_USBTTY
 #endif
 
-#if defined(CONFIG_NAND)
+#if defined(CONFIG_nand)
 #define CONFIG_ENV_IS_IN_NAND
 #else
 #define CONFIG_ENV_IS_IN_FLASH

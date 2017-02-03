@@ -25,6 +25,8 @@
 #define CONFIG_SYS_TIMER_RATE		1000000
 #endif
 
+#define CONFIG_SYS_STDIO_DEREGISTER
+
 /*
  * Number of bits in a C 'long' on this architecture. Set this to 32 when
  * building on a 32-bit machine.
@@ -35,6 +37,7 @@
 #define CONFIG_ANDROID_BOOT_IMAGE
 
 #define CONFIG_CMD_PCI
+#define CONFIG_PCI_PNP
 #define CONFIG_CMD_IO
 
 #define CONFIG_FS_FAT
@@ -64,6 +67,7 @@
 
 #define CONFIG_SYS_LONGHELP			/* #undef to save memory */
 #define CONFIG_SYS_CBSIZE		1024	/* Console I/O Buffer Size */
+#define CONFIG_SILENT_CONSOLE
 
 /* Print Buffer Size */
 #define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE + sizeof(CONFIG_SYS_PROMPT) + 16)
@@ -146,6 +150,8 @@
 /* LCD and keyboard require SDL support */
 #ifdef CONFIG_SANDBOX_SDL
 #define CONFIG_CMD_BMP
+#define CONFIG_CONSOLE_MUX
+#define CONFIG_SYS_CONSOLE_IS_IN_ENV
 #define LCD_BPP			LCD_COLOR16
 #define CONFIG_LCD_BMP_RLE8
 #define CONFIG_VIDEO_BMP_RLE8

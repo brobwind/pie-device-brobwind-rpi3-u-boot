@@ -62,8 +62,13 @@ static int arasan_sdhci_ofdata_to_platdata(struct udevice *dev)
 static int rockchip_sdhci_bind(struct udevice *dev)
 {
 	struct rockchip_sdhc_plat *plat = dev_get_platdata(dev);
+	int ret;
 
-	return sdhci_bind(dev, &plat->mmc, &plat->cfg);
+	ret = sdhci_bind(dev, &plat->mmc, &plat->cfg);
+	if (ret)
+		return ret;
+
+	return 0;
 }
 
 static const struct udevice_id arasan_sdhci_ids[] = {

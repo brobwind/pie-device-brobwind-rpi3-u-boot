@@ -12,10 +12,8 @@ import os
 import re
 import Queue
 import shutil
-import signal
 import string
 import sys
-import threading
 import time
 
 import builderthread
@@ -98,22 +96,19 @@ OUTCOME_OK, OUTCOME_WARNING, OUTCOME_ERROR, OUTCOME_UNKNOWN = range(4)
 # Translate a commit subject into a valid filename
 trans_valid_chars = string.maketrans("/: ", "---")
 
-BASE_CONFIG_FILENAMES = [
-    'u-boot.cfg', 'u-boot-spl.cfg', 'u-boot-tpl.cfg'
-]
-
-EXTRA_CONFIG_FILENAMES = [
+CONFIG_FILENAMES = [
     '.config', '.config-spl', '.config-tpl',
     'autoconf.mk', 'autoconf-spl.mk', 'autoconf-tpl.mk',
     'autoconf.h', 'autoconf-spl.h','autoconf-tpl.h',
+    'u-boot.cfg', 'u-boot-spl.cfg', 'u-boot-tpl.cfg'
 ]
 
 class Config:
     """Holds information about configuration settings for a board."""
-    def __init__(self, config_filename, target):
+    def __init__(self, target):
         self.target = target
         self.config = {}
-        for fname in config_filename:
+        for fname in CONFIG_FILENAMES:
             self.config[fname] = {}
 
     def Add(self, fname, key, value):
@@ -131,6 +126,7 @@ class Builder:
     """Class for building U-Boot for a particular commit.
 
     Public members: (many should ->private)
+        active: True if the builder is active and has not been stopped
         already_done: Number of builds already completed
         base_dir: Base directory to use for builder
         checkout: True to check out source, False to skip that step.
@@ -210,8 +206,7 @@ class Builder:
     def __init__(self, toolchains, base_dir, git_dir, num_threads, num_jobs,
                  gnu_make='make', checkout=True, show_unknown=True, step=1,
                  no_subdirs=False, full_path=False, verbose_build=False,
-                 incremental=False, per_board_out_dir=False,
-                 config_only=False, squash_config_y=False):
+                 incremental=False, per_board_out_dir=False):
         """Create a new Builder object
 
         Args:
@@ -234,13 +229,12 @@ class Builder:
                 mrproper when configuring
             per_board_out_dir: Build in a separate persistent directory per
                 board rather than a thread-specific directory
-            config_only: Only configure each build, don't build it
-            squash_config_y: Convert CONFIG options with the value 'y' to '1'
         """
         self.toolchains = toolchains
         self.base_dir = base_dir
         self._working_dir = os.path.join(base_dir, '.bm-work')
         self.threads = []
+        self.active = True
         self.do_make = self.Make
         self.gnu_make = gnu_make
         self.checkout = checkout
@@ -263,11 +257,6 @@ class Builder:
         self.no_subdirs = no_subdirs
         self.full_path = full_path
         self.verbose_build = verbose_build
-        self.config_only = config_only
-        self.squash_config_y = squash_config_y
-        self.config_filenames = BASE_CONFIG_FILENAMES
-        if not self.squash_config_y:
-            self.config_filenames += EXTRA_CONFIG_FILENAMES
 
         self.col = terminal.Color()
 
@@ -294,16 +283,10 @@ class Builder:
         ignore_lines = ['(make.*Waiting for unfinished)', '(Segmentation fault)']
         self.re_make_err = re.compile('|'.join(ignore_lines))
 
-        # Handle existing graceful with SIGINT / Ctrl-C
-        signal.signal(signal.SIGINT, self.signal_handler)
-
     def __del__(self):
         """Get rid of all threads created by the builder"""
         for t in self.threads:
             del t
-
-    def signal_handler(self, signal, frame):
-        sys.exit(1)
 
     def SetDisplayOptions(self, show_errors=False, show_sizes=False,
                           show_detail=False, show_bloat=False,
@@ -406,6 +389,11 @@ class Builder:
         if result:
             target = result.brd.target
 
+            if result.return_code < 0:
+                self.active = False
+                command.StopAll()
+                return
+
             self.upto += 1
             if result.return_code != 0:
                 self.fail += 1
@@ -443,7 +431,7 @@ class Builder:
 
         name += target
         Print(line + name, newline=False)
-        length = 16 + len(name)
+        length = 14 + len(name)
         self.ClearLine(length)
 
     def _GetOutputDir(self, commit_upto):
@@ -594,15 +582,13 @@ class Builder:
                             key, value = values
                         else:
                             key = values[0]
-                            value = '1' if self.squash_config_y else ''
+                            value = ''
                         if not key.startswith('CONFIG_'):
                             continue
                     elif not line or line[0] in ['#', '*', '/']:
                         continue
                     else:
                         key, value = line.split('=', 1)
-                    if self.squash_config_y and value == 'y':
-                        value = '1'
                     config[key] = value
         return config
 
@@ -669,7 +655,7 @@ class Builder:
 
             if read_config:
                 output_dir = self.GetBuildDir(commit_upto, target)
-                for name in self.config_filenames:
+                for name in CONFIG_FILENAMES:
                     fname = os.path.join(output_dir, name)
                     config[name] = self._ProcessConfig(fname)
 
@@ -746,8 +732,8 @@ class Builder:
                                     line, board)
                         last_was_warning = is_warning
                         last_func = None
-            tconfig = Config(self.config_filenames, board.target)
-            for fname in self.config_filenames:
+            tconfig = Config(board.target)
+            for fname in CONFIG_FILENAMES:
                 if outcome.config:
                     for key, value in outcome.config[fname].iteritems():
                         tconfig.Add(fname, key, value)
@@ -1203,7 +1189,7 @@ class Builder:
                 arch_config_plus[arch] = {}
                 arch_config_minus[arch] = {}
                 arch_config_change[arch] = {}
-                for name in self.config_filenames:
+                for name in CONFIG_FILENAMES:
                     arch_config_plus[arch][name] = {}
                     arch_config_minus[arch][name] = {}
                     arch_config_change[arch][name] = {}
@@ -1220,7 +1206,7 @@ class Builder:
                 tbase = self._base_config[target]
                 tconfig = config[target]
                 lines = []
-                for name in self.config_filenames:
+                for name in CONFIG_FILENAMES:
                     if not tconfig.config[name]:
                         continue
                     config_plus = {}
@@ -1264,7 +1250,7 @@ class Builder:
                 all_plus = {}
                 all_minus = {}
                 all_change = {}
-                for name in self.config_filenames:
+                for name in CONFIG_FILENAMES:
                     all_plus.update(arch_config_plus[arch][name])
                     all_minus.update(arch_config_minus[arch][name])
                     all_change.update(arch_config_change[arch][name])
@@ -1380,10 +1366,8 @@ class Builder:
             if os.path.exists(git_dir):
                 gitutil.Fetch(git_dir, thread_dir)
             else:
-                Print('\rCloning repo for thread %d' % thread_num,
-                      newline=False)
+                Print('Cloning repo for thread %d' % thread_num)
                 gitutil.Clone(src_dir, thread_dir)
-                Print('\r%s\r' % (' ' * 30), newline=False)
 
     def _PrepareWorkingSpace(self, max_threads, setup_git):
         """Prepare the working directory for use.
@@ -1411,14 +1395,8 @@ class Builder:
         for commit_upto in range(self.commit_count):
             dir_list.append(self._GetOutputDir(commit_upto))
 
-        to_remove = []
         for dirname in glob.glob(os.path.join(self.base_dir, '*')):
             if dirname not in dir_list:
-                to_remove.append(dirname)
-        if to_remove:
-            Print('Removing %d old build directories' % len(to_remove),
-                  newline=False)
-            for dirname in to_remove:
                 shutil.rmtree(dirname)
 
     def BuildBoards(self, commits, board_selected, keep_outputs, verbose):
@@ -1444,7 +1422,6 @@ class Builder:
         self._PrepareWorkingSpace(min(self.num_threads, len(board_selected)),
                 commits is not None)
         self._PrepareOutputSpace()
-        Print('\rStarting build...', newline=False)
         self.SetupBuild(board_selected, commits)
         self.ProcessResult(None)
 
@@ -1457,11 +1434,8 @@ class Builder:
             job.step = self._step
             self.queue.put(job)
 
-        term = threading.Thread(target=self.queue.join)
-        term.setDaemon(True)
-        term.start()
-        while term.isAlive():
-            term.join(100)
+        # Wait until all jobs are started
+        self.queue.join()
 
         # Wait until we have processed all output
         self.out_queue.join()

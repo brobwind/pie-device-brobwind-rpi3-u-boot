@@ -36,6 +36,9 @@
 /*
  * High Level Configuration Options
  */
+#define CONFIG_BOOKE		1	/* BOOKE */
+#define CONFIG_E500		1	/* BOOKE e500 family */
+#define CONFIG_MPC8548		1	/* MPC8548 specific */
 #define CONFIG_SBC8548		1	/* SBC8548 board specific */
 
 /*
@@ -67,6 +70,8 @@
 
 #define CONFIG_INTERRUPTS		/* enable pci, srio, ddr interrupts */
 
+#define CONFIG_FSL_LAW		1	/* Use common FSL init code */
+
 /*
  * Below assumes that CCB:SYSCLK remains unchanged at 6:1 via SW2:[1-4]
  */
@@ -96,6 +101,7 @@
 #define CONFIG_SYS_CCSRBAR_PHYS_LOW	CONFIG_SYS_CCSRBAR
 
 /* DDR Setup */
+#define CONFIG_SYS_FSL_DDR2
 #undef CONFIG_FSL_DDR_INTERACTIVE
 #undef CONFIG_DDR_ECC			/* only for ECC DDR module */
 /*
@@ -116,6 +122,7 @@
 #define CONFIG_SYS_SDRAM_BASE		CONFIG_SYS_DDR_SDRAM_BASE
 #define CONFIG_VERY_BIG_RAM
 
+#define CONFIG_NUM_DDR_CONTROLLERS	1
 #define CONFIG_DIMM_SLOTS_PER_CTLR	1
 #define CONFIG_CHIP_SELECTS_PER_CTRL	2
 
@@ -454,6 +461,9 @@
 #endif
 
 #if defined(CONFIG_PCI)
+
+#define CONFIG_PCI_PNP			/* do pci plug-and-play */
+
 #undef CONFIG_EEPRO100
 #undef CONFIG_TULIP
 

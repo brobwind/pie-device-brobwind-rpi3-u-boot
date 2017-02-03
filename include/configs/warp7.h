@@ -21,6 +21,8 @@
 #define CONFIG_BOARD_EARLY_INIT_F
 #define CONFIG_BOARD_LATE_INIT
 
+#define CONFIG_DISPLAY_BOARDINFO
+
 /* MMC Config*/
 #define CONFIG_SYS_FSL_ESDHC_ADDR       USDHC3_BASE_ADDR
 #define CONFIG_SUPPORT_EMMC_BOOT
@@ -38,7 +40,6 @@
 	"script=boot.scr\0" \
 	"image=zImage\0" \
 	"console=ttymxc0\0" \
-	"ethact=usb_ether\0" \
 	"fdt_high=0xffffffff\0" \
 	"initrd_high=0xffffffff\0" \
 	"fdt_file=imx7s-warp.dtb\0" \
@@ -143,13 +144,9 @@
 #define CONFIG_USB_FUNCTION_MASS_STORAGE
 
 /* USB Device Firmware Update support */
+#define CONFIG_USB_FUNCTION_DFU
+#define CONFIG_DFU_MMC
 #define CONFIG_SYS_DFU_DATA_BUF_SIZE	SZ_16M
 #define DFU_DEFAULT_POLL_TIMEOUT	300
-
-#define CONFIG_USB_ETHER
-#define CONFIG_USB_ETH_CDC
-#define CONFIG_USB_ETH_RNDIS
-#define CONFIG_USBNET_HOST_ADDR		"de:ad:be:af:00:00"
-#define CONFIG_USBNET_DEV_ADDR		"de:ad:be:af:00:01"
 
 #endif

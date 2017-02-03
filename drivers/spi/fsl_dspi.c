@@ -594,7 +594,7 @@ static int fsl_dspi_claim_bus(struct udevice *dev)
 
 	priv = dev_get_priv(bus);
 
-	/* processor special preparation work */
+	/* processor special prepartion work */
 	cpu_dspi_claim_bus(bus->seq, slave_plat->cs);
 
 	/* configure transfer mode */

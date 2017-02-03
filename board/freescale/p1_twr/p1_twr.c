@@ -282,7 +282,7 @@ int ft_board_setup(void *blob, bd_t *bd)
 #if defined(CONFIG_TWR_P1025)
 	fdt_board_fixup_qe_pins(blob);
 #endif
-	fsl_fdt_fixup_dr_usb(blob, bd);
+	fdt_fixup_dr_usb(blob, bd);
 
 	return 0;
 }

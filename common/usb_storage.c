@@ -708,10 +708,13 @@ static int usb_stor_CBI_get_status(ccb *srb, struct us_data *us)
 /* clear a stall on an endpoint - special for BBB devices */
 static int usb_stor_BBB_clear_endpt_stall(struct us_data *us, __u8 endpt)
 {
+	int result;
+
 	/* ENDPOINT_HALT = 0, so set value to 0 */
-	return usb_control_msg(us->pusb_dev, usb_sndctrlpipe(us->pusb_dev, 0),
-			       USB_REQ_CLEAR_FEATURE, USB_RECIP_ENDPOINT, 0,
-			       endpt, NULL, 0, USB_CNTL_TIMEOUT * 5);
+	result = usb_control_msg(us->pusb_dev, usb_sndctrlpipe(us->pusb_dev, 0),
+				USB_REQ_CLEAR_FEATURE, USB_RECIP_ENDPOINT,
+				0, endpt, NULL, 0, USB_CNTL_TIMEOUT * 5);
+	return result;
 }
 
 static int usb_stor_BBB_transport(ccb *srb, struct us_data *us)

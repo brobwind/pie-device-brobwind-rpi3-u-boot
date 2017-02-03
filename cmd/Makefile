@@ -129,7 +129,6 @@ obj-$(CONFIG_CMD_TRACE) += trace.o
 obj-$(CONFIG_HUSH_PARSER) += test.o
 obj-$(CONFIG_CMD_TPM) += tpm.o
 obj-$(CONFIG_CMD_TPM_TEST) += tpm_test.o
-obj-$(CONFIG_CMD_CROS_EC) += cros_ec.o
 obj-$(CONFIG_CMD_TSI148) += tsi148.o
 obj-$(CONFIG_CMD_UBI) += ubi.o
 obj-$(CONFIG_CMD_UBIFS) += ubifs.o
@@ -164,5 +163,3 @@ obj-$(CONFIG_CMD_BLOB) += blob.o
 
 # core command
 obj-y += nvedit.o
-
-obj-$(CONFIG_ARCH_MVEBU) += mvebu/

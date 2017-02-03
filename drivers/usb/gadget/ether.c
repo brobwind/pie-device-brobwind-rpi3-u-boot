@@ -10,7 +10,7 @@
 
 #include <common.h>
 #include <console.h>
-#include <linux/errno.h>
+#include <asm/errno.h>
 #include <linux/netdevice.h>
 #include <linux/usb/ch9.h>
 #include <linux/usb/cdc.h>
@@ -23,10 +23,6 @@
 
 #include "gadget_chips.h"
 #include "rndis.h"
-
-#include <dm.h>
-#include <dm/uclass-internal.h>
-#include <dm/device-internal.h>
 
 #define USB_NET_NAME "usb_ether"
 
@@ -80,6 +76,7 @@ unsigned packet_received, packet_sent;
 /* Based on linux 2.6.27 version */
 #define DRIVER_VERSION		"May Day 2005"
 
+static const char shortname[] = "ether";
 static const char driver_desc[] = DRIVER_DESC;
 
 #define RX_EXTRA	20		/* guard against rx overflows */
@@ -104,9 +101,6 @@ struct eth_dev {
 	struct usb_gadget	*gadget;
 	struct usb_request	*req;		/* for control responses */
 	struct usb_request	*stat_req;	/* for cdc & rndis status */
-#ifdef CONFIG_DM_USB
-	struct udevice		*usb_udev;
-#endif
 
 	u8			config;
 	struct usb_ep		*in_ep, *out_ep, *status_ep;
@@ -140,14 +134,9 @@ struct eth_dev {
  */
 
 /*-------------------------------------------------------------------------*/
-struct ether_priv {
-	struct eth_dev ethdev;
-	struct eth_device netdev;
-	struct usb_gadget_driver eth_driver;
-};
-
-struct ether_priv eth_priv;
-struct ether_priv *l_priv = &eth_priv;
+static struct eth_dev l_ethdev;
+static struct eth_device l_netdev;
+static struct usb_gadget_driver eth_driver;
 
 /*-------------------------------------------------------------------------*/
 
@@ -1146,7 +1135,7 @@ static void eth_status_complete(struct usb_ep *ep, struct usb_request *req)
 			event->bNotificationType, value);
 		if (event->bNotificationType ==
 				USB_CDC_NOTIFY_SPEED_CHANGE) {
-			dev->network_started = 1;
+			l_ethdev.network_started = 1;
 			printf("USB network up!\n");
 		}
 	}
@@ -1334,7 +1323,7 @@ eth_setup(struct usb_gadget *gadget, const struct usb_ctrlrequest *ctrl)
 			 * that network is working. So we signalize it
 			 * here.
 			 */
-			dev->network_started = 1;
+			l_ethdev.network_started = 1;
 			debug("USB network up!\n");
 			goto done_set_intf;
 		}
@@ -1834,10 +1823,10 @@ static void rndis_control_ack_complete(struct usb_ep *ep,
 		debug("rndis control ack complete --> %d, %d/%d\n",
 			req->status, req->actual, req->length);
 
-	if (!dev->network_started) {
+	if (!l_ethdev.network_started) {
 		if (rndis_get_state(dev->rndis_config)
 				== RNDIS_DATA_INITIALIZED) {
-			dev->network_started = 1;
+			l_ethdev.network_started = 1;
 			printf("USB RNDIS network up!\n");
 		}
 	}
@@ -1852,8 +1841,7 @@ static char rndis_resp_buf[8] __attribute__((aligned(sizeof(__le32))));
 
 static int rndis_control_ack(struct eth_device *net)
 {
-	struct ether_priv	*priv = (struct ether_priv *)net->priv;
-	struct eth_dev		*dev = &priv->ethdev;
+	struct eth_dev		*dev = &l_ethdev;
 	int                     length;
 	struct usb_request      *resp = dev->stat_req;
 
@@ -1994,7 +1982,7 @@ static int get_ether_addr(const char *str, u8 *dev_addr)
 
 static int eth_bind(struct usb_gadget *gadget)
 {
-	struct eth_dev		*dev = &l_priv->ethdev;
+	struct eth_dev		*dev = &l_ethdev;
 	u8			cdc = 1, zlp = 1, rndis = 1;
 	struct usb_ep		*in_ep, *out_ep, *status_ep = NULL;
 	int			status = -ENOMEM;
@@ -2187,7 +2175,7 @@ autoconf_fail:
 
 
 	/* network device setup */
-	dev->net = &l_priv->netdev;
+	dev->net = &l_netdev;
 
 	dev->cdc = cdc;
 	dev->zlp = zlp;
@@ -2315,39 +2303,19 @@ fail:
 
 /*-------------------------------------------------------------------------*/
 
-#ifdef CONFIG_DM_USB
-int dm_usb_init(struct eth_dev *e_dev)
+static int usb_eth_init(struct eth_device *netdev, bd_t *bd)
 {
-	struct udevice *dev = NULL;
-	int ret;
-
-	ret = uclass_first_device(UCLASS_USB_DEV_GENERIC, &dev);
-	if (!dev || ret) {
-		error("No USB device found\n");
-		return -ENODEV;
-	}
-
-	e_dev->usb_udev = dev;
-
-	return ret;
-}
-#endif
-
-static int _usb_eth_init(struct ether_priv *priv)
-{
-	struct eth_dev *dev = &priv->ethdev;
+	struct eth_dev *dev = &l_ethdev;
 	struct usb_gadget *gadget;
 	unsigned long ts;
 	unsigned long timeout = USB_CONNECT_TIMEOUT;
 
-#ifdef CONFIG_DM_USB
-	if (dm_usb_init(dev)) {
-		error("USB ether not found\n");
-		return -ENODEV;
+	if (!netdev) {
+		error("received NULL ptr");
+		goto fail;
 	}
-#else
+
 	board_usb_init(0, USB_INIT_DEVICE);
-#endif
 
 	/* Configure default mac-addresses for the USB ethernet device */
 #ifdef CONFIG_USBNET_DEV_ADDR
@@ -2374,15 +2342,7 @@ static int _usb_eth_init(struct ether_priv *priv)
 		goto fail;
 	}
 
-	priv->eth_driver.speed		= DEVSPEED;
-	priv->eth_driver.bind		= eth_bind;
-	priv->eth_driver.unbind		= eth_unbind;
-	priv->eth_driver.setup		= eth_setup;
-	priv->eth_driver.reset		= eth_disconnect;
-	priv->eth_driver.disconnect	= eth_disconnect;
-	priv->eth_driver.suspend	= eth_suspend;
-	priv->eth_driver.resume		= eth_resume;
-	if (usb_gadget_register_driver(&priv->eth_driver) < 0)
+	if (usb_gadget_register_driver(&eth_driver) < 0)
 		goto fail;
 
 	dev->network_started = 0;
@@ -2397,7 +2357,7 @@ static int _usb_eth_init(struct ether_priv *priv)
 		timeout = simple_strtoul(getenv("cdc_connect_timeout"),
 						NULL, 10) * CONFIG_SYS_HZ;
 	ts = get_timer(0);
-	while (!dev->network_started) {
+	while (!l_ethdev.network_started) {
 		/* Handle control-c and timeouts */
 		if (ctrlc() || (get_timer(ts) > timeout)) {
 			error("The remote end did not respond in time.");
@@ -2413,11 +2373,11 @@ fail:
 	return -1;
 }
 
-static int _usb_eth_send(struct ether_priv *priv, void *packet, int length)
+static int usb_eth_send(struct eth_device *netdev, void *packet, int length)
 {
 	int			retval;
 	void			*rndis_pkt = NULL;
-	struct eth_dev		*dev = &priv->ethdev;
+	struct eth_dev		*dev = &l_ethdev;
 	struct usb_request	*req = dev->tx_req;
 	unsigned long ts;
 	unsigned long timeout = USB_CONNECT_TIMEOUT;
@@ -2482,16 +2442,34 @@ drop:
 	return -ENOMEM;
 }
 
-static int _usb_eth_recv(struct ether_priv *priv)
+static int usb_eth_recv(struct eth_device *netdev)
 {
+	struct eth_dev *dev = &l_ethdev;
+
 	usb_gadget_handle_interrupts(0);
 
+	if (packet_received) {
+		debug("%s: packet received\n", __func__);
+		if (dev->rx_req) {
+			net_process_received_packet(net_rx_packets[0],
+						    dev->rx_req->length);
+			packet_received = 0;
+
+			rx_submit(dev, dev->rx_req, 0);
+		} else
+			error("dev->rx_req invalid");
+	}
 	return 0;
 }
 
-void _usb_eth_halt(struct ether_priv *priv)
+void usb_eth_halt(struct eth_device *netdev)
 {
-	struct eth_dev *dev = &priv->ethdev;
+	struct eth_dev *dev = &l_ethdev;
+
+	if (!netdev) {
+		error("received NULL ptr");
+		return;
+	}
 
 	/* If the gadget not registered, simple return */
 	if (!dev->gadget)
@@ -2518,65 +2496,27 @@ void _usb_eth_halt(struct ether_priv *priv)
 		dev->network_started = 0;
 	}
 
-	usb_gadget_unregister_driver(&priv->eth_driver);
-#ifdef CONFIG_DM_USB
-	device_remove(dev->usb_udev);
-#else
+	usb_gadget_unregister_driver(&eth_driver);
 	board_usb_cleanup(0, USB_INIT_DEVICE);
-#endif
 }
 
-static int usb_eth_init(struct eth_device *netdev, bd_t *bd)
-{
-	struct ether_priv *priv = (struct ether_priv *)netdev->priv;
+static struct usb_gadget_driver eth_driver = {
+	.speed		= DEVSPEED,
 
-	return _usb_eth_init(priv);
-}
+	.bind		= eth_bind,
+	.unbind		= eth_unbind,
 
-static int usb_eth_send(struct eth_device *netdev, void *packet, int length)
-{
-	struct ether_priv	*priv = (struct ether_priv *)netdev->priv;
+	.setup		= eth_setup,
+	.reset		= eth_disconnect,
+	.disconnect	= eth_disconnect,
 
-	return _usb_eth_send(priv, packet, length);
-}
-
-static int usb_eth_recv(struct eth_device *netdev)
-{
-	struct ether_priv *priv = (struct ether_priv *)netdev->priv;
-	struct eth_dev *dev = &priv->ethdev;
-	int ret;
-
-	ret = _usb_eth_recv(priv);
-	if (ret) {
-		error("error packet receive\n");
-		return ret;
-	}
-
-	if (!packet_received)
-		return 0;
-
-	if (dev->rx_req) {
-		net_process_received_packet(net_rx_packets[0],
-					    dev->rx_req->length);
-	} else {
-		error("dev->rx_req invalid");
-	}
-	packet_received = 0;
-	rx_submit(dev, dev->rx_req, 0);
-
-	return 0;
-}
-
-void usb_eth_halt(struct eth_device *netdev)
-{
-	struct ether_priv *priv = (struct ether_priv *)netdev->priv;
-
-	_usb_eth_halt(priv);
-}
+	.suspend	= eth_suspend,
+	.resume		= eth_resume,
+};
 
 int usb_eth_initialize(bd_t *bi)
 {
-	struct eth_device *netdev = &l_priv->netdev;
+	struct eth_device *netdev = &l_netdev;
 
 	strlcpy(netdev->name, USB_NET_NAME, sizeof(netdev->name));
 
@@ -2584,7 +2524,6 @@ int usb_eth_initialize(bd_t *bi)
 	netdev->send = usb_eth_send;
 	netdev->recv = usb_eth_recv;
 	netdev->halt = usb_eth_halt;
-	netdev->priv = l_priv;
 
 #ifdef CONFIG_MCAST_TFTP
   #error not supported

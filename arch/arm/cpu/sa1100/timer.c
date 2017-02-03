@@ -66,5 +66,8 @@ unsigned long long get_ticks(void)
  */
 ulong get_tbclk (void)
 {
-	return CONFIG_SYS_HZ;
+	ulong tbclk;
+
+	tbclk = CONFIG_SYS_HZ;
+	return tbclk;
 }

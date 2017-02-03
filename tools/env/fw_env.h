@@ -63,7 +63,6 @@ struct env_opts {
 #endif
 	int aes_flag; /* Is AES encryption used? */
 	uint8_t aes_key[AES_KEY_LENGTH];
-	char *lockname;
 };
 
 int parse_aes_key(char *key, uint8_t *bin_key);

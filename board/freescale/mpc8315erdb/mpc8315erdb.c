@@ -194,7 +194,7 @@ int ft_board_setup(void *blob, bd_t *bd)
 #ifdef CONFIG_PCI
 	ft_pci_setup(blob, bd);
 #endif
-	fsl_fdt_fixup_dr_usb(blob, bd);
+	fdt_fixup_dr_usb(blob, bd);
 	fdt_tsec1_fixup(blob, bd);
 
 	return 0;

@@ -18,6 +18,7 @@
  /* High Level Configuration Options */
 #define CONFIG_MX35
 
+#define CONFIG_DISPLAY_CPUINFO
 #define CONFIG_SYS_FSL_CLK
 
 /* Set TEXT at the beginning of the NOR flash */
@@ -219,6 +220,7 @@
 #define CONFIG_MXC_USB_PORTSC	(MXC_EHCI_UTMI_16BIT | MXC_EHCI_MODE_UTMI)
 
 /* mmc driver */
+#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_FSL_ESDHC
 #define CONFIG_SYS_FSL_ESDHC_ADDR	0

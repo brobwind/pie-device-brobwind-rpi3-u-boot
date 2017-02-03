@@ -13,7 +13,6 @@
 #include <i2c.h>
 #include <fsl_esdhc.h>
 #include <spi_flash.h>
-#include "../common/spl.h"
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -118,7 +117,7 @@ void board_init_r(gd_t *gd, ulong dest_addr)
 #ifdef CONFIG_SPL_MMC_BOOT
 	mmc_boot();
 #elif defined(CONFIG_SPL_SPI_BOOT)
-	fsl_spi_boot();
+	spi_boot();
 #elif defined(CONFIG_SPL_NAND_BOOT)
 	nand_boot();
 #endif

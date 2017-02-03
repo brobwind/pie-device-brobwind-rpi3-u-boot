@@ -71,12 +71,12 @@ typedef int cyg_int32;
 static int
 CYGACC_COMM_IF_GETC_TIMEOUT (char chan, char *c)
 {
-
-  ulong now = get_timer(0);
-  while (!tstc ())
+#define DELAY 20
+  unsigned long counter = 0;
+  while (!tstc () && (counter < xyzModem_CHAR_TIMEOUT * 1000 / DELAY))
     {
-      if (get_timer(now) > xyzModem_CHAR_TIMEOUT)
-        break;
+      udelay (DELAY);
+      counter++;
     }
   if (tstc ())
     {

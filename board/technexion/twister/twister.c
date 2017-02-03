@@ -140,7 +140,7 @@ int board_mmc_init(bd_t *bis)
 
 #ifdef CONFIG_SPL_OS_BOOT
 /*
- * Do board specific preparation before SPL
+ * Do board specific preperation before SPL
  * Linux boot
  */
 void spl_board_prepare_for_linux(void)

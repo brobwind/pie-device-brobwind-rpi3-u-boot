@@ -62,7 +62,6 @@ config SANDBOX
 	bool "Sandbox"
 	select SUPPORT_OF_CONTROL
 	select DM
-	select DM_KEYBOARD
 	select DM_SPI_FLASH
 	select DM_SERIAL
 	select DM_I2C
@@ -84,7 +83,6 @@ config X86
 	select HAVE_PRIVATE_LIBGCC
 	select SUPPORT_OF_CONTROL
 	select DM
-	select DM_KEYBOARD
 	select DM_SERIAL
 	select DM_GPIO
 	select DM_SPI

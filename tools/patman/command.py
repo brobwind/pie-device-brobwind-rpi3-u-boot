@@ -85,7 +85,7 @@ def RunPipe(pipe_list, infile=None, outfile=None,
 
         try:
             last_pipe = cros_subprocess.Popen(cmd, cwd=cwd, **kwargs)
-        except Exception as err:
+        except Exception, err:
             result.exception = err
             if raise_on_error:
                 raise Exception("Error running '%s': %s" % (user_pipestr, str))
@@ -104,9 +104,8 @@ def RunPipe(pipe_list, infile=None, outfile=None,
         raise Exception("Error running '%s'" % user_pipestr)
     return result
 
-def Output(*cmd, **kwargs):
-    raise_on_error = kwargs.get('raise_on_error', True)
-    return RunPipe([cmd], capture=True, raise_on_error=raise_on_error).stdout
+def Output(*cmd):
+    return RunPipe([cmd], capture=True, raise_on_error=False).stdout
 
 def OutputOneLine(*cmd, **kwargs):
     raise_on_error = kwargs.pop('raise_on_error', True)

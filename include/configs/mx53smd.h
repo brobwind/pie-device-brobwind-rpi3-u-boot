@@ -11,6 +11,9 @@
 
 #define CONFIG_MX53
 
+#define CONFIG_DISPLAY_CPUINFO
+#define CONFIG_DISPLAY_BOARDINFO
+
 #define CONFIG_MACH_TYPE	MACH_TYPE_MX53_SMD
 
 #include <asm/arch/imx-regs.h>
@@ -43,6 +46,7 @@
 #define CONFIG_SYS_FSL_ESDHC_ADDR	0
 #define CONFIG_SYS_FSL_ESDHC_NUM	1
 
+#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_DOS_PARTITION
 

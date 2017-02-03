@@ -190,6 +190,7 @@ static int vidconsole_post_probe(struct udevice *dev)
 {
 	struct vidconsole_priv *priv = dev_get_uclass_priv(dev);
 	struct stdio_dev *sdev = &priv->sdev;
+	int ret;
 
 	if (!priv->tab_width_frac)
 		priv->tab_width_frac = VID_TO_POS(priv->x_charsize) * 8;
@@ -205,8 +206,11 @@ static int vidconsole_post_probe(struct udevice *dev)
 	sdev->putc = vidconsole_putc;
 	sdev->puts = vidconsole_puts;
 	sdev->priv = dev;
+	ret = stdio_register(sdev);
+	if (ret)
+		return ret;
 
-	return stdio_register(sdev);
+	return 0;
 }
 
 UCLASS_DRIVER(vidconsole) = {

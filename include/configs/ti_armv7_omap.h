@@ -14,6 +14,7 @@
 
 /* Common defines for all OMAP architecture based SoCs */
 #define CONFIG_OMAP
+#define CONFIG_OMAP_COMMON
 
 /* I2C IP block */
 #define CONFIG_SYS_OMAP24_I2C_SPEED	100000

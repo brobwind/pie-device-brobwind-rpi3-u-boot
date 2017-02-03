@@ -23,7 +23,6 @@
 		regulator-name = "vdd_center";
 		regulator-min-microvolt = <800000>;
 		regulator-max-microvolt = <1400000>;
-		regulator-init-microvolt = <950000>;
 		regulator-always-on;
 		regulator-boot-on;
 		status = "okay";
@@ -43,12 +42,6 @@
 		regulator-name = "vcc_phy";
 		regulator-always-on;
 		regulator-boot-on;
-	};
-
-	vcc5v0_host: vcc5v0-host-en {
-		compatible = "regulator-fixed";
-		regulator-name = "vcc5v0_host";
-		gpio = <&gpio4 25 GPIO_ACTIVE_HIGH>;
 	};
 };
 
@@ -92,19 +85,11 @@
 	status = "okay";
 };
 
-&dwc3_typec0 {
-	status = "okay";
-};
-
 &usb_host1_ehci {
 	status = "okay";
 };
 
 &usb_host1_ohci {
-	status = "okay";
-};
-
-&dwc3_typec1 {
 	status = "okay";
 };
 

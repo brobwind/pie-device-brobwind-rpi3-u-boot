@@ -15,7 +15,7 @@
 #include <asm/io.h>
 #include <asm/ppc4xx-gpio.h>
 #include <asm/4xx_pcie.h>
-#include <linux/errno.h>
+#include <asm/errno.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 

@@ -533,6 +533,7 @@
 
 /* UBI Support */
 #define CONFIG_CMD_NAND_TRIMFFS
+#define CONFIG_CMD_UBI
 #define CONFIG_CMD_UBIFS
 #define CONFIG_RBTREE
 #define CONFIG_LZO

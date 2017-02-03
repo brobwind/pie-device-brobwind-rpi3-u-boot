@@ -12,6 +12,7 @@
 
 /* U-Boot Commands */
 #define CONFIG_SYS_NO_FLASH
+#define CONFIG_DISPLAY_CPUINFO
 #define CONFIG_DOS_PARTITION
 
 #define CONFIG_CMD_LED

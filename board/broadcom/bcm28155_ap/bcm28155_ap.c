@@ -75,7 +75,7 @@ void dram_init_banksize(void)
 	gd->bd->bi_dram[0].size = gd->ram_size;
 }
 
-#ifdef CONFIG_MMC_SDHCI_KONA
+#ifdef CONFIG_KONA_SDHCI
 /*
  * mmc_init - Initializes mmc
  */

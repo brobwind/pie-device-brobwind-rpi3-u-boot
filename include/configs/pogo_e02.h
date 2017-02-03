@@ -18,6 +18,7 @@
  */
 #define MACH_TYPE_POGO_E02		3542
 #define CONFIG_MACH_TYPE		MACH_TYPE_POGO_E02
+#define CONFIG_IDENT_STRING		"\nPogo E02"
 
 /*
  * High Level Configuration Options (easy to change)
@@ -81,6 +82,7 @@
  * File system
  */
 #define CONFIG_CMD_JFFS2
+#define CONFIG_CMD_UBI
 #define CONFIG_CMD_UBIFS
 #define CONFIG_RBTREE
 #define CONFIG_MTD_DEVICE               /* needed for mtdparts commands */

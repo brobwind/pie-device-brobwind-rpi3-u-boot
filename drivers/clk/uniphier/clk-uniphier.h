@@ -10,46 +10,48 @@
 
 #include <linux/kernel.h>
 
-#define UNIPHIER_CLK_MAX_NR_MUXS	8
-
 struct uniphier_clk_gate_data {
-	unsigned int id;
+	int index;
 	unsigned int reg;
-	unsigned int bit;
+	u32 mask;
+	u32 data;
 };
 
-struct uniphier_clk_mux_data {
-	unsigned int id;
-	unsigned int nr_muxs;
+struct uniphier_clk_rate_data {
+	int index;
 	unsigned int reg;
-	unsigned int masks[UNIPHIER_CLK_MAX_NR_MUXS];
-	unsigned int vals[UNIPHIER_CLK_MAX_NR_MUXS];
-	unsigned long rates[UNIPHIER_CLK_MAX_NR_MUXS];
+#define UNIPHIER_CLK_RATE_IS_FIXED		UINT_MAX
+	u32 mask;
+	u32 data;
+	unsigned long rate;
 };
 
-struct uniphier_clk_data {
-	const struct uniphier_clk_gate_data *gate;
-	const struct uniphier_clk_mux_data *mux;
+struct uniphier_clk_soc_data {
+	struct uniphier_clk_gate_data *gate;
+	unsigned int nr_gate;
+	struct uniphier_clk_rate_data *rate;
+	unsigned int nr_rate;
 };
 
-#define UNIPHIER_CLK_ID_END		(unsigned int)(-1)
-
-#define UNIPHIER_CLK_END				\
-	{ .id = UNIPHIER_CLK_ID_END }
-
-#define UNIPHIER_CLK_GATE(_id, _reg, _bit)		\
+#define UNIPHIER_CLK_FIXED_RATE(i, f)			\
 	{						\
-		.id = (_id),				\
-		.reg = (_reg),				\
-		.bit = (_bit),				\
+		.index = i,				\
+		.reg = UNIPHIER_CLK_RATE_IS_FIXED,	\
+		.rate = f,				\
 	}
 
-#define UNIPHIER_CLK_FIXED_RATE(_id, _rate)		\
-	{						\
-		.id = (_id),				\
-		.rates = {(_reg),},			\
-	}
+/**
+ * struct uniphier_clk_priv - private data for UniPhier clock driver
+ *
+ * @base: base address of the clock provider
+ * @socdata: SoC specific data
+ */
+struct uniphier_clk_priv {
+	void __iomem *base;
+	struct uniphier_clk_soc_data *socdata;
+};
 
-extern const struct uniphier_clk_data uniphier_mio_clk_data;
+extern const struct clk_ops uniphier_clk_ops;
+int uniphier_clk_probe(struct udevice *dev);
 
 #endif /* __CLK_UNIPHIER_H__ */

@@ -16,7 +16,6 @@
 #include <asm/omap_gpio.h>
 #include <asm/omap_common.h>
 #include <asm/ti-common/ti-edma3.h>
-#include <linux/kernel.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -24,9 +23,6 @@ DECLARE_GLOBAL_DATA_PTR;
 #define QSPI_TIMEOUT                    2000000
 #define QSPI_FCLK			192000000
 #define QSPI_DRA7XX_FCLK                76800000
-#define QSPI_WLEN_MAX_BITS		128
-#define QSPI_WLEN_MAX_BYTES		(QSPI_WLEN_MAX_BITS >> 3)
-#define QSPI_WLEN_MASK			QSPI_WLEN(QSPI_WLEN_MAX_BITS)
 /* clock control */
 #define QSPI_CLK_EN                     BIT(31)
 #define QSPI_CLK_DIV_MAX                0xffff
@@ -119,18 +115,21 @@ static void ti_spi_set_speed(struct ti_qspi_priv *priv, uint hz)
 	if (!hz)
 		clk_div = 0;
 	else
-		clk_div = DIV_ROUND_UP(priv->fclk, hz) - 1;
-
-	/* truncate clk_div value to QSPI_CLK_DIV_MAX */
-	if (clk_div > QSPI_CLK_DIV_MAX)
-		clk_div = QSPI_CLK_DIV_MAX;
+		clk_div = (priv->fclk / hz) - 1;
 
 	debug("ti_spi_set_speed: hz: %d, clock divider %d\n", hz, clk_div);
 
 	/* disable SCLK */
 	writel(readl(&priv->base->clk_ctrl) & ~QSPI_CLK_EN,
 	       &priv->base->clk_ctrl);
-	/* enable SCLK and program the clk divider */
+
+	/* assign clk_div values */
+	if (clk_div < 0)
+		clk_div = 0;
+	else if (clk_div > QSPI_CLK_DIV_MAX)
+		clk_div = QSPI_CLK_DIV_MAX;
+
+	/* enable SCLK */
 	writel(QSPI_CLK_EN | clk_div, &priv->base->clk_ctrl);
 }
 
@@ -224,34 +223,20 @@ static int __ti_qspi_xfer(struct ti_qspi_priv *priv, unsigned int bitlen,
 		priv->cmd |= QSPI_3_PIN;
 	priv->cmd |= 0xfff;
 
-	while (words) {
-		u8 xfer_len = 0;
-
+/* FIXME: This delay is required for successfull
+ * completion of read/write/erase. Once its root
+ * caused, it will be remove from the driver.
+ */
+#ifdef CONFIG_AM43XX
+	udelay(100);
+#endif
+	while (words--) {
 		if (txp) {
-			u32 cmd = priv->cmd;
-
-			if (words >= QSPI_WLEN_MAX_BYTES) {
-				u32 *txbuf = (u32 *)txp;
-				u32 data;
-
-				data = cpu_to_be32(*txbuf++);
-				writel(data, &priv->base->data3);
-				data = cpu_to_be32(*txbuf++);
-				writel(data, &priv->base->data2);
-				data = cpu_to_be32(*txbuf++);
-				writel(data, &priv->base->data1);
-				data = cpu_to_be32(*txbuf++);
-				writel(data, &priv->base->data);
-				cmd &= ~QSPI_WLEN_MASK;
-				cmd |= QSPI_WLEN(QSPI_WLEN_MAX_BITS);
-				xfer_len = QSPI_WLEN_MAX_BYTES;
-			} else {
-				writeb(*txp, &priv->base->data);
-				xfer_len = 1;
-			}
-			debug("tx cmd %08x dc %08x\n",
-			      cmd | QSPI_WR_SNGL, priv->dc);
-			writel(cmd | QSPI_WR_SNGL, &priv->base->cmd);
+			debug("tx cmd %08x dc %08x data %02x\n",
+			      priv->cmd | QSPI_WR_SNGL, priv->dc, *txp);
+			writel(*txp++, &priv->base->data);
+			writel(priv->cmd | QSPI_WR_SNGL,
+			       &priv->base->cmd);
 			status = readl(&priv->base->status);
 			timeout = QSPI_TIMEOUT;
 			while ((status & QSPI_WC_BUSY) != QSPI_XFER_DONE) {
@@ -261,7 +246,6 @@ static int __ti_qspi_xfer(struct ti_qspi_priv *priv, unsigned int bitlen,
 				}
 				status = readl(&priv->base->status);
 			}
-			txp += xfer_len;
 			debug("tx done, status %08x\n", status);
 		}
 		if (rxp) {
@@ -278,11 +262,9 @@ static int __ti_qspi_xfer(struct ti_qspi_priv *priv, unsigned int bitlen,
 				status = readl(&priv->base->status);
 			}
 			*rxp++ = readl(&priv->base->data);
-			xfer_len = 1;
 			debug("rx done, status %08x, read %02x\n",
 			      status, *(rxp-1));
 		}
-		words -= xfer_len;
 	}
 
 	/* Terminate frame */
@@ -354,7 +336,7 @@ static void ti_spi_setup_spi_register(struct ti_qspi_priv *priv)
 			QSPI_SETUP0_NUM_D_BYTES_8_BITS |
 			QSPI_SETUP0_READ_QUAD | QSPI_CMD_WRITE |
 			QSPI_NUM_DUMMY_BITS);
-	slave->mode |= SPI_RX_QUAD;
+	slave->mode_rx = SPI_RX_QUAD;
 #else
 	memval |= QSPI_CMD_READ | QSPI_SETUP0_NUM_A_BYTES |
 			QSPI_SETUP0_NUM_D_BYTES_NO_BITS |
@@ -383,7 +365,7 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 
 	priv->base = (struct ti_qspi_regs *)QSPI_BASE;
 	priv->mode = mode;
-#if defined(CONFIG_DRA7XX)
+#if defined(CONFIG_DRA7XX) || defined(CONFIG_AM57XX)
 	priv->ctrl_mod_mmap = (void *)CORE_CTRL_IO;
 	priv->slave.memory_map = (void *)MMAP_START_ADDR_DRA;
 	priv->fclk = QSPI_DRA7XX_FCLK;
@@ -440,7 +422,7 @@ static void __ti_qspi_setup_memorymap(struct ti_qspi_priv *priv,
 				      bool enable)
 {
 	u32 memval;
-	u32 mode = slave->mode & (SPI_RX_QUAD | SPI_RX_DUAL);
+	u32 mode = slave->mode_rx & (SPI_RX_QUAD | SPI_RX_DUAL);
 
 	if (!enable) {
 		writel(0, &priv->base->setup0);
@@ -454,7 +436,7 @@ static void __ti_qspi_setup_memorymap(struct ti_qspi_priv *priv,
 		memval |= QSPI_CMD_READ_QUAD;
 		memval |= QSPI_SETUP0_NUM_D_BYTES_8_BITS;
 		memval |= QSPI_SETUP0_READ_QUAD;
-		slave->mode |= SPI_RX_QUAD;
+		slave->mode_rx = SPI_RX_QUAD;
 		break;
 	case SPI_RX_DUAL:
 		memval |= QSPI_CMD_READ_DUAL;

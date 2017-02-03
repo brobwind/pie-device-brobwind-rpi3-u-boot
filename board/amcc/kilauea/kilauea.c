@@ -12,7 +12,7 @@
 #include <fdt_support.h>
 #include <asm/processor.h>
 #include <asm/io.h>
-#include <linux/errno.h>
+#include <asm/errno.h>
 
 #if defined(CONFIG_PCI)
 #include <pci.h>

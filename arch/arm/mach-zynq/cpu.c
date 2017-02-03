@@ -43,8 +43,12 @@ int arch_cpu_init(void)
 
 unsigned int zynq_get_silicon_version(void)
 {
-	return (readl(&devcfg_base->mctrl) & ZYNQ_SILICON_VER_MASK)
-						>> ZYNQ_SILICON_VER_SHIFT;
+	unsigned int ver;
+
+	ver = (readl(&devcfg_base->mctrl) &
+	       ZYNQ_SILICON_VER_MASK) >> ZYNQ_SILICON_VER_SHIFT;
+
+	return ver;
 }
 
 void reset_cpu(ulong addr)

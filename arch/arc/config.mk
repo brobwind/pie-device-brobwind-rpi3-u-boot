@@ -31,15 +31,15 @@ CONFIG_MMU = 1
 endif
 
 ifdef CONFIG_CPU_ARC750D
-PLATFORM_CPPFLAGS += -mcpu=arc700
+PLATFORM_CPPFLAGS += -marc700
 endif
 
 ifdef CONFIG_CPU_ARC770D
-PLATFORM_CPPFLAGS += -mcpu=arc700 -mlock -mswape
+PLATFORM_CPPFLAGS += -marc700 -mlock -mswape
 endif
 
 ifdef CONFIG_CPU_ARCEM6
-PLATFORM_CPPFLAGS += -mcpu=arcem
+PLATFORM_CPPFLAGS += -marcem
 endif
 
 ifdef CONFIG_CPU_ARCHS34

@@ -140,6 +140,9 @@ static int msm_sdc_probe(struct udevice *dev)
 		writel(caps, host->ioaddr + SDHCI_VENDOR_SPEC_CAPABILITIES0);
 	}
 
+	/* Set host controller version */
+	host->version = sdhci_readw(host, SDHCI_HOST_VERSION);
+
 	ret = sdhci_setup_cfg(&plat->cfg, host, 0, 0);
 	host->mmc = &plat->mmc;
 	if (ret)
@@ -187,8 +190,13 @@ static int msm_ofdata_to_platdata(struct udevice *dev)
 static int msm_sdc_bind(struct udevice *dev)
 {
 	struct msm_sdhc_plat *plat = dev_get_platdata(dev);
+	int ret;
 
-	return sdhci_bind(dev, &plat->mmc, &plat->cfg);
+	ret = sdhci_bind(dev, &plat->mmc, &plat->cfg);
+	if (ret)
+		return ret;
+
+	return 0;
 }
 
 static const struct udevice_id msm_mmc_ids[] = {

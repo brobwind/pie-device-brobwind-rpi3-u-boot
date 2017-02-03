@@ -6,4 +6,4 @@
 #
 
 obj-y	:= r2dplus.o
-extra-y	+= lowlevel_init.o
+obj-y	+= lowlevel_init.o

@@ -13,7 +13,6 @@
 #include <fsl_esdhc.h>
 #include <spi_flash.h>
 #include "../common/sleep.h"
-#include "../common/spl.h"
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -120,8 +119,8 @@ void board_init_r(gd_t *gd, ulong dest_addr)
 			   (uchar *)CONFIG_ENV_ADDR);
 #endif
 #ifdef CONFIG_SPL_SPI_BOOT
-	fsl_spi_spl_load_image(CONFIG_ENV_OFFSET, CONFIG_ENV_SIZE,
-			       (uchar *)CONFIG_ENV_ADDR);
+	spi_spl_load_image(CONFIG_ENV_OFFSET, CONFIG_ENV_SIZE,
+			   (uchar *)CONFIG_ENV_ADDR);
 #endif
 
 	gd->env_addr  = (ulong)(CONFIG_ENV_ADDR);
@@ -134,7 +133,7 @@ void board_init_r(gd_t *gd, ulong dest_addr)
 #ifdef CONFIG_SPL_MMC_BOOT
 	mmc_boot();
 #elif defined(CONFIG_SPL_SPI_BOOT)
-	fsl_spi_boot();
+	spi_boot();
 #elif defined(CONFIG_SPL_NAND_BOOT)
 	nand_boot();
 #endif

@@ -8,7 +8,7 @@
 
 #include <common.h>
 #include <dm.h>
-#include <linux/errno.h>
+#include <asm/errno.h>
 #include <asm/io.h>
 #include <asm-generic/gpio.h>
 #include <asm/arch/clock.h>
@@ -600,18 +600,9 @@ static int init_ulpi_usb_controller(struct fdt_usb *config,
 
 	/* reset ULPI phy */
 	if (dm_gpio_is_valid(&config->phy_reset_gpio)) {
-		/*
-		 * This GPIO is typically active-low, and marked as such in
-		 * device tree. dm_gpio_set_value() takes this into account
-		 * and inverts the value we pass here if required. In other
-		 * words, this first call logically asserts the reset signal,
-		 * which typically results in driving the physical GPIO low,
-		 * and the second call logically de-asserts the reset signal,
-		 * which typically results in driver the GPIO high.
-		 */
-		dm_gpio_set_value(&config->phy_reset_gpio, 1);
-		mdelay(5);
 		dm_gpio_set_value(&config->phy_reset_gpio, 0);
+		mdelay(5);
+		dm_gpio_set_value(&config->phy_reset_gpio, 1);
 	}
 
 	/* Reset the usb controller */
@@ -855,6 +846,17 @@ static int ehci_usb_probe(struct udevice *dev)
 			     plat->init_type);
 }
 
+static int ehci_usb_remove(struct udevice *dev)
+{
+	int ret;
+
+	ret = ehci_deregister(dev);
+	if (ret)
+		return ret;
+
+	return 0;
+}
+
 static const struct udevice_id ehci_usb_ids[] = {
 	{ .compatible = "nvidia,tegra20-ehci", .data = USB_CTLR_T20 },
 	{ .compatible = "nvidia,tegra30-ehci", .data = USB_CTLR_T30 },
@@ -869,7 +871,7 @@ U_BOOT_DRIVER(usb_ehci) = {
 	.of_match = ehci_usb_ids,
 	.ofdata_to_platdata = ehci_usb_ofdata_to_platdata,
 	.probe = ehci_usb_probe,
-	.remove = ehci_deregister,
+	.remove = ehci_usb_remove,
 	.ops	= &ehci_usb_ops,
 	.platdata_auto_alloc_size = sizeof(struct usb_platdata),
 	.priv_auto_alloc_size = sizeof(struct fdt_usb),

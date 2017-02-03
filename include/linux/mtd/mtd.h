@@ -20,7 +20,7 @@
 #else
 #include <linux/compat.h>
 #include <mtd/mtd-abi.h>
-#include <linux/errno.h>
+#include <asm/errno.h>
 #include <div64.h>
 
 #define MAX_MTD_DEVICES 32

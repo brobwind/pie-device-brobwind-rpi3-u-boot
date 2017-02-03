@@ -8,7 +8,7 @@
  */
 
 #include <common.h>
-#include <linux/errno.h>
+#include <asm/errno.h>
 
 #include "vct.h"
 

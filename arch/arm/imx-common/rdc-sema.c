@@ -8,7 +8,7 @@
 #include <asm/arch/imx-regs.h>
 #include <asm/imx-common/rdc-sema.h>
 #include <asm/arch/imx-rdc.h>
-#include <linux/errno.h>
+#include <asm-generic/errno.h>
 
 /*
  * Check if the RDC Semaphore is required for this peripheral.

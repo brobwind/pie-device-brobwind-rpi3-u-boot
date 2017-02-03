@@ -18,6 +18,8 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#define CONFIG_DISPLAY_BOARDINFO
+
 /*
  * Top level Makefile configuration choices
  */
@@ -37,6 +39,7 @@
 
 #define CONFIG_MISC_INIT_R
 
+#define CONFIG_PCI
 /* Don't enable PCI2 on vme834x - it doesn't exist physically. */
 #undef CONFIG_MPC83XX_PCI2		/* support for 2nd PCI controller */
 
@@ -266,6 +269,7 @@
 
 #ifndef VME_CADDY2
 #endif
+#define CONFIG_PCI_PNP		/* do pci plug-and-play */
 
 #undef CONFIG_EEPRO100
 #undef CONFIG_TULIP

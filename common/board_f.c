@@ -49,7 +49,7 @@
 #include <trace.h>
 #include <video.h>
 #include <watchdog.h>
-#include <linux/errno.h>
+#include <asm/errno.h>
 #include <asm/io.h>
 #include <asm/sections.h>
 #if defined(CONFIG_X86) || defined(CONFIG_ARC)
@@ -276,7 +276,7 @@ static int setup_mon_len(void)
 #elif defined(CONFIG_BLACKFIN) || defined(CONFIG_NIOS2) || \
 	defined(CONFIG_XTENSA)
 	gd->mon_len = CONFIG_SYS_MONITOR_LEN;
-#elif defined(CONFIG_NDS32) || defined(CONFIG_SH)
+#elif defined(CONFIG_NDS32)
 	gd->mon_len = (ulong)(&__bss_end) - (ulong)(&_start);
 #elif defined(CONFIG_SYS_MONITOR_BASE)
 	/* TODO: use (ulong)&__bss_end - (ulong)&__text_start; ? */
@@ -286,11 +286,6 @@ static int setup_mon_len(void)
 }
 
 __weak int arch_cpu_init(void)
-{
-	return 0;
-}
-
-__weak int mach_cpu_init(void)
 {
 	return 0;
 }
@@ -619,8 +614,7 @@ static int display_new_sp(void)
 	return 0;
 }
 
-#if defined(CONFIG_M68K) || defined(CONFIG_MIPS) || defined(CONFIG_PPC) || \
-	defined(CONFIG_SH)
+#if defined(CONFIG_PPC) || defined(CONFIG_M68K) || defined(CONFIG_MIPS)
 static int setup_board_part1(void)
 {
 	bd_t *bd = gd->bd;
@@ -866,7 +860,6 @@ static init_fnc_t init_sequence_f[] = {
 	x86_fsp_init,
 #endif
 	arch_cpu_init,		/* basic arch cpu dependent setup */
-	mach_cpu_init,		/* SoC/machine dependent CPU setup */
 	initf_dm,
 	arch_cpu_init_dm,
 	mark_bootstage,		/* need timer, go after init dm */
@@ -885,7 +878,7 @@ static init_fnc_t init_sequence_f[] = {
 #endif
 #if defined(CONFIG_ARM) || defined(CONFIG_MIPS) || \
 		defined(CONFIG_BLACKFIN) || defined(CONFIG_NDS32) || \
-		defined(CONFIG_SH) || defined(CONFIG_SPARC)
+		defined(CONFIG_SPARC)
 	timer_init,		/* initialize timer */
 #endif
 #ifdef CONFIG_SYS_ALLOC_DPRAM
@@ -913,6 +906,9 @@ static init_fnc_t init_sequence_f[] = {
 #ifdef CONFIG_SANDBOX
 	sandbox_early_getopt_check,
 #endif
+#ifdef CONFIG_OF_CONTROL
+	fdtdec_prepare_fdt,
+#endif
 	display_options,	/* say that we are here */
 	display_text_info,	/* show debugging info if required */
 #if defined(CONFIG_MPC8260)
@@ -922,7 +918,7 @@ static init_fnc_t init_sequence_f[] = {
 #if defined(CONFIG_MPC83xx)
 	prt_83xx_rsr,
 #endif
-#if defined(CONFIG_PPC) || defined(CONFIG_M68K) || defined(CONFIG_SH)
+#if defined(CONFIG_PPC) || defined(CONFIG_M68K)
 	checkcpu,
 #endif
 	print_cpuinfo,		/* display cpu info (and speed) */
@@ -946,8 +942,7 @@ static init_fnc_t init_sequence_f[] = {
 	announce_dram_init,
 	/* TODO: unify all these dram functions? */
 #if defined(CONFIG_ARM) || defined(CONFIG_X86) || defined(CONFIG_NDS32) || \
-		defined(CONFIG_MICROBLAZE) || defined(CONFIG_AVR32) || \
-		defined(CONFIG_SH)
+		defined(CONFIG_MICROBLAZE) || defined(CONFIG_AVR32)
 	dram_init,		/* configure available RAM banks */
 #endif
 #if defined(CONFIG_MIPS) || defined(CONFIG_PPC) || defined(CONFIG_M68K)
@@ -1025,8 +1020,7 @@ static init_fnc_t init_sequence_f[] = {
 	reserve_stacks,
 	setup_dram_config,
 	show_dram_config,
-#if defined(CONFIG_M68K) || defined(CONFIG_MIPS) || defined(CONFIG_PPC) || \
-	defined(CONFIG_SH)
+#if defined(CONFIG_PPC) || defined(CONFIG_M68K) || defined(CONFIG_MIPS)
 	setup_board_part1,
 #endif
 #if defined(CONFIG_PPC) || defined(CONFIG_M68K)
@@ -1058,7 +1052,7 @@ void board_init_f(ulong boot_flags)
 {
 #ifdef CONFIG_SYS_GENERIC_GLOBAL_DATA
 	/*
-	 * For some architectures, global data is initialized and used before
+	 * For some archtectures, global data is initialized and used before
 	 * calling this function. The data should be preserved. For others,
 	 * CONFIG_SYS_GENERIC_GLOBAL_DATA should be defined and use the stack
 	 * here to host global data until relocation.
@@ -1070,7 +1064,7 @@ void board_init_f(ulong boot_flags)
 	/*
 	 * Clear global data before it is accessed at debug print
 	 * in initcall_run_list. Otherwise the debug print probably
-	 * get the wrong value of gd->have_console.
+	 * get the wrong vaule of gd->have_console.
 	 */
 	zero_global_data();
 #endif

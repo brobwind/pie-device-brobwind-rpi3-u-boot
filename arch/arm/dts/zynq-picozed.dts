@@ -14,27 +14,15 @@
 
 	aliases {
 		serial0 = &uart1;
-		spi0 = &qspi;
-		mmc0 = &sdhci1;
 	};
 
-	memory@0 {
+	memory {
 		device_type = "memory";
 		reg = <0 0x40000000>;
 	};
 };
 
 &uart1 {
-	u-boot,dm-pre-reloc;
-	status = "okay";
-};
-
-&qspi {
-	u-boot,dm-pre-reloc;
-	status = "okay";
-};
-
-&sdhci1 {
 	u-boot,dm-pre-reloc;
 	status = "okay";
 };

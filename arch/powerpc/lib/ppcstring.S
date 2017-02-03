@@ -6,7 +6,7 @@
  * SPDX-License-Identifier:	GPL-2.0+
  */
 #include <ppc_asm.tmpl>
-#include <linux/errno.h>
+#include <asm/errno.h>
 
 	.globl	strcpy
 strcpy:

@@ -14,17 +14,8 @@
 #include <mmc.h>
 #include <div64.h>
 
-/*
- * FIXME: Ensure we always set these names via Kconfig once xxx_PARTITION is
- * migrated
- */
 #ifndef CONFIG_FASTBOOT_GPT_NAME
-#define CONFIG_FASTBOOT_GPT_NAME "gpt"
-#endif
-
-
-#ifndef CONFIG_FASTBOOT_MBR_NAME
-#define CONFIG_FASTBOOT_MBR_NAME "mbr"
+#define CONFIG_FASTBOOT_GPT_NAME GPT_ENTRY_NAME
 #endif
 
 #define FASTBOOT_MAX_BLK_WRITE 16384
@@ -34,12 +25,12 @@ struct fb_mmc_sparse {
 	struct blk_desc	*dev_desc;
 };
 
-static int part_get_info_by_name_or_alias(struct blk_desc *dev_desc,
+static int part_get_info_efi_by_name_or_alias(struct blk_desc *dev_desc,
 		const char *name, disk_partition_t *info)
 {
 	int ret;
 
-	ret = part_get_info_by_name(dev_desc, name, info);
+	ret = part_get_info_efi_by_name(dev_desc, name, info);
 	if (ret) {
 		/* strlen("fastboot_partition_alias_") + 32(part_name) + 1 */
 		char env_alias_name[25 + 32 + 1];
@@ -50,7 +41,7 @@ static int part_get_info_by_name_or_alias(struct blk_desc *dev_desc,
 		strncat(env_alias_name, name, 32);
 		aliased_part_name = getenv(env_alias_name);
 		if (aliased_part_name != NULL)
-			ret = part_get_info_by_name(dev_desc,
+			ret = part_get_info_efi_by_name(dev_desc,
 					aliased_part_name, info);
 	}
 	return ret;
@@ -139,7 +130,6 @@ void fb_mmc_flash_write(const char *cmd, void *download_buffer,
 		return;
 	}
 
-#ifdef CONFIG_EFI_PARTITION
 	if (strcmp(cmd, CONFIG_FASTBOOT_GPT_NAME) == 0) {
 		printf("%s: updating MBR, Primary and Backup GPT(s)\n",
 		       __func__);
@@ -151,37 +141,14 @@ void fb_mmc_flash_write(const char *cmd, void *download_buffer,
 		}
 		if (write_mbr_and_gpt_partitions(dev_desc, download_buffer)) {
 			printf("%s: writing GPT partitions failed\n", __func__);
-			fastboot_fail("writing GPT partitions failed",
-				      response);
+			fastboot_fail(
+				      "writing GPT partitions failed", response);
 			return;
 		}
 		printf("........ success\n");
 		fastboot_okay("", response);
 		return;
-	}
-#endif
-
-#ifdef CONFIG_DOS_PARTITION
-	if (strcmp(cmd, CONFIG_FASTBOOT_MBR_NAME) == 0) {
-		printf("%s: updating MBR\n", __func__);
-		if (is_valid_dos_buf(download_buffer)) {
-			printf("%s: invalid MBR - refusing to write to flash\n",
-			       __func__);
-			fastboot_fail("invalid MBR partition", response);
-			return;
-		}
-		if (write_mbr_partition(dev_desc, download_buffer)) {
-			printf("%s: writing MBR partition failed\n", __func__);
-			fastboot_fail("writing MBR partition failed", response);
-			return;
-		}
-		printf("........ success\n");
-		fastboot_okay("", response);
-		return;
-	}
-#endif
-
-	if (part_get_info_by_name_or_alias(dev_desc, cmd, &info)) {
+	} else if (part_get_info_efi_by_name_or_alias(dev_desc, cmd, &info)) {
 		error("cannot find partition: '%s'\n", cmd);
 		fastboot_fail("cannot find partition", response);
 		return;
@@ -232,7 +199,7 @@ void fb_mmc_erase(const char *cmd, char *response)
 		return;
 	}
 
-	ret = part_get_info_by_name_or_alias(dev_desc, cmd, &info);
+	ret = part_get_info_efi_by_name_or_alias(dev_desc, cmd, &info);
 	if (ret) {
 		error("cannot find partition: '%s'", cmd);
 		fastboot_fail("cannot find partition", response);

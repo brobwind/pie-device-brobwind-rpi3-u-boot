@@ -168,6 +168,7 @@
 
 #define CONFIG_SYS_LOAD_ADDR		0x200000	/* default load address */
 
+#define CONFIG_DISPLAY_BOARDINFO 1
 #define CONFIG_CMDLINE_EDITING  1
 
 /*

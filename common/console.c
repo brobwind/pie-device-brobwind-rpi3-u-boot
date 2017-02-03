@@ -16,7 +16,6 @@
 #include <stdio_dev.h>
 #include <exports.h>
 #include <environment.h>
-#include <watchdog.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -66,11 +65,11 @@ U_BOOT_ENV_CALLBACK(console, on_console);
 static int on_silent(const char *name, const char *value, enum env_op op,
 	int flags)
 {
-#if !CONFIG_IS_ENABLED(CONFIG_SILENT_CONSOLE_UPDATE_ON_SET)
+#ifndef CONFIG_SILENT_CONSOLE_UPDATE_ON_SET
 	if (flags & H_INTERACTIVE)
 		return 0;
 #endif
-#if !CONFIG_IS_ENABLED(CONFIG_SILENT_CONSOLE_UPDATE_ON_RELOC)
+#ifndef CONFIG_SILENT_CONSOLE_UPDATE_ON_RELOC
 	if ((flags & H_INTERACTIVE) == 0)
 		return 0;
 #endif
@@ -202,7 +201,7 @@ static void console_putc(int file, const char c)
 	}
 }
 
-#if CONFIG_IS_ENABLED(PRE_CONSOLE_BUFFER)
+#ifdef CONFIG_PRE_CONSOLE_BUFFER
 static void console_puts_noserial(int file, const char *s)
 {
 	int i;
@@ -248,7 +247,7 @@ static inline void console_putc(int file, const char c)
 	stdio_devices[file]->putc(stdio_devices[file], c);
 }
 
-#if CONFIG_IS_ENABLED(PRE_CONSOLE_BUFFER)
+#ifdef CONFIG_PRE_CONSOLE_BUFFER
 static inline void console_puts_noserial(int file, const char *s)
 {
 	if (strcmp(stdio_devices[file]->name, "serial") != 0)
@@ -295,7 +294,6 @@ int fgetc(int file)
 		 * Effectively poll for input wherever it may be available.
 		 */
 		for (;;) {
-			WATCHDOG_RESET();
 			/*
 			 * Upper layer may have already called tstc() so
 			 * check for that first.
@@ -415,7 +413,7 @@ int tstc(void)
 #define PRE_CONSOLE_FLUSHPOINT1_SERIAL			0
 #define PRE_CONSOLE_FLUSHPOINT2_EVERYTHING_BUT_SERIAL	1
 
-#if CONFIG_IS_ENABLED(PRE_CONSOLE_BUFFER)
+#ifdef CONFIG_PRE_CONSOLE_BUFFER
 #define CIRC_BUF_IDX(idx) ((idx) % (unsigned long)CONFIG_PRE_CON_BUF_SZ)
 
 static void pre_console_putc(const char c)
@@ -689,22 +687,15 @@ int console_assign(int file, const char *devname)
 	return -1;
 }
 
-static void console_update_silent(void)
-{
-#ifdef CONFIG_SILENT_CONSOLE
-	if (getenv("silent") != NULL)
-		gd->flags |= GD_FLG_SILENT;
-	else
-		gd->flags &= ~GD_FLG_SILENT;
-#endif
-}
-
 /* Called before relocation - use serial functions */
 int console_init_f(void)
 {
 	gd->have_console = 1;
 
-	console_update_silent();
+#ifdef CONFIG_SILENT_CONSOLE
+	if (getenv("silent") != NULL)
+		gd->flags |= GD_FLG_SILENT;
+#endif
 
 	print_pre_console_buffer(PRE_CONSOLE_FLUSHPOINT1_SERIAL);
 
@@ -839,8 +830,6 @@ int console_init_r(void)
 	struct list_head *list = stdio_get_list();
 	struct list_head *pos;
 	struct stdio_dev *dev;
-
-	console_update_silent();
 
 #ifdef CONFIG_SPLASH_SCREEN
 	/*

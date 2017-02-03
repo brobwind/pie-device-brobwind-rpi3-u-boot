@@ -206,17 +206,7 @@ static int do_fdt(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 			return 1;
 		}
 		working_fdt = newaddr;
-#ifdef CONFIG_OF_SYSTEM_SETUP
-	/* Call the board-specific fixup routine */
-	} else if (strncmp(argv[1], "sys", 3) == 0) {
-		int err = ft_system_setup(working_fdt, gd->bd);
 
-		if (err) {
-			printf("Failed to add system information to FDT: %s\n",
-			       fdt_strerror(err));
-			return CMD_RET_FAILURE;
-		}
-#endif
 	/*
 	 * Make a new node
 	 */
@@ -587,6 +577,18 @@ static int do_fdt(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 		}
 	}
 #endif
+#ifdef CONFIG_OF_SYSTEM_SETUP
+	/* Call the board-specific fixup routine */
+	else if (strncmp(argv[1], "sys", 3) == 0) {
+		int err = ft_system_setup(working_fdt, gd->bd);
+
+		if (err) {
+			printf("Failed to add system information to FDT: %s\n",
+			       fdt_strerror(err));
+			return CMD_RET_FAILURE;
+		}
+	}
+#endif
 	/* Create a chosen node */
 	else if (strncmp(argv[1], "cho", 3) == 0) {
 		unsigned long initrd_start = 0, initrd_end = 0;
@@ -660,12 +662,7 @@ static int do_fdt(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 #endif
 	/* resize the fdt */
 	else if (strncmp(argv[1], "re", 2) == 0) {
-		uint extrasize;
-		if (argc > 2)
-			extrasize = simple_strtoul(argv[2], NULL, 16);
-		else
-			extrasize = 0;
-		fdt_shrink_to_minimum(working_fdt, extrasize);
+		fdt_shrink_to_minimum(working_fdt);
 	}
 	else {
 		/* Unrecognized command */
@@ -1059,7 +1056,7 @@ static char fdt_help_text[] =
 	"fdt systemsetup                     - Do system-specific set up\n"
 #endif
 	"fdt move   <fdt> <newaddr> <length> - Copy the fdt to <addr> and make it active\n"
-	"fdt resize [<extrasize>]            - Resize fdt to size + padding to 4k addr + some optional <extrasize> if needed\n"
+	"fdt resize                          - Resize fdt to size + padding to 4k addr\n"
 	"fdt print  <path> [<prop>]          - Recursive print starting at <path>\n"
 	"fdt list   <path> [<prop>]          - Print one level starting at <path>\n"
 	"fdt get value <var> <path> <prop>   - Get <property> and store in <var>\n"

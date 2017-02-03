@@ -74,7 +74,6 @@ SECTIONS
 		*(._secure.data)
 	}
 
-#ifdef CONFIG_ARMV7_PSCI
 	.secure_stack ALIGN(ADDR(.secure_data) + SIZEOF(.secure_data),
 			    CONSTANT(COMMONPAGESIZE)) (NOLOAD) :
 #ifdef __ARMV7_PSCI_STACK_IN_RAM
@@ -84,10 +83,10 @@ SECTIONS
 #endif
 	{
 		KEEP(*(.__secure_stack_start))
-
+#ifdef CONFIG_ARMV7_PSCI
 		/* Skip addreses for stack */
 		. = . + CONFIG_ARMV7_PSCI_NR_CPUS * ARM_PSCI_STACK_SIZE;
-
+#endif
 		/* Align end of stack section to page boundary */
 		. = ALIGN(CONSTANT(COMMONPAGESIZE));
 
@@ -108,8 +107,6 @@ SECTIONS
 #ifndef __ARMV7_PSCI_STACK_IN_RAM
 	/* Reset VMA but don't allocate space if we have secure SRAM */
 	. = LOADADDR(.secure_stack);
-#endif
-
 #endif
 
 	.__secure_end : AT(ADDR(.__secure_end)) {

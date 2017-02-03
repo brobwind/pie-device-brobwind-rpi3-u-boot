@@ -9,16 +9,14 @@
 
 #include <common.h>
 #include <command.h>
-#include <image.h>
 #include <mach/mon.h>
 asm(".arch_extension sec\n\t");
 
 static int do_mon_install(cmd_tbl_t *cmdtp, int flag, int argc,
 			  char * const argv[])
 {
-	u32 addr, dpsc_base = 0x1E80000, freq, load_addr, size;
+	u32 addr, dpsc_base = 0x1E80000, freq;
 	int     rcode = 0;
-	struct image_header *header;
 
 	if (argc < 2)
 		return CMD_RET_USAGE;
@@ -27,21 +25,9 @@ static int do_mon_install(cmd_tbl_t *cmdtp, int flag, int argc,
 
 	addr = simple_strtoul(argv[1], NULL, 16);
 
-	header = (struct image_header *)addr;
-
-	if (image_get_magic(header) != IH_MAGIC) {
-		printf("## Please update monitor image\n");
-		return -EFAULT;
-	}
-
-	load_addr = image_get_load(header);
-	size = image_get_data_size(header);
-	memcpy((void *)load_addr, (void *)(addr + sizeof(struct image_header)),
-	       size);
-
-	rcode = mon_install(load_addr, dpsc_base, freq);
-	printf("## installed monitor @ 0x%x, freq [%d], status %d\n",
-	       load_addr, freq, rcode);
+	rcode = mon_install(addr, dpsc_base, freq);
+	printf("## installed monitor, freq [%d], status %d\n",
+	       freq, rcode);
 
 	return 0;
 }

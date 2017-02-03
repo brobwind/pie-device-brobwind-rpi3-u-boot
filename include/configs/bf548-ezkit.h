@@ -143,6 +143,7 @@
  */
 #if !defined(__ADSPBF544__)
 #define CONFIG_GENERIC_MMC
+#define CONFIG_MMC
 #define CONFIG_BFIN_SDH
 #endif
 
@@ -166,6 +167,7 @@
 
 #define CONFIG_ADI_GPIO2
 
+#undef CONFIG_VIDEO
 #ifdef CONFIG_VIDEO
 #define EASYLOGO_HEADER < asm/bfin_logo_230x230_gzip.h >
 #define CONFIG_DEB_DMA_URGENT

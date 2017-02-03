@@ -34,6 +34,10 @@
 /* Have release address at the end of 256MB for now */
 #define CPU_RELEASE_ADDR	0xFFFFFF0
 
+#if !defined(CONFIG_IDENT_STRING)
+# define CONFIG_IDENT_STRING		" Xilinx ZynqMP"
+#endif
+
 #define CONFIG_SYS_INIT_SP_ADDR		CONFIG_SYS_TEXT_BASE
 
 /* Generic Timer Definitions - setup in EL3. Setup by ATF for other cases */
@@ -75,14 +79,18 @@
 
 /* Diff from config_distro_defaults.h */
 #define CONFIG_SUPPORT_RAW_INITRD
-#if !defined(CONFIG_SPL_BUILD)
 #define CONFIG_ENV_VARS_UBOOT_CONFIG
-#endif
 #define CONFIG_AUTO_COMPLETE
 
+/* PXE */
+#define CONFIG_CMD_PXE
+#define CONFIG_MENU
+
 #if defined(CONFIG_ZYNQ_SDHCI)
+# define CONFIG_MMC
 # define CONFIG_GENERIC_MMC
 # define CONFIG_SUPPORT_EMMC_BOOT
+# define CONFIG_SDHCI
 # ifndef CONFIG_ZYNQ_SDHCI_MAX_FREQ
 #  define CONFIG_ZYNQ_SDHCI_MAX_FREQ	200000000
 # endif
@@ -104,11 +112,14 @@
 #define CONFIG_SYS_LOAD_ADDR		0x8000000
 
 #if defined(CONFIG_ZYNQMP_USB)
+#define CONFIG_USB_MAX_CONTROLLER_COUNT         1
 #define CONFIG_SYS_USB_XHCI_MAX_ROOT_PORTS      2
 #define CONFIG_USB_XHCI_ZYNQMP
 
 #define CONFIG_SYS_DFU_DATA_BUF_SIZE	0x1800000
 #define DFU_DEFAULT_POLL_TIMEOUT	300
+#define CONFIG_USB_FUNCTION_DFU
+#define CONFIG_DFU_RAM
 #define CONFIG_USB_CABLE_CHECK
 #define CONFIG_CMD_THOR_DOWNLOAD
 #define CONFIG_USB_FUNCTION_THOR
@@ -128,6 +139,7 @@
 #if !defined(DFU_ALT_INFO)
 # define DFU_ALT_INFO
 #endif
+
 
 #define CONFIG_BOARD_LATE_INIT
 
@@ -177,8 +189,10 @@
 #endif
 
 #ifdef CONFIG_SATA_CEVA
+#define CONFIG_AHCI
 #define CONFIG_LIBATA
 #define CONFIG_SCSI_AHCI
+#define CONFIG_SCSI_AHCI_PLAT
 #define CONFIG_SYS_SCSI_MAX_SCSI_ID	2
 #define CONFIG_SYS_SCSI_MAX_LUN		1
 #define CONFIG_SYS_SCSI_MAX_DEVICE	(CONFIG_SYS_SCSI_MAX_SCSI_ID * \
@@ -237,60 +251,42 @@
 	DFU_ALT_INFO
 #endif
 
-/* SPL can't handle all huge variables - define just DFU */
-#if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_DFU_SUPPORT)
-#undef CONFIG_EXTRA_ENV_SETTINGS
-# define CONFIG_EXTRA_ENV_SETTINGS \
-	"dfu_alt_info_ram=uboot.bin ram 0x8000000 0x1000000;" \
-			  "atf-uboot.ub ram 0x10000000 0x1000000;" \
-			  "Image ram 0x80000 0x3f80000;" \
-			  "system.dtb ram 0x4000000 0x100000\0" \
-	"dfu_bufsiz=0x1000\0"
-#endif
-
 #define CONFIG_SPL_TEXT_BASE		0xfffc0000
 #define CONFIG_SPL_STACK		0xfffffffc
-#define CONFIG_SPL_MAX_SIZE		0x40000
+#define CONFIG_SPL_MAX_SIZE		0x20000
 
 /* Just random location in OCM */
-#define CONFIG_SPL_BSS_START_ADDR	0x0
-#define CONFIG_SPL_BSS_MAX_SIZE		0x80000
+#define CONFIG_SPL_BSS_START_ADDR	0x1000000
+#define CONFIG_SPL_BSS_MAX_SIZE		0x2000000
 
 #define CONFIG_SPL_FRAMEWORK
+#define CONFIG_SPL_LIBCOMMON_SUPPORT
+#define CONFIG_SPL_LIBGENERIC_SUPPORT
+#define CONFIG_SPL_SERIAL_SUPPORT
 #define CONFIG_SPL_BOARD_INIT
 #define CONFIG_SPL_RAM_DEVICE
 
+#define CONFIG_SPL_OS_BOOT
 /* u-boot is like dtb */
 #define CONFIG_SPL_FS_LOAD_ARGS_NAME	"u-boot.bin"
 #define CONFIG_SYS_SPL_ARGS_ADDR	0x8000000
 
 /* ATF is my kernel image */
-#define CONFIG_SPL_FS_LOAD_KERNEL_NAME	"atf-uboot.ub"
+#define CONFIG_SPL_FS_LOAD_KERNEL_NAME	"atf.ub"
 
 /* FIT load address for RAM boot */
 #define CONFIG_SPL_LOAD_FIT_ADDRESS	0x10000000
 
 /* MMC support */
 #ifdef CONFIG_ZYNQ_SDHCI
+# define CONFIG_SPL_MMC_SUPPORT
 # define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION	1
 # define CONFIG_SYS_MMCSD_RAW_MODE_ARGS_SECTOR	0 /* unused */
 # define CONFIG_SYS_MMCSD_RAW_MODE_ARGS_SECTORS	0 /* unused */
 # define CONFIG_SYS_MMCSD_RAW_MODE_KERNEL_SECTOR	0 /* unused */
+# define CONFIG_SPL_LIBDISK_SUPPORT
+# define CONFIG_SPL_FAT_SUPPORT
 # define CONFIG_SPL_FS_LOAD_PAYLOAD_NAME	"u-boot.img"
-#endif
-
-#if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_DFU_SUPPORT)
-# undef CONFIG_CMD_BOOTD
-# define CONFIG_SPL_ENV_SUPPORT
-# define CONFIG_SPL_HASH_SUPPORT
-# define CONFIG_ENV_MAX_ENTRIES	10
-
-# define CONFIG_SYS_SPL_MALLOC_START	0x20000000
-# define CONFIG_SYS_SPL_MALLOC_SIZE	0x10000000
-
-#ifdef CONFIG_SPL_SYS_MALLOC_SIMPLE
-# error "Disable CONFIG_SPL_SYS_MALLOC_SIMPLE. Full malloc needs to be used"
-#endif
 #endif
 
 #endif /* __XILINX_ZYNQMP_H */

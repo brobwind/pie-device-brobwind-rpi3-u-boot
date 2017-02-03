@@ -9,6 +9,7 @@
 #ifndef __SH7785LCR_H
 #define __SH7785LCR_H
 
+#undef DEBUG
 #define CONFIG_CPU_SH7785	1
 #define CONFIG_SH7785LCR	1
 
@@ -26,7 +27,6 @@
 	"bootdevice=0:1\0"						\
 	"usbload=usb reset;usbboot;usb stop;bootm\0"
 
-#define CONFIG_DISPLAY_BOARDINFO
 #undef	CONFIG_SHOW_BOOT_PROGRESS
 
 /* MEMORY */
@@ -60,6 +60,9 @@
 #define CONFIG_SCIF_CONSOLE	1
 #define CONFIG_CONS_SCIF1	1
 #define CONFIG_SCIF_EXT_CLOCK	1
+#undef	CONFIG_SYS_CONSOLE_INFO_QUIET
+#undef	CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE
+#undef	CONFIG_SYS_CONSOLE_ENV_OVERWRITE
 
 #define CONFIG_SYS_MEMTEST_START	(SH7785LCR_SDRAM_BASE)
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + \
@@ -106,6 +109,7 @@
 #define CONFIG_R8A66597_ENDIAN		0x0000	/* little */
 
 /* PCI Controller */
+#define CONFIG_PCI
 #define CONFIG_SH4_PCI
 #define CONFIG_SH7780_PCI
 #if defined(CONFIG_SH_32BIT)
@@ -117,6 +121,7 @@
 #define CONFIG_SH7780_PCI_LAR	CONFIG_SYS_SDRAM_SIZE
 #define CONFIG_SH7780_PCI_BAR	CONFIG_SYS_SDRAM_SIZE
 #endif
+#define CONFIG_PCI_PNP
 #define CONFIG_PCI_SCAN_SHOW	1
 
 #define CONFIG_PCI_MEM_BUS	0xFD000000	/* Memory space base addr */

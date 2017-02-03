@@ -20,7 +20,7 @@
 #include <linux/mtd/onenand.h>
 #include <malloc.h>
 
-#include <linux/errno.h>
+#include <asm/errno.h>
 
 /**
  * check_short_pattern - [GENERIC] check if a pattern is in the buffer

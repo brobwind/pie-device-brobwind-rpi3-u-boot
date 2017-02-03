@@ -139,9 +139,15 @@ static void qemu_chipset_init(void)
 
 int arch_cpu_init(void)
 {
+	int ret;
+
 	post_code(POST_CPU_INIT);
 
-	return x86_cpu_init_f();
+	ret = x86_cpu_init_f();
+	if (ret)
+		return ret;
+
+	return 0;
 }
 
 #ifndef CONFIG_EFI_STUB

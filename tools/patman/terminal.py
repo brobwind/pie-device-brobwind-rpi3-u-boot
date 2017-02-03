@@ -8,8 +8,6 @@
 This module handles terminal interaction including ANSI color codes.
 """
 
-from __future__ import print_function
-
 import os
 import sys
 
@@ -54,11 +52,9 @@ def Print(text='', newline=True, colour=None):
         if colour:
             col = Color()
             text = col.Color(colour, text)
-        print(text, end='')
+        print text,
         if newline:
-            print()
-        else:
-            sys.stdout.flush()
+            print
 
 def SetPrintTestMode():
     """Go into test mode, where all printing is recorded"""
@@ -83,11 +79,11 @@ def EchoPrintTestLines():
     for line in print_test_list:
         if line.colour:
             col = Color()
-            print(col.Color(line.colour, line.text), end='')
+            print col.Color(line.colour, line.text),
         else:
-            print(line.text, end='')
+            print line.text,
         if line.newline:
-            print()
+            print
 
 
 class Color(object):

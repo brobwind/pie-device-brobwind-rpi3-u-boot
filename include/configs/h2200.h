@@ -107,6 +107,8 @@
 /*
  * Serial port
  */
+
+#define CONFIG_PXA_SERIAL
 #define CONFIG_FFUART
 #define CONFIG_CONS_INDEX		3
 
@@ -129,6 +131,7 @@
 
 #define CONFIG_BOOTARGS "root=/dev/ram0 ro console=ttyS0,115200n8"
 
+#define CONFIG_SYS_CONSOLE_IS_IN_ENV
 #define CONFIG_USB_DEV_PULLUP_GPIO	33
 /* USB VBUS GPIO 3 */
 

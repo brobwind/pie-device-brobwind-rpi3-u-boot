@@ -6,15 +6,12 @@
 #
 
 ifndef CONFIG_STANDALONE_LOAD_ADDR
-ifneq ($(CONFIG_ARCH_OMAP2),)
+ifneq ($(CONFIG_OMAP_COMMON),)
 CONFIG_STANDALONE_LOAD_ADDR = 0x80300000
 else
 CONFIG_STANDALONE_LOAD_ADDR = 0xc100000
 endif
 endif
-
-CFLAGS_NON_EFI := -fno-pic -ffixed-r9 -ffunction-sections -fdata-sections
-CFLAGS_EFI := -fpic -fshort-wchar
 
 LDFLAGS_FINAL += --gc-sections
 PLATFORM_RELFLAGS += -ffunction-sections -fdata-sections \
@@ -121,8 +118,7 @@ endif
 
 # limit ourselves to the sections we want in the .bin.
 ifdef CONFIG_ARM64
-OBJCOPYFLAGS += -j .text -j .secure_text -j .secure_data -j .rodata -j .data \
-		-j .u_boot_list -j .rela.dyn
+OBJCOPYFLAGS += -j .text -j .rodata -j .data -j .u_boot_list -j .rela.dyn
 else
 OBJCOPYFLAGS += -j .text -j .secure_text -j .secure_data -j .rodata -j .hash \
 		-j .data -j .got -j .got.plt -j .u_boot_list -j .rel.dyn
@@ -148,11 +144,4 @@ else
 ALL-y += u-boot.imx
 endif
 endif
-ifneq ($(CONFIG_VF610),)
-ALL-y += u-boot.vyb
 endif
-endif
-
-EFI_LDS := elf_arm_efi.lds
-EFI_CRT0 := crt0_arm_efi.o
-EFI_RELOC := reloc_arm_efi.o

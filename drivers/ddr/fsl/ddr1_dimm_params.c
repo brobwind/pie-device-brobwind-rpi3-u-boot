@@ -108,14 +108,22 @@ static unsigned int byte40_table_ps[8] = {
 static unsigned int
 compute_trfc_ps_from_spd(unsigned char trctrfc_ext, unsigned char trfc)
 {
-	return ((trctrfc_ext & 0x1) * 256 + trfc) * 1000
+	unsigned int trfc_ps;
+
+	trfc_ps = (((trctrfc_ext & 0x1) * 256) + trfc) * 1000
 		+ byte40_table_ps[(trctrfc_ext >> 1) & 0x7];
+
+	return trfc_ps;
 }
 
 static unsigned int
 compute_trc_ps_from_spd(unsigned char trctrfc_ext, unsigned char trc)
 {
-	return trc * 1000 + byte40_table_ps[(trctrfc_ext >> 4) & 0x7];
+	unsigned int trc_ps;
+
+	trc_ps = trc * 1000 + byte40_table_ps[(trctrfc_ext >> 4) & 0x7];
+
+	return trc_ps;
 }
 
 /*

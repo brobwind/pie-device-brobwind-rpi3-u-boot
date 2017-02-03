@@ -88,16 +88,14 @@ int sandbox_fs_ls(const char *dirname)
 
 	ret = os_dirent_ls(dirname, &head);
 	if (ret)
-		goto out;
+		return ret;
 
 	for (node = head; node; node = node->next) {
 		printf("%s %10lu %s\n", os_dirent_get_typename(node->type),
 		       node->size, node->name);
 	}
-out:
-	os_dirent_free(head);
 
-	return ret;
+	return 0;
 }
 
 int sandbox_fs_exists(const char *filename)

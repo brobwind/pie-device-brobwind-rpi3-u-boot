@@ -8,7 +8,7 @@
 #include <common.h>
 #include <dwmmc.h>
 #include <malloc.h>
-#include <linux/errno.h>
+#include <asm-generic/errno.h>
 
 #define	DWMMC_MAX_CH_NUM		4
 

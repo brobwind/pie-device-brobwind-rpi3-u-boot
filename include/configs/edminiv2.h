@@ -17,6 +17,10 @@
  */
 
 #define CONFIG_SPL_FRAMEWORK
+#define CONFIG_SPL_LIBGENERIC_SUPPORT
+#define CONFIG_SPL_LIBCOMMON_SUPPORT
+#define CONFIG_SPL_SERIAL_SUPPORT
+#define CONFIG_SPL_NOR_SUPPORT
 #define CONFIG_SPL_TEXT_BASE		0xffff0000
 #define CONFIG_SPL_MAX_SIZE		0x0000fff0
 #define CONFIG_SPL_STACK		0x00020000
@@ -29,6 +33,12 @@
 #define CONFIG_SYS_UBOOT_BASE		0xfff90000
 #define CONFIG_SYS_UBOOT_START		0x00800000
 #define CONFIG_SYS_TEXT_BASE 		0x00800000
+
+/*
+ * Version number information
+ */
+
+#define CONFIG_IDENT_STRING	" EDMiniV2"
 
 /*
  * High Level Configuration Options (easy to change)
@@ -208,8 +218,10 @@
 /*
  * Other required minimal configurations
  */
+#define CONFIG_CONSOLE_INFO_QUIET	/* some code reduction */
 #define CONFIG_ARCH_CPU_INIT		/* call arch_cpu_init() */
 #define CONFIG_ARCH_MISC_INIT		/* call arch_misc_init() */
+#define CONFIG_DISPLAY_CPUINFO		/* Display cpu info */
 #define CONFIG_NR_DRAM_BANKS		1
 
 #define CONFIG_SYS_LOAD_ADDR		0x00800000

@@ -73,7 +73,7 @@ int ft_board_setup(void *blob, bd_t *bd)
 	fdt_fixup_mtdparts(blob, nodes, ARRAY_SIZE(nodes));
 #endif
 
-	fsl_fdt_fixup_dr_usb(blob, bd);
+	fdt_fixup_dr_usb(blob, bd);
 
 	return 0;
 }

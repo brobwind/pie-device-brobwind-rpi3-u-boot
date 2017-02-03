@@ -51,7 +51,7 @@ static unsigned long sata_bwrite(struct blk_desc *block_dev, lbaint_t start,
 
 int __sata_initialize(void)
 {
-	int rc, ret = -1;
+	int rc;
 	int i;
 
 	for (i = 0; i < CONFIG_SYS_SATA_MAX_DEVICE; i++) {
@@ -71,14 +71,12 @@ int __sata_initialize(void)
 		if (!rc) {
 			rc = scan_sata(i);
 			if (!rc && sata_dev_desc[i].lba > 0 &&
-			    sata_dev_desc[i].blksz > 0) {
+			    sata_dev_desc[i].blksz > 0)
 				part_init(&sata_dev_desc[i]);
-				ret = i;
-			}
 		}
 	}
 
-	return ret;
+	return rc;
 }
 int sata_initialize(void) __attribute__((weak, alias("__sata_initialize")));
 

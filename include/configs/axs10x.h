@@ -85,6 +85,7 @@
 /*
  * SD/MMC configuration
  */
+#define CONFIG_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_DWMMC
 #define CONFIG_DOS_PARTITION

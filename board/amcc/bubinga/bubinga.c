@@ -57,5 +57,8 @@ int checkboard(void)
    ------------------------------------------------------------------------- */
 phys_size_t initdram(int board_type)
 {
-	return spd_sdram();
+	long int ret;
+
+	ret = spd_sdram();
+	return ret;
 }

@@ -9,4 +9,4 @@
 #
 
 obj-y	:= ap325rxa.o cpld-ap325rxa.o
-extra-y	+= lowlevel_init.o
+obj-y	+= lowlevel_init.o

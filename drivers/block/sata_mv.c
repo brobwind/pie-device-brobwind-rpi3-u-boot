@@ -37,7 +37,7 @@
 #include <libata.h>
 #include <malloc.h>
 #include <sata.h>
-#include <linux/errno.h>
+#include <asm/errno.h>
 #include <asm/io.h>
 #include <linux/mbus.h>
 
@@ -572,7 +572,6 @@ static int mv_ata_exec_ata_cmd(int port, struct sata_fis_h2d *cfis,
 	struct mv_priv *priv = (struct mv_priv *)sata_dev_desc[port].priv;
 	struct crqb *req;
 	int slot;
-	u32 start;
 
 	if (len >= 64 * 1024) {
 		printf("We only support <64K transfers for now\n");
@@ -629,9 +628,7 @@ static int mv_ata_exec_ata_cmd(int port, struct sata_fis_h2d *cfis,
 		CRQB_SECTCOUNT_COUNT_EXP_MASK;
 
 	/* Flush data */
-	start = (u32)req & ~(ARCH_DMA_MINALIGN - 1);
-	flush_dcache_range(start,
-			   start + ALIGN(sizeof(*req), ARCH_DMA_MINALIGN));
+	flush_dcache_range((u32)req, (u32)req + sizeof(*req));
 
 	/* Trigger operation */
 	slot = get_next_reqip(port);
@@ -646,11 +643,8 @@ static int mv_ata_exec_ata_cmd(int port, struct sata_fis_h2d *cfis,
 	process_responses(port);
 
 	/* Invalidate data on read */
-	if (buffer && len) {
-		start = (u32)buffer & ~(ARCH_DMA_MINALIGN - 1);
-		invalidate_dcache_range(start,
-					start + ALIGN(len, ARCH_DMA_MINALIGN));
-	}
+	if (buffer && len)
+		invalidate_dcache_range((u32)buffer, (u32)buffer + len);
 
 	return len;
 }

@@ -57,7 +57,7 @@ struct jt_funcs {
 };
 
 
-#define XF_VERSION	9
+#define XF_VERSION	8
 
 #if defined(CONFIG_X86)
 extern gd_t *global_data;

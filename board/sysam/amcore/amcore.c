@@ -1,7 +1,7 @@
 /*
  * Board functions for Sysam AMCORE (MCF5307 based) board
  *
- * (C) Copyright 2016  Angelo Dureghello <angelo@sysam.it>
+ * (C) Copyright 2015  Angelo Dureghello <angelo@sysam.it>
  *
  * SPDX-License-Identifier:     GPL-2.0+
  *
@@ -11,8 +11,6 @@
 #include <common.h>
 #include <asm/immap.h>
 #include <asm/io.h>
-#include <dm.h>
-#include <dm/platform_data/serial_coldfire.h>
 
 void init_lcd(void)
 {
@@ -93,7 +91,7 @@ phys_size_t initdram(int board_type)
 	out_be32((u32 *)0x00000004, 0xbeaddeed);
 	/* issue AUTOREFRESH */
 	out_be32(&dc->dacr0, 0x0000b304);
-	/* let refresh occur */
+	/* let refresh occour */
 	fudelay(1);
 
 	out_be32(&dc->dacr0, 0x0000b344);
@@ -101,14 +99,3 @@ phys_size_t initdram(int board_type)
 
 	return get_ram_size(CONFIG_SYS_SDRAM_BASE, CONFIG_SYS_SDRAM_SIZE);
 }
-
-static struct coldfire_serial_platdata mcf5307_serial_plat = {
-	.base = CONFIG_SYS_UART_BASE,
-	.port = 0,
-	.baudrate = CONFIG_BAUDRATE,
-};
-
-U_BOOT_DEVICE(coldfire_serial) = {
-	.name = "serial_coldfire",
-	.platdata = &mcf5307_serial_plat,
-};

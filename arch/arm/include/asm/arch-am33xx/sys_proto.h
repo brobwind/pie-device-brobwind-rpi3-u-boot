@@ -19,7 +19,6 @@ u32 get_sysboot_value(void);
 extern struct ctrl_stat *cstat;
 u32 get_device_type(void);
 void save_omap_boot_params(void);
-void setup_early_clocks(void);
 void setup_clocks_for_console(void);
 void mpu_pll_config_val(int mpull_m);
 void ddr_pll_config(unsigned int ddrpll_M);
@@ -45,4 +44,3 @@ int am335x_get_tps65910_mpu_vdd(int sil_rev, int frequency);
 
 void enable_usb_clocks(int index);
 void disable_usb_clocks(int index);
-void do_board_detect(void);

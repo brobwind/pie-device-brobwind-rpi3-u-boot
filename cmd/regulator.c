@@ -292,10 +292,7 @@ static int do_value(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 		return CMD_RET_FAILURE;
 	}
 
-	if (!force)
-		ret = regulator_set_value(dev, value);
-	else
-		ret = regulator_set_value_force(dev, value);
+	ret = regulator_set_value(dev, value);
 	if (ret) {
 		printf("Regulator: %s - can't set the Voltage!\n",
 		       uc_pdata->name);

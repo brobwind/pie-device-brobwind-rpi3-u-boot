@@ -9,7 +9,6 @@
  */
 
 #include "mkimage.h"
-#include "imximage.h"
 #include <image.h>
 #include <version.h>
 
@@ -65,7 +64,6 @@ static int show_valid_options(enum ih_category category)
 			genimg_get_cat_name(category, item));
 	}
 	fprintf(stderr, "\n");
-	free(order);
 
 	return 0;
 }
@@ -89,13 +87,12 @@ static void usage(const char *msg)
 		"          -x ==> set XIP (execute in place)\n",
 		params.cmdname);
 	fprintf(stderr,
-		"       %s [-D dtc_options] [-f fit-image.its|-f auto|-F] [-b <dtb> [-b <dtb>]] [-i <ramdisk.cpio.gz>] fit-image\n"
-		"           <dtb> file is used with -f auto, it may occur multiple times.\n",
+		"       %s [-D dtc_options] [-f fit-image.its|-f auto|-F] [-b <dtb> [-b <dtb>]] fit-image\n"
+		"           <dtb> file is used with -f auto, it may occour multiple times.\n",
 		params.cmdname);
 	fprintf(stderr,
 		"          -D => set all options for device tree compiler\n"
-		"          -f => input filename for FIT source\n"
-		"          -i => input filename for ramdisk file\n");
+		"          -f => input filename for FIT source\n");
 #ifdef CONFIG_FIT_SIGNATURE
 	fprintf(stderr,
 		"Signing / verified boot options: [-E] [-k keydir] [-K dtb] [ -c <comment>] [-p addr] [-r]\n"
@@ -143,7 +140,7 @@ static void process_args(int argc, char **argv)
 	int opt;
 
 	while ((opt = getopt(argc, argv,
-			     "a:A:b:c:C:d:D:e:Ef:Fk:i:K:ln:p:O:rR:qsT:vVx")) != -1) {
+			     "a:A:b:c:C:d:D:e:Ef:Fk:K:ln:p:O:rR:qsT:vVx")) != -1) {
 		switch (opt) {
 		case 'a':
 			params.addr = strtoull(optarg, &ptr, 16);
@@ -208,9 +205,6 @@ static void process_args(int argc, char **argv)
 			 */
 			params.type = IH_TYPE_FLATDT;
 			params.fflag = 1;
-			break;
-		case 'i':
-			params.fit_ramdisk = optarg;
 			break;
 		case 'k':
 			params.keydir = optarg;
@@ -508,37 +502,6 @@ int main(int argc, char **argv)
 			pbl_load_uboot(ifd, &params);
 		} else {
 			copy_file(ifd, params.datafile, pad_len);
-		}
-		if (params.type == IH_TYPE_FIRMWARE_IVT) {
-			/* Add alignment and IVT */
-			uint32_t aligned_filesize = (params.file_size + 0x1000
-					- 1) & ~(0x1000 - 1);
-			flash_header_v2_t ivt_header = { { 0xd1, 0x2000, 0x40 },
-					params.addr, 0, 0, 0, params.addr
-							+ aligned_filesize
-							- tparams->header_size,
-					params.addr + aligned_filesize
-							- tparams->header_size
-							+ 0x20, 0 };
-			int i = params.file_size;
-			for (; i < aligned_filesize; i++) {
-				if (write(ifd, &i, 1) != 1) {
-					fprintf(stderr,
-							"%s: Write error on %s: %s\n",
-							params.cmdname,
-							params.imagefile,
-							strerror(errno));
-					exit(EXIT_FAILURE);
-				}
-			}
-			if (write(ifd, &ivt_header, sizeof(flash_header_v2_t))
-					!= sizeof(flash_header_v2_t)) {
-				fprintf(stderr, "%s: Write error on %s: %s\n",
-						params.cmdname,
-						params.imagefile,
-						strerror(errno));
-				exit(EXIT_FAILURE);
-			}
 		}
 	}
 

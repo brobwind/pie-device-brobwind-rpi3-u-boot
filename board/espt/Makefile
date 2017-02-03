@@ -8,4 +8,4 @@
 #
 
 obj-y	:= espt.o
-extra-y	+= lowlevel_init.o
+obj-y	+= lowlevel_init.o

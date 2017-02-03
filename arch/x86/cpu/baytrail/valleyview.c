@@ -12,9 +12,8 @@
 #include <asm/post.h>
 
 static struct pci_device_id mmc_supported[] = {
-	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BYT_SDIO },
-	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BYT_SD },
-	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_BYT_EMMC2 },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_VALLEYVIEW_SDIO },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_VALLEYVIEW_SDCARD },
 	{},
 };
 
@@ -26,9 +25,15 @@ int cpu_mmc_init(bd_t *bis)
 #ifndef CONFIG_EFI_APP
 int arch_cpu_init(void)
 {
+	int ret;
+
 	post_code(POST_CPU_INIT);
 
-	return x86_cpu_init_f();
+	ret = x86_cpu_init_f();
+	if (ret)
+		return ret;
+
+	return 0;
 }
 
 int arch_misc_init(void)

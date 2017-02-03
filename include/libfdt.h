@@ -61,7 +61,7 @@
 #define FDT_ERR_NOTFOUND	1
 	/* FDT_ERR_NOTFOUND: The requested node or property does not exist */
 #define FDT_ERR_EXISTS		2
-	/* FDT_ERR_EXISTS: Attempted to create a node or property which
+	/* FDT_ERR_EXISTS: Attemped to create a node or property which
 	 * already exists */
 #define FDT_ERR_NOSPACE		3
 	/* FDT_ERR_NOSPACE: Operation needed to expand the device
@@ -79,10 +79,8 @@
 	 * (e.g. missing a leading / for a function which requires an
 	 * absolute path) */
 #define FDT_ERR_BADPHANDLE	6
-	/* FDT_ERR_BADPHANDLE: Function was passed an invalid phandle.
-	 * This can be caused either by an invalid phandle property
-	 * length, or the phandle value was either 0 or -1, which are
-	 * not permitted. */
+	/* FDT_ERR_BADPHANDLE: Function was passed an invalid phandle
+	 * value.  phandle values of 0 and -1 are not permitted. */
 #define FDT_ERR_BADSTATE	7
 	/* FDT_ERR_BADSTATE: Function was passed an incomplete device
 	 * tree created by the sequential-write functions, which is
@@ -123,26 +121,12 @@
 	/* FDT_ERR_BADNCELLS: Device tree has a #address-cells, #size-cells
 	 * or similar property with a bad format or value */
 
-#define FDT_ERR_BADVALUE	15
-	/* FDT_ERR_BADVALUE: Device tree has a property with an unexpected
-	 * value. For example: a property expected to contain a string list
-	 * is not NUL-terminated within the length of its value. */
-
-#define FDT_ERR_BADOVERLAY	16
-	/* FDT_ERR_BADOVERLAY: The device tree overlay, while
-	 * correctly structured, cannot be applied due to some
-	 * unexpected or missing value, property or node. */
-
-#define FDT_ERR_NOPHANDLES	17
-	/* FDT_ERR_NOPHANDLES: The device tree doesn't have any
-	 * phandle available anymore without causing an overflow */
-
-#define FDT_ERR_TOODEEP	18
+#define FDT_ERR_TOODEEP		15
 	/* FDT_ERR_TOODEEP: The depth of a node has exceeded the internal
 	 * libfdt limit. This can happen if you have more than
 	 * FDT_MAX_DEPTH nested nodes. */
 
-#define FDT_ERR_MAX		18
+#define FDT_ERR_MAX		15
 
 /**********************************************************************/
 /* Low-level functions (you probably don't need these)                */
@@ -187,27 +171,24 @@ int fdt_next_subnode(const void *fdt, int offset);
 /**
  * fdt_for_each_subnode - iterate over all subnodes of a parent
  *
- * @node:	child node (int, lvalue)
- * @fdt:	FDT blob (const void *)
- * @parent:	parent node (int)
- *
  * This is actually a wrapper around a for loop and would be used like so:
  *
- *	fdt_for_each_subnode(node, fdt, parent) {
- *		Use node
+ *	fdt_for_each_subnode(fdt, node, parent) {
+ *		...
+ *		use node
  *		...
  *	}
  *
- *	if ((node < 0) && (node != -FDT_ERR_NOT_FOUND)) {
- *		Error handling
- *	}
+ * Note that this is implemented as a macro and node is used as iterator in
+ * the loop. It should therefore be a locally allocated variable. The parent
+ * variable on the other hand is never modified, so it can be constant or
+ * even a literal.
  *
- * Note that this is implemented as a macro and @node is used as
- * iterator in the loop. The parent variable be constant or even a
- * literal.
- *
+ * @fdt:	FDT blob (const void *)
+ * @node:	child node (int)
+ * @parent:	parent node (int)
  */
-#define fdt_for_each_subnode(node, fdt, parent)		\
+#define fdt_for_each_subnode(fdt, node, parent)		\
 	for (node = fdt_first_subnode(fdt, parent);	\
 	     node >= 0;					\
 	     node = fdt_next_subnode(fdt, node))
@@ -232,7 +213,7 @@ int fdt_next_subnode(const void *fdt, int offset);
 #define __fdt_set_hdr(name) \
 	static inline void fdt_set_##name(void *fdt, uint32_t val) \
 	{ \
-		struct fdt_header *fdth = (struct fdt_header *)fdt; \
+		struct fdt_header *fdth = (struct fdt_header*)fdt; \
 		fdth->name = cpu_to_fdt32(val); \
 	}
 __fdt_set_hdr(magic);
@@ -307,13 +288,11 @@ const char *fdt_string(const void *fdt, int stroffset);
  * @fdt: pointer to the device tree blob
  *
  * fdt_get_max_phandle retrieves the highest phandle in the given
- * device tree. This will ignore badly formatted phandles, or phandles
- * with a value of 0 or -1.
+ * device tree
  *
  * returns:
  *      the highest phandle on success
- *      0, if no phandle was found in the device tree
- *      -1, if an error occurred
+ *      0, if an error occurred
  */
 uint32_t fdt_get_max_phandle(const void *fdt);
 
@@ -377,9 +356,8 @@ int fdt_subnode_offset_namelen(const void *fdt, int parentoffset,
  * returns:
  *	structure block offset of the requested subnode (>=0), on success
  *	-FDT_ERR_NOTFOUND, if the requested subnode does not exist
- *	-FDT_ERR_BADOFFSET, if parentoffset did not point to an FDT_BEGIN_NODE
- *		tag
- *	-FDT_ERR_BADMAGIC,
+ *	-FDT_ERR_BADOFFSET, if parentoffset did not point to an FDT_BEGIN_NODE tag
+ *      -FDT_ERR_BADMAGIC,
  *	-FDT_ERR_BADVERSION,
  *	-FDT_ERR_BADSTATE,
  *	-FDT_ERR_BADSTRUCTURE,
@@ -388,13 +366,13 @@ int fdt_subnode_offset_namelen(const void *fdt, int parentoffset,
 int fdt_subnode_offset(const void *fdt, int parentoffset, const char *name);
 
 /**
- * fdt_path_offset_namelen - find a tree node by its full path
+ * fdt_path_offset_namelen - find a tree node based on substring
  * @fdt: pointer to the device tree blob
  * @path: full path of the node to locate
- * @namelen: number of characters of path to consider
+ * @namelen: number of characters of name to consider
  *
- * Identical to fdt_path_offset(), but only consider the first namelen
- * characters of path as the path name.
+ * Identical to fdt_path_offset(), but only examine the first
+ * namelen characters of path for matching the node path.
  */
 int fdt_path_offset_namelen(const void *fdt, const char *path, int namelen);
 
@@ -411,8 +389,7 @@ int fdt_path_offset_namelen(const void *fdt, const char *path, int namelen);
  * address).
  *
  * returns:
- *	structure block offset of the node with the requested path (>=0), on
- *		success
+ *	structure block offset of the node with the requested path (>=0), on success
  *	-FDT_ERR_BADPATH, given path does not begin with '/' or is invalid
  *	-FDT_ERR_NOTFOUND, if the requested node does not exist
  *      -FDT_ERR_BADMAGIC,
@@ -421,7 +398,10 @@ int fdt_path_offset_namelen(const void *fdt, const char *path, int namelen);
  *	-FDT_ERR_BADSTRUCTURE,
  *	-FDT_ERR_TRUNCATED, standard meanings.
  */
-int fdt_path_offset(const void *fdt, const char *path);
+static inline int fdt_path_offset(const void *fdt, const char *path)
+{
+	return fdt_path_offset_namelen(fdt, path, strlen(path));
+}
 
 /**
  * fdt_get_name - retrieve the name of a given node
@@ -436,12 +416,10 @@ int fdt_path_offset(const void *fdt, const char *path);
  *
  * returns:
  *	pointer to the node's name, on success
- *		If lenp is non-NULL, *lenp contains the length of that name
- *			(>=0)
+ *		If lenp is non-NULL, *lenp contains the length of that name (>=0)
  *	NULL, on error
  *		if lenp is non-NULL *lenp contains an error code (<0):
- *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE
- *			tag
+ *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
  *		-FDT_ERR_BADMAGIC,
  *		-FDT_ERR_BADVERSION,
  *		-FDT_ERR_BADSTATE, standard meanings
@@ -490,26 +468,23 @@ int fdt_first_property_offset(const void *fdt, int nodeoffset);
 int fdt_next_property_offset(const void *fdt, int offset);
 
 /**
- * fdt_for_each_property_offset - iterate over all properties of a node
- *
- * @property_offset:	property offset (int, lvalue)
+ * fdt_for_each_property - iterate over all properties of a node
+ * @property_offset:	property offset (int)
  * @fdt:		FDT blob (const void *)
  * @node:		node offset (int)
  *
  * This is actually a wrapper around a for loop and would be used like so:
  *
- *	fdt_for_each_property_offset(property, fdt, node) {
- *		Use property
+ *	fdt_for_each_property(fdt, node, property) {
+ *		...
+ *		use property
  *		...
  *	}
  *
- *	if ((property < 0) && (property != -FDT_ERR_NOT_FOUND)) {
- *		Error handling
- *	}
- *
  * Note that this is implemented as a macro and property is used as
- * iterator in the loop. The node variable can be constant or even a
- * literal.
+ * iterator in the loop. It should therefore be a locally allocated
+ * variable. The node variable on the other hand is never modified, so
+ * it can be constant or even a literal.
  */
 #define fdt_for_each_property_offset(property, fdt, node)	\
 	for (property = fdt_first_property_offset(fdt, node);	\
@@ -552,8 +527,8 @@ const struct fdt_property *fdt_get_property_by_offset(const void *fdt,
  * @namelen: number of characters of name to consider
  * @lenp: pointer to an integer variable (will be overwritten) or NULL
  *
- * Identical to fdt_get_property(), but only examine the first namelen
- * characters of name for matching the property name.
+ * Identical to fdt_get_property_namelen(), but only examine the first
+ * namelen characters of name for matching the property name.
  */
 const struct fdt_property *fdt_get_property_namelen(const void *fdt,
 						    int nodeoffset,
@@ -580,8 +555,7 @@ const struct fdt_property *fdt_get_property_namelen(const void *fdt,
  *	NULL, on error
  *		if lenp is non-NULL, *lenp contains an error code (<0):
  *		-FDT_ERR_NOTFOUND, node does not have named property
- *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE
- *			tag
+ *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
  *		-FDT_ERR_BADMAGIC,
  *		-FDT_ERR_BADVERSION,
  *		-FDT_ERR_BADSTATE,
@@ -673,8 +647,7 @@ static inline void *fdt_getprop_namelen_w(void *fdt, int nodeoffset,
  *	NULL, on error
  *		if lenp is non-NULL, *lenp contains an error code (<0):
  *		-FDT_ERR_NOTFOUND, node does not have named property
- *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE
- *			tag
+ *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
  *		-FDT_ERR_BADMAGIC,
  *		-FDT_ERR_BADVERSION,
  *		-FDT_ERR_BADSTATE,
@@ -716,7 +689,7 @@ const char *fdt_get_alias_namelen(const void *fdt,
 				  const char *name, int namelen);
 
 /**
- * fdt_get_alias - retrieve the path referenced by a given alias
+ * fdt_get_alias - retreive the path referenced by a given alias
  * @fdt: pointer to the device tree blob
  * @name: name of the alias th look up
  *
@@ -776,11 +749,11 @@ int fdt_get_path(const void *fdt, int nodeoffset, char *buf, int buflen);
  * structure from the start to nodeoffset.
  *
  * returns:
+
  *	structure block offset of the node at node offset's ancestor
  *		of depth supernodedepth (>=0), on success
  *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
- *	-FDT_ERR_NOTFOUND, supernodedepth was greater than the depth of
- *		nodeoffset
+*	-FDT_ERR_NOTFOUND, supernodedepth was greater than the depth of nodeoffset
  *	-FDT_ERR_BADMAGIC,
  *	-FDT_ERR_BADVERSION,
  *	-FDT_ERR_BADSTATE,
@@ -973,66 +946,51 @@ int fdt_node_offset_by_compatible(const void *fdt, int startoffset,
 int fdt_stringlist_contains(const char *strlist, int listlen, const char *str);
 
 /**
- * fdt_stringlist_count - count the number of strings in a string list
+ * fdt_count_strings - count the number of strings in a string list
  * @fdt: pointer to the device tree blob
- * @nodeoffset: offset of a tree node
+ * @node: offset of the node
  * @property: name of the property containing the string list
- * @return:
- *   the number of strings in the given property
- *   -FDT_ERR_BADVALUE if the property value is not NUL-terminated
- *   -FDT_ERR_NOTFOUND if the property does not exist
+ * @return: the number of strings in the given property
  */
-int fdt_stringlist_count(const void *fdt, int nodeoffset, const char *property);
+int fdt_count_strings(const void *fdt, int node, const char *property);
 
 /**
- * fdt_stringlist_search - find a string in a string list and return its index
+ * fdt_find_string - find a string in a string list and return its index
  * @fdt: pointer to the device tree blob
- * @nodeoffset: offset of a tree node
+ * @node: offset of the node
  * @property: name of the property containing the string list
  * @string: string to look up in the string list
- *
- * Note that it is possible for this function to succeed on property values
- * that are not NUL-terminated. That's because the function will stop after
- * finding the first occurrence of @string. This can for example happen with
- * small-valued cell properties, such as #address-cells, when searching for
- * the empty string.
- *
- * @return:
- *   the index of the string in the list of strings
- *   -FDT_ERR_BADVALUE if the property value is not NUL-terminated
- *   -FDT_ERR_NOTFOUND if the property does not exist or does not contain
- *                     the given string
+ * @return: the index of the string or negative on error
  */
-int fdt_stringlist_search(const void *fdt, int nodeoffset, const char *property,
-			  const char *string);
+int fdt_find_string(const void *fdt, int node, const char *property,
+		    const char *string);
 
 /**
- * fdt_stringlist_get() - obtain the string at a given index in a string list
+ * fdt_get_string_index() - obtain the string at a given index in a string list
  * @fdt: pointer to the device tree blob
- * @nodeoffset: offset of a tree node
+ * @node: offset of the node
  * @property: name of the property containing the string list
  * @index: index of the string to return
- * @lenp: return location for the string length or an error code on failure
- *
- * Note that this will successfully extract strings from properties with
- * non-NUL-terminated values. For example on small-valued cell properties
- * this function will return the empty string.
- *
- * If non-NULL, the length of the string (on success) or a negative error-code
- * (on failure) will be stored in the integer pointer to by lenp.
- *
- * @return:
- *   A pointer to the string at the given index in the string list or NULL on
- *   failure. On success the length of the string will be stored in the memory
- *   location pointed to by the lenp parameter, if non-NULL. On failure one of
- *   the following negative error codes will be returned in the lenp parameter
- *   (if non-NULL):
- *     -FDT_ERR_BADVALUE if the property value is not NUL-terminated
- *     -FDT_ERR_NOTFOUND if the property does not exist
+ * @output: return location for the string
+ * @return: 0 if the string was found or a negative error code otherwise
  */
-const char *fdt_stringlist_get(const void *fdt, int nodeoffset,
-			       const char *property, int index,
-			       int *lenp);
+int fdt_get_string_index(const void *fdt, int node, const char *property,
+			 int index, const char **output);
+
+/**
+ * fdt_get_string() - obtain the first string in a string list
+ * @fdt: pointer to the device tree blob
+ * @node: offset of the node
+ * @property: name of the property containing the string list
+ * @output: return location for the string
+ * @return: 0 if the string was found or a negative error code otherwise
+ *
+ * This is a shortcut for:
+ *
+ *	fdt_get_string_index(fdt, node, property, 0, output).
+ */
+int fdt_get_string(const void *fdt, int node, const char *property,
+		   const char **output);
 
 /**********************************************************************/
 /* Read-only functions (addressing related)                           */
@@ -1102,7 +1060,7 @@ int fdt_size_cells(const void *fdt, int nodeoffset);
  * @nodeoffset: offset of the node whose property to change
  * @name: name of the property to change
  * @namelen: number of characters of name to consider
- * @idx: index of the property to change in the array
+ * @index: index of the property to change in the array
  * @val: pointer to data to replace the property value with
  * @len: length of the property value
  *
@@ -1113,7 +1071,7 @@ int fdt_size_cells(const void *fdt, int nodeoffset);
  */
 int fdt_setprop_inplace_namelen_partial(void *fdt, int nodeoffset,
 					const char *name, int namelen,
-					uint32_t idx, const void *val,
+					uint32_t index, const void *val,
 					int len);
 
 /**
@@ -1742,11 +1700,9 @@ int fdt_add_subnode_namelen(void *fdt, int parentoffset,
  * change the offsets of some existing nodes.
 
  * returns:
- *	structure block offset of the created nodeequested subnode (>=0), on
- *		success
+ *	structure block offset of the created nodeequested subnode (>=0), on success
  *	-FDT_ERR_NOTFOUND, if the requested subnode does not exist
- *	-FDT_ERR_BADOFFSET, if parentoffset did not point to an FDT_BEGIN_NODE
- *		tag
+ *	-FDT_ERR_BADOFFSET, if parentoffset did not point to an FDT_BEGIN_NODE tag
  *	-FDT_ERR_EXISTS, if the node at parentoffset already has a subnode of
  *		the given name
  *	-FDT_ERR_NOSPACE, if there is insufficient free space in the
@@ -1800,9 +1756,8 @@ int fdt_del_node(void *fdt, int nodeoffset);
  *	-FDT_ERR_NOSPACE, there's not enough space in the base device tree
  *	-FDT_ERR_NOTFOUND, the overlay points to some inexistant nodes or
  *		properties in the base DT
- *	-FDT_ERR_BADPHANDLE,
- *	-FDT_ERR_BADOVERLAY,
- *	-FDT_ERR_NOPHANDLES,
+ *	-FDT_ERR_BADPHANDLE, the phandles in the overlay do not have the right
+ *		magic
  *	-FDT_ERR_INTERNAL,
  *	-FDT_ERR_BADLAYOUT,
  *	-FDT_ERR_BADMAGIC,

@@ -9,8 +9,10 @@
 #include <common.h>
 #include <bios_emul.h>
 #include <dm.h>
+#include <pci_rom.h>
 #include <vbe.h>
 #include <video.h>
+#include <video_fb.h>
 #include <asm/cpu.h>
 #include <asm/intel_regs.h>
 #include <asm/io.h>
@@ -18,9 +20,11 @@
 #include <asm/arch/cpu.h>
 #include <asm/arch/iomap.h>
 #include <asm/arch/pch.h>
+#include <linux/log2.h>
 #include "i915_reg.h"
 
 struct broadwell_igd_priv {
+	GraphicDevice ctfb;
 	u8 *regs;
 };
 
@@ -319,7 +323,10 @@ err:
 static unsigned long gtt_read(struct broadwell_igd_priv *priv,
 			      unsigned long reg)
 {
-	return readl(priv->regs + reg);
+	u32 val;
+
+	val = readl(priv->regs + reg);
+	return val;
 }
 
 static void gtt_write(struct broadwell_igd_priv *priv, unsigned long reg,
@@ -660,7 +667,10 @@ static int broadwell_igd_probe(struct udevice *dev)
 {
 	struct video_uc_platdata *plat = dev_get_uclass_platdata(dev);
 	struct video_priv *uc_priv = dev_get_uclass_priv(dev);
+	struct broadwell_igd_priv *priv = dev_get_priv(dev);
 	bool is_broadwell;
+	GraphicDevice *gdev = &priv->ctfb;
+	int bits_per_pixel;
 	int ret;
 
 	if (!ll_boot_init()) {
@@ -676,9 +686,13 @@ static int broadwell_igd_probe(struct udevice *dev)
 	debug("%s: is_broadwell=%d\n", __func__, is_broadwell);
 	ret = igd_pre_init(dev, is_broadwell);
 	if (!ret) {
-		ret = vbe_setup_video(dev, broadwell_igd_int15_handler);
-		if (ret)
-			debug("failed to run video BIOS: %d\n", ret);
+		ret = dm_pci_run_vga_bios(dev, broadwell_igd_int15_handler,
+					  PCI_ROM_USE_NATIVE |
+					  PCI_ROM_ALLOW_FALLBACK);
+		if (ret) {
+			printf("failed to run video BIOS: %d\n", ret);
+			ret = -EIO;
+		}
 	}
 	if (!ret)
 		ret = igd_post_init(dev, is_broadwell);
@@ -686,8 +700,13 @@ static int broadwell_igd_probe(struct udevice *dev)
 	if (ret)
 		return ret;
 
-	/* Use write-combining for the graphics memory, 256MB */
-	ret = mtrr_add_request(MTRR_TYPE_WRCOMB, plat->base, 256 << 20);
+	if (vbe_get_video_info(gdev)) {
+		printf("No video mode configured\n");
+		return -ENXIO;
+	}
+
+	/* Use write-through for the graphics memory, 256MB */
+	ret = mtrr_add_request(MTRR_TYPE_WRTHROUGH, gdev->pciBase, 256 << 20);
 	if (!ret)
 		ret = mtrr_commit(true);
 	if (ret && ret != -ENOSYS) {
@@ -695,8 +714,17 @@ static int broadwell_igd_probe(struct udevice *dev)
 		       ret);
 	}
 
-	debug("fb=%lx, size %x, display size=%d %d %d\n", plat->base,
-	      plat->size, uc_priv->xsize, uc_priv->ysize, uc_priv->bpix);
+	bits_per_pixel = gdev->gdfBytesPP * 8;
+	sprintf(gdev->modeIdent, "%dx%dx%d", gdev->winSizeX, gdev->winSizeY,
+		bits_per_pixel);
+	printf("%s\n", gdev->modeIdent);
+	uc_priv->xsize = gdev->winSizeX;
+	uc_priv->ysize = gdev->winSizeY;
+	uc_priv->bpix = ilog2(bits_per_pixel);
+	plat->base = gdev->pciBase;
+	plat->size = gdev->memSize;
+	debug("fb=%x, size %x, display size=%d %d %d\n", gdev->pciBase,
+	      gdev->memSize, uc_priv->xsize, uc_priv->ysize, uc_priv->bpix);
 
 	return 0;
 }

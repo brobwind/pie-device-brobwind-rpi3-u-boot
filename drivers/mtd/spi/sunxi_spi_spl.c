@@ -158,10 +158,9 @@ static void spi0_disable_clock(void)
 			     (1 << AHB_RESET_SPI0_SHIFT));
 }
 
-static void spi0_init(void)
+static int spi0_init(void)
 {
 	unsigned int pin_function = SUNXI_GPC_SPI0;
-
 	if (IS_ENABLED(CONFIG_MACH_SUN50I))
 		pin_function = SUN50I_GPC_SPI0;
 
@@ -263,8 +262,7 @@ static void spi0_read_data(void *buf, u32 addr, u32 len)
 
 /*****************************************************************************/
 
-static int spl_spi_load_image(struct spl_image_info *spl_image,
-			      struct spl_boot_device *bootdev)
+int spl_spi_load_image(void)
 {
 	int err;
 	struct image_header *header;
@@ -273,15 +271,13 @@ static int spl_spi_load_image(struct spl_image_info *spl_image,
 	spi0_init();
 
 	spi0_read_data((void *)header, CONFIG_SYS_SPI_U_BOOT_OFFS, 0x40);
-	err = spl_parse_image_header(spl_image, header);
+	err = spl_parse_image_header(header);
 	if (err)
 		return err;
 
-	spi0_read_data((void *)spl_image->load_addr, CONFIG_SYS_SPI_U_BOOT_OFFS,
-		       spl_image->size);
+	spi0_read_data((void *)spl_image.load_addr, CONFIG_SYS_SPI_U_BOOT_OFFS,
+		       spl_image.size);
 
 	spi0_deinit();
 	return 0;
 }
-/* Use priorty 0 to override the default if it happens to be linked in */
-SPL_LOAD_IMAGE_METHOD("sunxi SPI" 0, BOOT_DEVICE_SPI, spl_spi_load_image);

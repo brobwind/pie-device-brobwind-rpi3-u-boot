@@ -15,8 +15,6 @@
 #include <libfdt_env.h>
 #include <memalign.h>
 #include <asm/global_data.h>
-#include <asm-generic/sections.h>
-#include <linux/linkage.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -54,7 +52,7 @@ static struct efi_device_path_file_path bootefi_device_path[] = {
 	}
 };
 
-static efi_status_t EFIAPI bootefi_open_dp(void *handle, efi_guid_t *protocol,
+static efi_status_t bootefi_open_dp(void *handle, efi_guid_t *protocol,
 			void **protocol_interface, void *agent_handle,
 			void *controller_handle, uint32_t attributes)
 {
@@ -141,26 +139,13 @@ static void *copy_fdt(void *fdt)
 	return new_fdt;
 }
 
-#ifdef CONFIG_ARM64
-static unsigned long efi_run_in_el2(ulong (*entry)(void *image_handle,
-		struct efi_system_table *st), void *image_handle,
-		struct efi_system_table *st)
-{
-	/* Enable caches again */
-	dcache_enable();
-
-	return entry(image_handle, st);
-}
-#endif
-
 /*
  * Load an EFI payload into a newly allocated piece of memory, register all
  * EFI objects it would want to access and jump to it.
  */
 static unsigned long do_bootefi_exec(void *efi, void *fdt)
 {
-	ulong (*entry)(void *image_handle, struct efi_system_table *st)
-		asmlinkage;
+	ulong (*entry)(void *image_handle, struct efi_system_table *st);
 	ulong fdt_pages, fdt_size, fdt_start, fdt_end;
 	bootm_headers_t img = { 0 };
 
@@ -219,16 +204,7 @@ static unsigned long do_bootefi_exec(void *efi, void *fdt)
 
 	if (!memcmp(bootefi_device_path[0].str, "N\0e\0t", 6))
 		loaded_image_info.device_handle = nethandle;
-	else
-		loaded_image_info.device_handle = bootefi_device_path;
 #endif
-#ifdef CONFIG_GENERATE_SMBIOS_TABLE
-	efi_smbios_register();
-#endif
-
-	/* Initialize EFI runtime services */
-	efi_reset_system_init();
-	efi_get_time_init();
 
 	/* Call our payload! */
 	debug("%s:%d Jumping to 0x%lx\n", __func__, __LINE__, (long)entry);
@@ -237,22 +213,6 @@ static unsigned long do_bootefi_exec(void *efi, void *fdt)
 		efi_status_t status = loaded_image_info.exit_status;
 		return status == EFI_SUCCESS ? 0 : -EINVAL;
 	}
-
-#ifdef CONFIG_ARM64
-	/* On AArch64 we need to make sure we call our payload in < EL3 */
-	if (current_el() == 3) {
-		smp_kick_all_cpus();
-		dcache_disable();	/* flush cache before switch to EL2 */
-
-		/* Move into EL2 and keep running there */
-		armv8_switch_to_el2((ulong)entry, (ulong)&loaded_image_info,
-				    (ulong)&systab, (ulong)efi_run_in_el2,
-				    ES_TO_AARCH64);
-
-		/* Should never reach here, efi exits with longjmp */
-		while (1) { }
-	}
-#endif
 
 	return entry(&loaded_image_info, &systab);
 }
@@ -267,26 +227,16 @@ static int do_bootefi(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 
 	if (argc < 2)
 		return CMD_RET_USAGE;
-#ifdef CONFIG_CMD_BOOTEFI_HELLO
-	if (!strcmp(argv[1], "hello")) {
-		ulong size = __efi_hello_world_end - __efi_hello_world_begin;
+	saddr = argv[1];
 
-		addr = CONFIG_SYS_LOAD_ADDR;
-		memcpy((char *)addr, __efi_hello_world_begin, size);
-	} else
-#endif
-	{
-		saddr = argv[1];
+	addr = simple_strtoul(saddr, NULL, 16);
 
-		addr = simple_strtoul(saddr, NULL, 16);
-
-		if (argc > 2) {
-			sfdt = argv[2];
-			fdt_addr = simple_strtoul(sfdt, NULL, 16);
-		}
+	if (argc > 2) {
+		sfdt = argv[2];
+		fdt_addr = simple_strtoul(sfdt, NULL, 16);
 	}
 
-	printf("## Starting EFI application at %08lx ...\n", addr);
+	printf("## Starting EFI application at 0x%08lx ...\n", addr);
 	r = do_bootefi_exec((void *)addr, (void*)fdt_addr);
 	printf("## Application terminated, r = %d\n", r);
 
@@ -301,12 +251,7 @@ static char bootefi_help_text[] =
 	"<image address> [fdt address]\n"
 	"  - boot EFI payload stored at address <image address>.\n"
 	"    If specified, the device tree located at <fdt address> gets\n"
-	"    exposed as EFI configuration table.\n"
-#ifdef CONFIG_CMD_BOOTEFI_HELLO
-	"hello\n"
-	"  - boot a sample Hello World application stored within U-Boot"
-#endif
-	;
+	"    exposed as EFI configuration table.\n";
 #endif
 
 U_BOOT_CMD(

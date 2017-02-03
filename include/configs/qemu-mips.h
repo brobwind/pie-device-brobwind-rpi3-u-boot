@@ -14,6 +14,7 @@
 
 #define CONFIG_QEMU_MIPS
 
+#define CONFIG_DISPLAY_BOARDINFO
 #define CONFIG_MISC_INIT_R
 
 
