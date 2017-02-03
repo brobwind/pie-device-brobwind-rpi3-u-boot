@@ -511,13 +511,13 @@ int board_mmc_init(bd_t *bis)
 }
 
 /*
- *  * If the firmware passed a device tree use for U-Boot.
- *   */
+ * If the firmware passed a device tree use for U-Boot.
+ */
 void *board_fdt_blob_setup(void)
 {
-    if (fdt_magic(fw_dtb_pointer) != FDT_MAGIC)
-          return NULL;
-      return (void *)fw_dtb_pointer;
+	if (fdt_magic(fw_dtb_pointer) != FDT_MAGIC)
+		return NULL;
+	return (void *)fw_dtb_pointer;
 }
 
 int ft_board_setup(void *blob, bd_t *bd)
