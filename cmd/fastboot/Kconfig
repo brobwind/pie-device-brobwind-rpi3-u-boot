@@ -26,12 +26,6 @@ config CMD_FASTBOOT
 	  Android devices. Fastboot requires either network stack
 	  enabled or support for acting as a USB device.
 
-config ANDROID_BOOT_IMAGE
-	bool "Enable support for Android Boot Images"
-	help
-	  This enables support for booting images which use the Android
-	  image format header.
-
 if USB_FUNCTION_FASTBOOT || UDP_FUNCTION_FASTBOOT
 
 config FASTBOOT_BUF_ADDR
