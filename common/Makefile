@@ -146,6 +146,7 @@ obj-y += malloc_simple.o
 endif
 obj-$(CONFIG_CMD_IDE) += ide.o
 obj-y += image.o
+obj-$(CONFIG_ANDROID_AB) += android_ab.o
 obj-$(CONFIG_ANDROID_BOOT_IMAGE) += image-android.o
 obj-$(CONFIG_ANDROID_BOOTLOADER) += android_bootloader.o
 obj-$(CONFIG_$(SPL_)OF_LIBFDT) += image-fdt.o

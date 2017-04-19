@@ -15,6 +15,7 @@ obj-y += version.o
 # command
 obj-$(CONFIG_CMD_AES) += aes.o
 obj-$(CONFIG_CMD_AMBAPP) += ambapp.o
+obj-$(CONFIG_CMD_ANDROID_AB_SELECT) += android_ab_select.o android_cmds.o
 obj-$(CONFIG_CMD_ARMFLASH) += armflash.o
 obj-$(CONFIG_SOURCE) += source.o
 obj-$(CONFIG_CMD_SOURCE) += source.o
@@ -82,7 +83,7 @@ obj-$(CONFIG_CMD_LDRINFO) += ldrinfo.o
 obj-$(CONFIG_CMD_LED) += led.o
 obj-$(CONFIG_CMD_LICENSE) += license.o
 obj-y += load.o
-obj-$(CONFIG_CMD_LOAD_ANDROID) += load_android.o
+obj-$(CONFIG_CMD_LOAD_ANDROID) += load_android.o android_cmds.o
 obj-$(CONFIG_LOGBUFFER) += log.o
 obj-$(CONFIG_ID_EEPROM) += mac.o
 obj-$(CONFIG_CMD_MD5SUM) += md5sum.o
