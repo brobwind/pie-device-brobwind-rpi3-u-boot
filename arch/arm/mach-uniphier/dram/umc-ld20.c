@@ -1,14 +1,15 @@
 /*
- * Copyright (C) 2016 Socionext Inc.
+ * Copyright (C) 2016-2017 Socionext Inc.
  *
- * based on commit 5e1cb0f1caeabc6c99469dd997cb6b4f46834443 of Diag
+ * based on commit 5ffd75ecd4929f22361ef65a35f0331d2fbc0f35 of Diag
  *
  * SPDX-License-Identifier:	GPL-2.0+
  */
 
 #include <common.h>
 #include <linux/bitops.h>
-#include <linux/err.h>
+#include <linux/compat.h>
+#include <linux/errno.h>
 #include <linux/io.h>
 #include <linux/sizes.h>
 #include <asm/processor.h>
@@ -76,191 +77,95 @@ static const u32 ddrphy_scl_gate_timing[DRAM_CH_NR] = {
 	0x00000140, 0x00000180, 0x00000140
 };
 
-static const int ddrphy_op_dq_shift_val[DRAM_BOARD_NR][DRAM_CH_NR][32] = {
-	{ /* LD20 reference */
-		{
-			2, 1, 0, 1, 2, 1, 1, 1,
-			2, 1, 1, 2, 1, 1, 1, 1,
-			1, 2, 1, 1, 1, 2, 1, 1,
-			2, 2, 0, 1, 1, 2, 2, 1,
-		},
-		{
-			1, 1, 0, 1, 2, 2, 1, 1,
-			1, 1, 1, 1, 1, 1, 1, 1,
-			1, 1, 0, 0, 1, 1, 0, 0,
-			0, 1, 1, 1, 2, 1, 2, 1,
-		},
-		{
-			2, 2, 0, 2, 1, 1, 2, 1,
-			1, 1, 0, 1, 1, -1, 1, 1,
-			2, 2, 2, 2, 1, 1, 1, 1,
-			1, 1, 1, 0, 2, 2, 1, 2,
-		},
+static const short ddrphy_op_dq_shift_val_ld20[DRAM_CH_NR][32] = {
+	{
+		2, 1, 0, 1, 2, 1, 1, 1,
+		2, 1, 1, 2, 1, 1, 1, 1,
+		1, 2, 1, 1, 1, 2, 1, 1,
+		2, 2, 0, 1, 1, 2, 2, 1,
 	},
-	{ /* LD20 TV */
-		{
-			2, 1, 0, 1, 2, 1, 1, 1,
-			2, 1, 1, 2, 1, 1, 1, 1,
-			1, 2, 1, 1, 1, 2, 1, 1,
-			2, 2, 0, 1, 1, 2, 2, 1,
-		},
-		{
-			1, 1, 0, 1, 2, 2, 1, 1,
-			1, 1, 1, 1, 1, 1, 1, 1,
-			1, 1, 0, 0, 1, 1, 0, 0,
-			0, 1, 1, 1, 2, 1, 2, 1,
-		},
-		{
-			2, 2, 0, 2, 1, 1, 2, 1,
-			1, 1, 0, 1, 1, -1, 1, 1,
-			2, 2, 2, 2, 1, 1, 1, 1,
-			1, 1, 1, 0, 2, 2, 1, 2,
-		},
+	{
+		1, 1, 0, 1, 2, 2, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 0, 0, 1, 1, 0, 0,
+		0, 1, 1, 1, 2, 1, 2, 1,
 	},
-	{ /* LD20 TV C1 */
-		{
-			2, 1, 0, 1, 2, 1, 1, 1,
-			2, 1, 1, 2, 1, 1, 1, 1,
-			1, 2, 1, 1, 1, 2, 1, 1,
-			2, 2, 0, 1, 1, 2, 2, 1,
-		},
-		{
-			1, 1, 0, 1, 2, 2, 1, 1,
-			1, 1, 1, 1, 1, 1, 1, 1,
-			1, 1, 0, 0, 1, 1, 0, 0,
-			0, 1, 1, 1, 2, 1, 2, 1,
-		},
-		{
-			2, 2, 0, 2, 1, 1, 2, 1,
-			1, 1, 0, 1, 1, -1, 1, 1,
-			2, 2, 2, 2, 1, 1, 1, 1,
-			1, 1, 1, 0, 2, 2, 1, 2,
-		},
-	},
-	{ /* LD21 reference */
-		{
-			1, 1, 0, 1, 1, 1, 1, 1,
-			1, 0, 0, 0, 1, 1, 0, 2,
-			1, 1, 0, 0, 1, 1, 1, 1,
-			1, 0, 0, 0, 1, 0, 0, 1,
-		},
-		{	1, 0, 2, 1, 1, 1, 1, 0,
-			1, 0, 0, 1, 0, 1, 0, 0,
-			1, 0, 1, 0, 1, 1, 1, 0,
-			1, 1, 1, 1, 0, 1, 0, 0,
-		},
-		/* No CH2 */
-	},
-	{ /* LD21 TV */
-		{
-			1, 1, 0, 1, 1, 1, 1, 1,
-			1, 0, 0, 0, 1, 1, 0, 2,
-			1, 1, 0, 0, 1, 1, 1, 1,
-			1, 0, 0, 0, 1, 0, 0, 1,
-		},
-		{	1, 0, 2, 1, 1, 1, 1, 0,
-			1, 0, 0, 1, 0, 1, 0, 0,
-			1, 0, 1, 0, 1, 1, 1, 0,
-			1, 1, 1, 1, 0, 1, 0, 0,
-		},
-		/* No CH2 */
+	{
+		2, 2, 0, 2, 1, 1, 2, 1,
+		1, 1, 0, 1, 1, -1, 1, 1,
+		2, 2, 2, 2, 1, 1, 1, 1,
+		1, 1, 1, 0, 2, 2, 1, 2,
 	},
 };
 
-static int ddrphy_ip_dq_shift_val[DRAM_BOARD_NR][DRAM_CH_NR][32] = {
-	{ /* LD20 reference */
-		{
-			3, 3, 3, 2, 3, 2, 0, 2,
-			2, 3, 3, 1, 2, 2, 2, 2,
-			2, 2, 2, 2, 0, 1, 1, 1,
-			2, 2, 2, 2, 3, 0, 2, 2,
-		},
-		{
-			2, 2, 1, 1, -1, 1, 1, 1,
-			2, 0, 2, 2, 2, 1, 0, 2,
-			2, 1, 2, 1, 0, 1, 1, 1,
-			2, 2, 2, 2, 2, 2, 2, 2,
-		},
-		{
-			2, 2, 3, 2, 1, 2, 2, 2,
-			2, 3, 4, 2, 3, 4, 3, 3,
-			2, 2, 1, 2, 1, 1, 1, 1,
-			2, 2, 2, 2, 1, 2, 2, 1,
-		},
+static const short ddrphy_op_dq_shift_val_ld21[DRAM_CH_NR][32] = {
+	{
+		1, 1, 0, 1, 1, 1, 1, 1,
+		1, 0, 0, 0, 1, 1, 0, 2,
+		1, 1, 0, 0, 1, 1, 1, 1,
+		1, 0, 0, 0, 1, 0, 0, 1,
 	},
-	{ /* LD20 TV */
-		{
-			3, 3, 3, 2, 3, 2, 0, 2,
-			2, 3, 3, 1, 2, 2, 2, 2,
-			2, 2, 2, 2, 0, 1, 1, 1,
-			2, 2, 2, 2, 3, 0, 2, 2,
-		},
-		{
-			2, 2, 1, 1, -1, 1, 1, 1,
-			2, 0, 2, 2, 2, 1, 0, 2,
-			2, 1, 2, 1, 0, 1, 1, 1,
-			2, 2, 2, 2, 2, 2, 2, 2,
-		},
-		{
-			2, 2, 3, 2, 1, 2, 2, 2,
-			2, 3, 4, 2, 3, 4, 3, 3,
-			2, 2, 1, 2, 1, 1, 1, 1,
-			2, 2, 2, 2, 1, 2, 2, 1,
-		},
+	{	1, 0, 2, 1, 1, 1, 1, 0,
+		1, 0, 0, 1, 0, 1, 0, 0,
+		1, 0, 1, 0, 1, 1, 1, 0,
+		1, 1, 1, 1, 0, 1, 0, 0,
 	},
-	{ /* LD20 TV C1 */
-		{
-			3, 3, 3, 2, 3, 2, 0, 2,
-			2, 3, 3, 1, 2, 2, 2, 2,
-			2, 2, 2, 2, 0, 1, 1, 1,
-			2, 2, 2, 2, 3, 0, 2, 2,
-		},
-		{
-			2, 2, 1, 1, -1, 1, 1, 1,
-			2, 0, 2, 2, 2, 1, 0, 2,
-			2, 1, 2, 1, 0, 1, 1, 1,
-			2, 2, 2, 2, 2, 2, 2, 2,
-		},
-		{
-			2, 2, 3, 2, 1, 2, 2, 2,
-			2, 3, 4, 2, 3, 4, 3, 3,
-			2, 2, 1, 2, 1, 1, 1, 1,
-			2, 2, 2, 2, 1, 2, 2, 1,
-		},
+	/* No CH2 */
+};
+
+static const short (* const ddrphy_op_dq_shift_val[DRAM_BOARD_NR])[32] = {
+	ddrphy_op_dq_shift_val_ld20,	/* LD20 reference */
+	ddrphy_op_dq_shift_val_ld20,	/* LD20 TV */
+	ddrphy_op_dq_shift_val_ld20,	/* LD20 TV C */
+	ddrphy_op_dq_shift_val_ld21,	/* LD21 reference */
+	ddrphy_op_dq_shift_val_ld21,	/* LD21 TV */
+};
+
+static const short ddrphy_ip_dq_shift_val_ld20[DRAM_CH_NR][32] = {
+	{
+		3, 3, 3, 2, 3, 2, 0, 2,
+		2, 3, 3, 1, 2, 2, 2, 2,
+		2, 2, 2, 2, 0, 1, 1, 1,
+		2, 2, 2, 2, 3, 0, 2, 2,
 	},
-	{ /* LD21 reference */
-		{
-			2, 2, 2, 2, 1, 2, 2, 2,
-			2, 3, 3, 2, 2, 2, 2, 2,
-			2, 1, 2, 2, 1, 1, 1, 1,
-			2, 2, 2, 3, 1, 2, 2, 2,
-		},
-		{
-			3, 4, 4, 1, 0, 1, 1, 1,
-			1, 2, 1, 2, 2, 3, 3, 2,
-			1, 0, 2, 1, 1, 0, 1, 0,
-			0, 1, 0, 0, 1, 1, 0, 1,
-		},
-		/* No CH2 */
+	{
+		2, 2, 1, 1, -1, 1, 1, 1,
+		2, 0, 2, 2, 2, 1, 0, 2,
+		2, 1, 2, 1, 0, 1, 1, 1,
+		2, 2, 2, 2, 2, 2, 2, 2,
 	},
-	{ /* LD21 TV */
-		{
-			2, 2, 2, 2, 1, 2, 2, 2,
-			2, 3, 3, 2, 2, 2, 2, 2,
-			2, 1, 2, 2, 1, 1, 1, 1,
-			2, 2, 2, 3, 1, 2, 2, 2,
-		},
-		{
-			3, 4, 4, 1, 0, 1, 1, 1,
-			1, 2, 1, 2, 2, 3, 3, 2,
-			1, 0, 2, 1, 1, 0, 1, 0,
-			0, 1, 0, 0, 1, 1, 0, 1,
-		},
-		/* No CH2 */
+	{
+		2, 2, 3, 2, 1, 2, 2, 2,
+		2, 3, 4, 2, 3, 4, 3, 3,
+		2, 2, 1, 2, 1, 1, 1, 1,
+		2, 2, 2, 2, 1, 2, 2, 1,
 	},
 };
 
-/* DDR PHY */
+static const short ddrphy_ip_dq_shift_val_ld21[DRAM_CH_NR][32] = {
+	{
+		2, 2, 2, 2, 1, 2, 2, 2,
+		2, 3, 3, 2, 2, 2, 2, 2,
+		2, 1, 2, 2, 1, 1, 1, 1,
+		2, 2, 2, 3, 1, 2, 2, 2,
+	},
+	{
+		3, 4, 4, 1, 0, 1, 1, 1,
+		1, 2, 1, 2, 2, 3, 3, 2,
+		1, 0, 2, 1, 1, 0, 1, 0,
+		0, 1, 0, 0, 1, 1, 0, 1,
+	},
+	/* No CH2 */
+};
+
+static const short (* const ddrphy_ip_dq_shift_val[DRAM_BOARD_NR])[32] = {
+	ddrphy_ip_dq_shift_val_ld20,	/* LD20 reference */
+	ddrphy_ip_dq_shift_val_ld20,	/* LD20 TV */
+	ddrphy_ip_dq_shift_val_ld20,	/* LD20 TV C */
+	ddrphy_ip_dq_shift_val_ld21,	/* LD21 reference */
+	ddrphy_ip_dq_shift_val_ld21,	/* LD21 TV */
+};
+
 static void ddrphy_select_lane(void __iomem *phy_base, unsigned int lane,
 			       unsigned int bit)
 {
@@ -272,12 +177,18 @@ static void ddrphy_select_lane(void __iomem *phy_base, unsigned int lane,
 	       phy_base + PHY_LANE_SEL);
 }
 
+#define DDRPHY_EFUSEMON		(void *)0x5f900118
+
 static void ddrphy_init(void __iomem *phy_base, enum dram_board board, int ch)
 {
 	writel(0x0C001001, phy_base + PHY_UNIQUIFY_TSMC_IO_1);
 	while (!(readl(phy_base + PHY_UNIQUIFY_TSMC_IO_1) & BIT(1)))
 		cpu_relax();
-	writel(0x0C001000, phy_base + PHY_UNIQUIFY_TSMC_IO_1);
+
+	if (readl(DDRPHY_EFUSEMON) & BIT(ch))
+		writel(0x00000000, phy_base + PHY_UNIQUIFY_TSMC_IO_1);
+	else
+		writel(0x0C001000, phy_base + PHY_UNIQUIFY_TSMC_IO_1);
 
 	writel(0x00000000, phy_base + PHY_DLL_INCR_TRIM_3);
 	writel(0x00000000, phy_base + PHY_DLL_INCR_TRIM_1);
@@ -379,7 +290,7 @@ static void ddrphy_init_tail(void __iomem *phy_base, enum dram_board board,
 }
 
 static void ddrphy_shift_one_dq(void __iomem *phy_base, unsigned int reg,
-				u32 mask, u32 incr, int shift_val)
+				u32 mask, u32 incr, short shift_val)
 {
 	u32 tmp;
 	int val;
@@ -402,7 +313,7 @@ static void ddrphy_shift_one_dq(void __iomem *phy_base, unsigned int reg,
 
 static void ddrphy_shift_dq(void __iomem *phy_base, unsigned int reg,
 			    u32 mask, u32 incr, u32 override,
-			    const int *shift_val_array)
+			    const short *shift_val_array)
 {
 	u32 tmp;
 	int dx, bit;
@@ -581,7 +492,7 @@ static int umc_dc_init(void __iomem *dc_base, unsigned int freq,
 	writel(umc_memconf0a[freq_e][size_e], dc_base + UMC_MEMCONF0A);
 	writel(umc_memconf0b[freq_e][size_e], dc_base + UMC_MEMCONF0B);
 	writel(umc_memconfch[freq_e][size_e], dc_base + UMC_MEMCONFCH);
-	writel(0x00000008, dc_base + UMC_MEMMAPSET);
+	writel(0x00000000, dc_base + UMC_MEMMAPSET);
 
 	writel(umc_cmdctla[freq_e], dc_base + UMC_CMDCTLA);
 	writel(umc_cmdctlb[freq_e], dc_base + UMC_CMDCTLB);
@@ -701,15 +612,18 @@ int uniphier_ld20_umc_init(const struct uniphier_board_data *bd)
 		return -EINVAL;
 	}
 
-	for (ch = 0; ch < bd->dram_nr_ch; ch++) {
+	for (ch = 0; ch < DRAM_CH_NR; ch++) {
 		unsigned long size = bd->dram_ch[ch].size;
 		unsigned int width = bd->dram_ch[ch].width;
 
-		ret = umc_ch_init(umc_ch_base, phy_ch_base, board,
-				  bd->dram_freq, size / (width / 16), ch);
-		if (ret) {
-			pr_err("failed to initialize UMC ch%d\n", ch);
-			return ret;
+		if (size) {
+			ret = umc_ch_init(umc_ch_base, phy_ch_base, board,
+					  bd->dram_freq, size / (width / 16),
+					  ch);
+			if (ret) {
+				pr_err("failed to initialize UMC ch%d\n", ch);
+				return ret;
+			}
 		}
 
 		umc_ch_base += 0x00200000;

@@ -120,9 +120,9 @@ int misc_init_r(void)
 	print_hwversion(&eeprom);
 
 	twl4030_power_init();
-	status_led_set(0, STATUS_LED_ON);
-	status_led_set(1, STATUS_LED_ON);
-	status_led_set(2, STATUS_LED_ON);
+	status_led_set(0, CONFIG_LED_STATUS_ON);
+	status_led_set(1, CONFIG_LED_STATUS_ON);
+	status_led_set(2, CONFIG_LED_STATUS_ON);
 
 	omap_die_id_display();
 
@@ -140,7 +140,7 @@ void set_muxconf_regs(void)
 	MUX_TRICORDER();
 }
 
-#if defined(CONFIG_GENERIC_MMC) && !(defined(CONFIG_SPL_BUILD))
+#if defined(CONFIG_GENERIC_MMC)
 int board_mmc_init(bd_t *bis)
 {
 	return omap_mmc_init(0, 0, 0, -1, -1);

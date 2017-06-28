@@ -32,7 +32,6 @@
 #define	CONFIG_8xx_CONS_SMC1	1	/* Console is on SMC1		*/
 #define CONFIG_SYS_SMC_RXBUFLEN	128
 #define CONFIG_SYS_MAXIDLE	10
-#define CONFIG_BAUDRATE		115200	/* console baudrate = 115kbps	*/
 
 #define	CONFIG_BOOTCOUNT_LIMIT
 
@@ -76,12 +75,6 @@
 
 #undef	CONFIG_WATCHDOG			/* watchdog disabled		*/
 
-#if defined(CONFIG_LCD)
-# undef	 CONFIG_STATUS_LED		/* disturbs display		*/
-#else
-# define CONFIG_STATUS_LED	1	/* Status LED enabled		*/
-#endif	/* CONFIG_LCD */
-
 #undef	CONFIG_CAN_DRIVER		/* CAN Driver support disabled	*/
 
 /*
@@ -92,9 +85,6 @@
 #define CONFIG_BOOTP_HOSTNAME
 #define CONFIG_BOOTP_BOOTPATH
 #define CONFIG_BOOTP_BOOTFILESIZE
-
-#define CONFIG_MAC_PARTITION
-#define CONFIG_DOS_PARTITION
 
 #define	CONFIG_RTC_MPC8xx		/* use internal RTC of MPC8xx	*/
 

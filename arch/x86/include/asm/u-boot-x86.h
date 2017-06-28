@@ -41,7 +41,6 @@ void x86_disable_caches(void);
 int x86_init_cache(void);
 void reset_cpu(ulong addr);
 ulong board_get_usable_ram_top(ulong total_size);
-void dram_init_banksize(void);
 int default_print_cpuinfo(void);
 
 /* Set up a UART which can be used with printch(), printhex8(), etc. */
@@ -54,9 +53,6 @@ u32 isa_map_rom(u32 bus_addr, int size);
 
 /* arch/x86/lib/... */
 int video_bios_init(void);
-
-/* arch/x86/lib/fsp/... */
-int x86_fsp_init(void);
 
 void	board_init_f_r_trampoline(ulong) __attribute__ ((noreturn));
 void	board_init_f_r(void) __attribute__ ((noreturn));

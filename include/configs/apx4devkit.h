@@ -16,12 +16,9 @@
 
 /* System configurations */
 #define CONFIG_MX28				/* i.MX28 SoC */
-#define MACH_TYPE_APX4DEVKIT	3712
 #define CONFIG_MACH_TYPE	MACH_TYPE_APX4DEVKIT
 
 /* U-Boot Commands */
-#define CONFIG_SYS_NO_FLASH
-#define CONFIG_DOS_PARTITION
 
 #define CONFIG_CMD_DATE
 #define CONFIG_CMD_NAND

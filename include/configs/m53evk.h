@@ -1,5 +1,5 @@
 /*
- * DENX M53 configuration
+ * Aries M53 configuration
  * Copyright (C) 2012-2013 Marek Vasut <marex@denx.de>
  *
  * SPDX-License-Identifier:	GPL-2.0+
@@ -13,9 +13,7 @@
 
 #include <asm/arch/imx-regs.h>
 
-#define CONFIG_BOARD_EARLY_INIT_F
 #define CONFIG_REVISION_TAG
-#define CONFIG_SYS_NO_FLASH
 #define CONFIG_SYS_FSL_CLK
 
 #define CONFIG_TIMESTAMP		/* Print image info with timestamp */
@@ -23,7 +21,6 @@
 /*
  * U-Boot Commands
  */
-#define CONFIG_DOS_PARTITION
 #define CONFIG_FAT_WRITE
 
 #define CONFIG_CMD_BMP
@@ -76,13 +73,11 @@
 #define CONFIG_MXC_UART
 #define CONFIG_MXC_UART_BASE		UART2_BASE
 #define CONFIG_CONS_INDEX		1
-#define CONFIG_BAUDRATE			115200
 
 /*
  * MMC Driver
  */
 #ifdef CONFIG_CMD_MMC
-#define CONFIG_GENERIC_MMC
 #define CONFIG_FSL_ESDHC
 #define CONFIG_SYS_FSL_ESDHC_ADDR	0
 #define CONFIG_SYS_FSL_ESDHC_NUM	1

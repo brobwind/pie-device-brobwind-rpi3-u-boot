@@ -55,4 +55,36 @@ int rkcommon_get_spl_size(struct image_tool_params *params);
 int rkcommon_set_header(void *buf, uint file_size,
 			struct image_tool_params *params);
 
+/**
+ * rkcommon_need_rc4_spl() - check if rc4 encoded spl is required
+ *
+ * Some socs cannot disable the rc4-encryption of the spl binary.
+ * rc4 encryption is disabled normally except on socs that cannot
+ * handle unencrypted binaries.
+ * @return true or false depending on rc4 being required.
+ */
+bool rkcommon_need_rc4_spl(struct image_tool_params *params);
+
+/**
+ * rkcommon_rc4_encode_spl() - encode the spl binary
+ *
+ * Encrypts the SPL binary using the generic rc4 key as required
+ * by some socs.
+ *
+ * @buf:	Pointer to the SPL data (header and SPL binary)
+ * @offset:	offset inside buf to start at
+ * @size:	number of bytes to encode
+ */
+void rkcommon_rc4_encode_spl(void *buf, unsigned int offset, unsigned int size);
+
+/**
+ * rkcommon_vrec_header() - allocate memory for the header
+ *
+ * @params:     Pointer to the tool params structure
+ * @tparams:    Pointer tot the image type structure (for setting
+ *              the header and header_size)
+ */
+void rkcommon_vrec_header(struct image_tool_params *params,
+			  struct image_type_params *tparams);
+
 #endif

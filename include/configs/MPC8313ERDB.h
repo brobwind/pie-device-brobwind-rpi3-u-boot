@@ -78,7 +78,6 @@
 
 #define CONFIG_SYS_CLK_FREQ	CONFIG_83XX_CLKIN
 
-#define CONFIG_BOARD_EARLY_INIT_F		/* call board_early_init_f */
 #define CONFIG_BOARD_EARLY_INIT_R		/* call board_early_init_r */
 
 #define CONFIG_SYS_IMMR		0xE0000000
@@ -644,7 +643,6 @@
 
 				/* default location for tftp and bootm */
 #define CONFIG_LOADADDR		800000
-#define CONFIG_BAUDRATE		115200
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"netdev=" CONFIG_NETDEV "\0"					\

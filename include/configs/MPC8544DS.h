@@ -282,7 +282,6 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 #endif
 
 #define CONFIG_PCI_SCAN_SHOW		/* show pci devices on startup */
-#define CONFIG_DOS_PARTITION
 #define CONFIG_SCSI_AHCI
 
 #ifdef CONFIG_SCSI_AHCI
@@ -422,8 +421,6 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 #define CONFIG_LOADADDR	1000000	/*default location for tftp and bootm*/
 
 #undef	CONFIG_BOOTARGS		/* the boot command will set bootargs*/
-
-#define CONFIG_BAUDRATE	115200
 
 #define	CONFIG_EXTRA_ENV_SETTINGS				\
 "netdev=eth0\0"						\

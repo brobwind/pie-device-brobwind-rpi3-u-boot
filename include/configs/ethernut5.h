@@ -19,7 +19,6 @@
 #define CONFIG_SKIP_LOWLEVEL_INIT
 
 /* Set our official architecture number. */
-#define MACH_TYPE_ETHERNUT5 1971
 #define CONFIG_MACH_TYPE MACH_TYPE_ETHERNUT5
 
 /* CPU information */
@@ -78,7 +77,6 @@
 /* Serial port */
 #define CONFIG_ATMEL_USART
 #define CONFIG_USART3			/* USART 3 is DBGU */
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_USART_BASE		ATMEL_BASE_DBGU
 #define	CONFIG_USART_ID			ATMEL_ID_SYS
 
@@ -96,7 +94,6 @@
 #define CONFIG_CMD_REISER
 #define CONFIG_CMD_SAVES
 #define CONFIG_CMD_UBIFS
-#define CONFIG_CMD_UNZIP
 #endif
 
 /* NAND flash */
@@ -127,7 +124,6 @@
 
 /* MMC */
 #ifdef CONFIG_CMD_MMC
-#define CONFIG_GENERIC_MMC
 #define CONFIG_GENERIC_ATMEL_MCI
 #define CONFIG_SYS_MMC_CD_PIN		AT91_PIO_PORTC, 8
 #endif
@@ -192,10 +188,6 @@
 #if defined(CONFIG_CMD_MTDPARTS) || defined(CONFIG_CMD_NAND)
 #define MTDIDS_DEFAULT		"nand0=atmel_nand"
 #define MTDPARTS_DEFAULT	"mtdparts=atmel_nand:-(root)"
-#endif
-#if defined(CONFIG_CMD_REISER) || defined(CONFIG_CMD_EXT2) || \
-	defined(CONFIG_CMD_USB) || defined(CONFIG_MMC)
-#define CONFIG_DOS_PARTITION
 #endif
 #define CONFIG_LZO
 #define CONFIG_RBTREE

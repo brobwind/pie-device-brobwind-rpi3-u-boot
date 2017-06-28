@@ -30,6 +30,8 @@
 #include <asm/mmu.h>
 #include <asm/cache.h>
 
+DECLARE_GLOBAL_DATA_PTR;
+
 #if defined(CONFIG_SPD_EEPROM) &&				\
 	(defined(CONFIG_440EPX) || defined(CONFIG_440GRX))
 
@@ -985,20 +987,20 @@ static void program_ddr0_44(unsigned long dimm_ranks[],
 }
 
 /*-----------------------------------------------------------------------------+
- * initdram.  Initializes the 440EPx/GPx DDR SDRAM controller.
+ * dram_init.  Initializes the 440EPx/GPx DDR SDRAM controller.
  * Note: This routine runs from flash with a stack set up in the chip's
  * sram space.  It is important that the routine does not require .sbss, .bss or
  * .data sections.  It also cannot call routines that require these sections.
  *-----------------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------------
- * Function:	 initdram
+ * Function:	 dram_init
  * Description:  Configures SDRAM memory banks for DDR operation.
  *		 Auto Memory Configuration option reads the DDR SDRAM EEPROMs
  *		 via the IIC bus and then configures the DDR SDRAM memory
  *		 banks appropriately. If Auto Memory Configuration is
  *		 not used, it is assumed that no DIMM is plugged
  *-----------------------------------------------------------------------------*/
-phys_size_t initdram(int board_type)
+int dram_init(void)
 {
 	unsigned char const iic0_dimm_addr[] = SPD_EEPROM_ADDRESS;
 	unsigned long dimm_ranks[MAXDIMMS];
@@ -1012,7 +1014,7 @@ phys_size_t initdram(int board_type)
 	unsigned long cas_latency = 0;	/* to quiet initialization warning */
 	unsigned long dram_size;
 
-	debug("\nEntering initdram()\n");
+	debug("\nEntering dram_init()\n");
 
 	/*------------------------------------------------------------------
 	 * Stop the DDR-SDRAM controller.
@@ -1212,7 +1214,9 @@ phys_size_t initdram(int board_type)
 #endif /* defined(CONFIG_ZERO_SDRAM) || defined(CONFIG_DDR_ECC) */
 
 	program_tlb(0, CONFIG_SYS_SDRAM_BASE, dram_size, MY_TLB_WORD2_I_ENABLE);
-	return dram_size;
+	gd->ram_size = dram_size;
+
+	return 0;
 }
 
 void board_add_ram_info(int use_default)

@@ -103,8 +103,9 @@ static void setup_iomux_enet(void)
 
 	/* Reset AR8033 PHY */
 	gpio_direction_output(IMX_GPIO_NR(1, 28), 0);
-	udelay(500);
+	mdelay(10);
 	gpio_set_value(IMX_GPIO_NR(1, 28), 1);
+	mdelay(1);
 }
 
 static iomux_v3_cfg_t const usdhc2_pads[] = {
@@ -306,7 +307,8 @@ static int mx6_rgmii_rework(struct phy_device *phydev)
 	/* set debug port address: SerDes Test and System Mode Control */
 	phy_write(phydev, MDIO_DEVAD_NONE, 0x1d, 0x05);
 	/* enable rgmii tx clock delay */
-	phy_write(phydev, MDIO_DEVAD_NONE, 0x1e, 0x100);
+	/* set the reserved bits to avoid board specific voltage peak issue*/
+	phy_write(phydev, MDIO_DEVAD_NONE, 0x1e, 0x3D47);
 
 	return 0;
 }

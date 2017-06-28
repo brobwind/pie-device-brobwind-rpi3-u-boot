@@ -75,8 +75,6 @@
 #define CONFIG_SYS_CLK_FREQ     get_board_sys_clk(0)
 #endif
 
-#define CONFIG_BOARD_EARLY_INIT_F	1	/* Call board_pre_init */
-
 #undef	CONFIG_SYS_DRAM_TEST				/* memory test, takes time */
 #define CONFIG_SYS_MEMTEST_START	0x00200000	/* memtest region */
 #define CONFIG_SYS_MEMTEST_END		0x00400000
@@ -302,7 +300,6 @@
 
 #define CONFIG_PCI_SCAN_SHOW		/* show pci devices on startup */
 
-#define CONFIG_DOS_PARTITION
 #undef CONFIG_SCSI_AHCI
 
 #ifdef CONFIG_SCSI_AHCI
@@ -520,8 +517,6 @@
 #define CONFIG_LOADADDR		1000000
 
 #undef  CONFIG_BOOTARGS		/* the boot command will set bootargs */
-
-#define CONFIG_BAUDRATE	115200
 
 #define	CONFIG_EXTRA_ENV_SETTINGS					\
    "netdev=eth0\0"							\

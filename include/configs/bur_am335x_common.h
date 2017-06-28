@@ -22,8 +22,6 @@
 #define CONFIG_SPL_AM33XX_ENABLE_RTC32K_OSC	/* enable 32kHz OSC at bootime */
 #define CONFIG_POWER_TPS65217
 
-#define CONFIG_SYS_NO_FLASH		/* have no NOR-flash */
-
 #include <asm/arch/omap.h>
 
 /* NS16550 Configuration */
@@ -31,7 +29,6 @@
 #define CONFIG_SYS_NS16550_REG_SIZE	(-4)
 #define CONFIG_SYS_NS16550_CLK		48000000
 #define CONFIG_SYS_NS16550_COM1		0x44e09000	/* UART0 */
-#define CONFIG_BAUDRATE			115200
 
 /* Network defines */
 #define CONFIG_DRIVER_TI_CPSW		/* Driver for IP block */

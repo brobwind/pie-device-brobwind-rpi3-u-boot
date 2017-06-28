@@ -85,7 +85,6 @@
 #define CONFIG_MXC_UART
 #define CONFIG_MXC_UART_BASE	UART1_BASE
 #define CONFIG_CONS_INDEX	1		/* use UART0 for console */
-#define CONFIG_BAUDRATE		115200		/* Default baud rate */
 
 /*
  * Flash & Environment
@@ -133,13 +132,6 @@
 #define CONFIG_SYS_NAND_BASE		0xd8000000
 #define CONFIG_JFFS2_NAND
 #define CONFIG_MXC_NAND_HWECC
-
-/*
- * SD/MMC
- */
-#define CONFIG_GENERIC_MMC
-#define CONFIG_MXC_MMC
-#define CONFIG_DOS_PARTITION
 
 /*
  * GPIO

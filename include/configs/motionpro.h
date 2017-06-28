@@ -47,7 +47,6 @@
  */
 #define CONFIG_PSC_CONSOLE	1	/* console is on PSC1 */
 #define CONFIG_NETCONSOLE	1	/* network console */
-#define CONFIG_BAUDRATE		115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200, 230400 }
 
 /*
@@ -257,7 +256,6 @@
 #define CONFIG_SYS_ATA_DATA_OFFSET	0x0060
 #define CONFIG_SYS_ATA_REG_OFFSET	CONFIG_SYS_ATA_DATA_OFFSET
 #define CONFIG_SYS_ATA_STRIDE		4
-#define CONFIG_DOS_PARTITION
 
 /*
  * I2C configuration
@@ -283,23 +281,9 @@
 /*
  * Status LED configuration
  */
-#define CONFIG_STATUS_LED		/* Status LED enabled */
-#define CONFIG_BOARD_SPECIFIC_LED
 
 #define ENABLE_GPIO_OUT		0x00000024
 #define LED_ON			0x00000010
-
-#ifndef __ASSEMBLY__
-/*
- * In case of Motion-PRO, a LED is identified by its corresponding
- * GPT Enable and Mode Select Register.
- */
-typedef volatile unsigned long * led_id_t;
-
-extern void __led_init(led_id_t id, int state);
-extern void __led_toggle(led_id_t id);
-extern void __led_set(led_id_t id, int state);
-#endif /* __ASSEMBLY__ */
 
 /*
  * Temperature sensor

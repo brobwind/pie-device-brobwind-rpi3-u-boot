@@ -14,8 +14,6 @@
 #include <configs/x86-common.h>
 
 #define CONFIG_SYS_MONITOR_LEN		(1 << 20)
-#define CONFIG_BOARD_EARLY_INIT_F
-#define CONFIG_ARCH_EARLY_INIT_R
 
 #define CONFIG_SMSC_LPC47M
 
@@ -25,8 +23,6 @@
 
 #define CONFIG_SCSI_DEV_LIST		\
 	{PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_TCF_SATA}
-
-#define CONFIG_GENERIC_MMC
 
 /* Environment configuration */
 #define CONFIG_ENV_SECT_SIZE		0x1000

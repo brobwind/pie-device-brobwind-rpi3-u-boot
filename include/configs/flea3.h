@@ -20,18 +20,12 @@
 
 #define CONFIG_SYS_DCACHE_OFF
 
-/* Only in case the value is not present in mach-types.h */
-#ifndef MACH_TYPE_FLEA3
-#define MACH_TYPE_FLEA3                3668
-#endif
-
 #define CONFIG_MACH_TYPE		MACH_TYPE_FLEA3
 
 /* Set TEXT at the beginning of the NOR flash */
 #define CONFIG_SYS_TEXT_BASE	0xA0000000
 
 /* This is required to setup the ESDC controller */
-#define CONFIG_BOARD_EARLY_INIT_F
 
 #define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs */
 #define CONFIG_REVISION_TAG
@@ -65,7 +59,6 @@
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 #define CONFIG_CONS_INDEX	1
-#define CONFIG_BAUDRATE		115200
 
 /*
  * Command definition

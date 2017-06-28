@@ -33,6 +33,8 @@
 
 #include "ecc.h"
 
+DECLARE_GLOBAL_DATA_PTR;
+
 #define PPC4xx_IBM_DDR2_DUMP_REGISTER(mnemonic)				\
 	do {								\
 		u32 data;						\
@@ -401,20 +403,20 @@ static unsigned char spd_read(uchar chip, uint addr)
 }
 
 /*-----------------------------------------------------------------------------+
- * initdram.  Initializes the 440SP Memory Queue and DDR SDRAM controller.
+ * dram_init.  Initializes the 440SP Memory Queue and DDR SDRAM controller.
  * Note: This routine runs from flash with a stack set up in the chip's
  * sram space.  It is important that the routine does not require .sbss, .bss or
  * .data sections.  It also cannot call routines that require these sections.
  *-----------------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------------
- * Function:	 initdram
+ * Function:	 dram_init
  * Description:  Configures SDRAM memory banks for DDR operation.
  *		 Auto Memory Configuration option reads the DDR SDRAM EEPROMs
  *		 via the IIC bus and then configures the DDR SDRAM memory
  *		 banks appropriately. If Auto Memory Configuration is
  *		 not used, it is assumed that no DIMM is plugged
  *-----------------------------------------------------------------------------*/
-phys_size_t initdram(int board_type)
+int dram_init(void)
 {
 	unsigned char iic0_dimm_addr[] = SPD_EEPROM_ADDRESS;
 	unsigned long dimm_populated[MAXDIMMS] = {SDRAM_NONE, SDRAM_NONE};
@@ -429,7 +431,9 @@ phys_size_t initdram(int board_type)
 		 * Reduce RAM size to avoid overwriting memory used by
 		 * current stack? Not sure what is happening.
 		 */
-		return sdram_memsize() / 2;
+		gd->ram_size = sdram_memsize() / 2;
+
+		return 0;
 	}
 
 	num_dimm_banks = sizeof(iic0_dimm_addr);
@@ -650,7 +654,9 @@ phys_size_t initdram(int board_type)
 	 */
 	set_mcsr(get_mcsr());
 
-	return sdram_memsize();
+	gd->ram_size = sdram_memsize();
+
+	return 0;
 }
 
 static void get_spd_info(unsigned long *dimm_populated,
@@ -2849,13 +2855,13 @@ static void test(void)
 #else /* CONFIG_SPD_EEPROM */
 
 /*-----------------------------------------------------------------------------
- * Function:	initdram
+ * Function:	dram_init
  * Description: Configures the PPC4xx IBM DDR1/DDR2 SDRAM memory controller.
  * 		The configuration is performed using static, compile-
  *		time parameters.
  * 		Configures the PPC405EX(r) and PPC460EX/GT
  *---------------------------------------------------------------------------*/
-phys_size_t initdram(int board_type)
+int dram_init(void)
 {
 	unsigned long val;
 
@@ -3011,7 +3017,9 @@ phys_size_t initdram(int board_type)
 	set_mcsr(get_mcsr());
 #endif /* CONFIG_PPC4xx_DDR_AUTOCALIBRATION */
 
-	return (CONFIG_SYS_MBYTES_SDRAM << 20);
+	gd->ram_size = CONFIG_SYS_MBYTES_SDRAM << 20;
+
+	return 0;
 }
 #endif /* CONFIG_SPD_EEPROM */
 

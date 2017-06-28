@@ -19,8 +19,6 @@
 #define	CONFIG_SYS_USE_NAND
 #define CONFIG_DRIVER_TI_EMAC_USE_RMII
 #define CONFIG_DRIVER_TI_EMAC_RMII_NO_NEGOTIATE
-#define CONFIG_BOARD_EARLY_INIT_F
-#define CONFIG_BOARD_LATE_INIT
 #define CONFIG_PREBOOT
 
 /*
@@ -61,7 +59,6 @@
 #define CONFIG_SYS_NS16550_COM1	DAVINCI_UART0_BASE /* Base address of UART0 */
 #define CONFIG_SYS_NS16550_CLK	clk_get(DAVINCI_UART2_CLKID)
 #define CONFIG_CONS_INDEX	1		/* use UART0 for console */
-#define CONFIG_BAUDRATE		115200		/* Default baud rate */
 
 #define CONFIG_SPI
 #define CONFIG_DAVINCI_SPI
@@ -97,7 +94,6 @@
 #define CONFIG_ENV_SIZE			(8 << 10)
 #define CONFIG_ENV_OFFSET		0x80000
 #define CONFIG_ENV_SECT_SIZE		(64 << 10)
-#define CONFIG_SYS_NO_FLASH
 #endif
 
 #if defined(CONFIG_VIDEO)
@@ -175,7 +171,6 @@
 	!defined(CONFIG_USE_NOR) && \
 	!defined(CONFIG_USE_SPIFLASH)
 #define CONFIG_ENV_IS_NOWHERE
-#define CONFIG_SYS_NO_FLASH
 #define CONFIG_ENV_SIZE		(16 << 10)
 #undef CONFIG_CMD_ENV
 #endif

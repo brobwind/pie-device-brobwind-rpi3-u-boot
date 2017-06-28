@@ -41,7 +41,6 @@
 #define CONFIG_SCIF_CONSOLE
 
 /* FLASH */
-#define CONFIG_SYS_NO_FLASH
 #define CONFIG_SPI
 #define CONFIG_SH_QSPI
 
@@ -94,7 +93,6 @@
 #define CONFIG_SMSTP7_ENA	0x00200000
 
 /* SD */
-#define CONFIG_GENERIC_MMC
 #define CONFIG_SH_SDHI_FREQ	97500000
 
 #endif	/* __KOELSCH_H */

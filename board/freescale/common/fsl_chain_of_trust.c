@@ -22,7 +22,7 @@
 #include <asm/fsl_pamu.h>
 #endif
 
-#ifdef CONFIG_LS102XA
+#ifdef CONFIG_ARCH_LS1021A
 #include <asm/arch/immap_ls102xa.h>
 #endif
 
@@ -151,7 +151,7 @@ void __noreturn jump_to_image_no_args(struct spl_image_info *spl_image)
 	 * may return back in case of non-fatal failures.
 	 */
 
-	debug("image entry point: 0x%X\n", spl_image->entry_point);
+	debug("image entry point: 0x%lX\n", spl_image->entry_point);
 	image_entry();
 }
 #endif /* ifdef CONFIG_SPL_FRAMEWORK */

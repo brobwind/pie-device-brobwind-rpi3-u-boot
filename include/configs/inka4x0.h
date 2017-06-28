@@ -39,7 +39,6 @@
  * Serial console configuration
  */
 #define CONFIG_PSC_CONSOLE	1	/* console is on PSC1	*/
-#define CONFIG_BAUDRATE		115200	/* ... at 115200 bps	*/
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200, 230400 }
 
 /*
@@ -61,9 +60,6 @@
 #define CONFIG_SYS_XLB_PIPELINING	1
 
 /* Partitions */
-#define CONFIG_MAC_PARTITION
-#define CONFIG_DOS_PARTITION
-#define CONFIG_ISO_PARTITION
 
 /*
  * BOOTP options

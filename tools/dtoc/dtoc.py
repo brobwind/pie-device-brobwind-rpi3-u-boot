@@ -30,6 +30,8 @@ PROP_IGNORE_LIST = [
     "status",
     'phandle',
     'u-boot,dm-pre-reloc',
+    'u-boot,dm-tpl',
+    'u-boot,dm-spl',
 ]
 
 # C type declarations for the tyues we support
@@ -54,6 +56,7 @@ def Conv_name_to_c(name):
     str = name.replace('@', '_at_')
     str = str.replace('-', '_')
     str = str.replace(',', '_')
+    str = str.replace('.', '_')
     str = str.replace('/', '__')
     return str
 
@@ -169,6 +172,21 @@ class DtbPlatdata:
         """
         self.fdt = fdt_select.FdtScan(self._dtb_fname)
 
+    def ScanNode(self, root):
+        for node in root.subnodes:
+            if 'compatible' in node.props:
+                status = node.props.get('status')
+                if (not options.include_disabled and not status or
+                    status.value != 'disabled'):
+                    self._valid_nodes.append(node)
+                    phandle_prop = node.props.get('phandle')
+                    if phandle_prop:
+                        phandle = phandle_prop.GetPhandle()
+                        self._phandle_node[phandle] = node
+
+            # recurse to handle any subnodes
+            self.ScanNode(node);
+
     def ScanTree(self):
         """Scan the device tree for useful information
 
@@ -177,8 +195,10 @@ class DtbPlatdata:
             _valid_nodes: A list of nodes we wish to consider include in the
                 platform data
         """
-        node_list = []
         self._phandle_node = {}
+        self._valid_nodes = []
+        return self.ScanNode(self.fdt.GetRoot());
+
         for node in self.fdt.GetRoot().subnodes:
             if 'compatible' in node.props:
                 status = node.props.get('status')

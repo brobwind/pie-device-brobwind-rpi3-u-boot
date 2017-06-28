@@ -122,7 +122,6 @@
 #define CONFIG_SYS_NS16550_COM1	DAVINCI_UART1_BASE /* Base address of UART1 */
 #define CONFIG_SYS_NS16550_CLK	clk_get(DAVINCI_UART2_CLKID)
 #define CONFIG_CONS_INDEX	1		/* use UART0 for console */
-#define CONFIG_BAUDRATE		115200		/* Default baud rate */
 
 #define CONFIG_SPI
 #define CONFIG_DAVINCI_SPI
@@ -142,7 +141,6 @@
 /*
  * U-Boot general configuration
  */
-#define CONFIG_BOARD_EARLY_INIT_F
 #define CONFIG_BOOTFILE		"uImage" /* Boot file name */
 #define CONFIG_SYS_CBSIZE	1024 /* Console I/O Buffer Size	*/
 #define CONFIG_SYS_PBSIZE	(CONFIG_SYS_CBSIZE+sizeof(CONFIG_SYS_PROMPT)+16)
@@ -211,21 +209,7 @@
 #endif
 
 #define CONFIG_ENV_IS_NOWHERE
-#define CONFIG_SYS_NO_FLASH
 #define CONFIG_ENV_SIZE		(16 << 10)
-
-/* SD/MMC configuration */
-#define CONFIG_DAVINCI_MMC_SD1
-#define CONFIG_GENERIC_MMC
-#define CONFIG_DAVINCI_MMC
-
-/*
- * Enable MMC commands only when
- * MMC support is present
- */
-#ifdef CONFIG_MMC
-#define CONFIG_DOS_PARTITION
-#endif
 
 /* additions for new relocation code, must added to all boards */
 #define CONFIG_SYS_SDRAM_BASE		0xc0000000

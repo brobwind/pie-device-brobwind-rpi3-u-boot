@@ -8,17 +8,9 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#define CONFIG_SYS_THUMB_BUILD
-/*#define CONFIG_SYS_NO_FLASH*/
-
-#define CONFIG_BOARD_EARLY_INIT_F
-
 #define CONFIG_SYS_FLASH_BASE		0x08000000
 #define CONFIG_SYS_INIT_SP_ADDR		0x20050000
 #define CONFIG_SYS_TEXT_BASE		0x08000000
-
-#define CONFIG_SYS_ICACHE_OFF
-#define CONFIG_SYS_DCACHE_OFF
 
 /*
  * Configuration of the external SDRAM memory
@@ -42,6 +34,12 @@
 #define CONFIG_STM32_FLASH
 #define CONFIG_STM32X7_SERIAL
 
+#define CONFIG_DESIGNWARE_ETH
+#define CONFIG_DW_GMAC_DEFAULT_DMA_PBL	(8)
+#define CONFIG_DW_ALTDESCRIPTOR
+#define CONFIG_MII
+#define CONFIG_PHY_SMSC
+
 #define CONFIG_STM32_HSE_HZ		25000000
 #define CONFIG_SYS_CLK_FREQ		200000000 /* 200 MHz */
 #define CONFIG_SYS_HZ_CLOCK		1000000	/* Timer is clocked at 1MHz */
@@ -56,10 +54,8 @@
 					+ sizeof(CONFIG_SYS_PROMPT) + 16)
 
 #define CONFIG_SYS_MAXARGS		16
-#define CONFIG_SYS_MALLOC_LEN		(16 * 1024)
-#define CONFIG_STACKSIZE		(64 << 10)
+#define CONFIG_SYS_MALLOC_LEN		(1 * 1024 * 1024)
 
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_BOOTARGS							\
 	"console=ttyS0,115200 earlyprintk consoleblank=0 ignore_loglevel"
 #define CONFIG_BOOTCOMMAND						\
@@ -79,4 +75,5 @@
 #define CONFIG_CMDLINE_EDITING
 
 #define CONFIG_CMD_MEM
+#define CONFIG_CMD_CACHE
 #endif /* __CONFIG_H */

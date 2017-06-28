@@ -20,15 +20,11 @@
 
 #define	CONFIG_SYS_TEXT_BASE	0xFE000000
 
-#define CONFIG_BOARD_EARLY_INIT_F
 #define CONFIG_BOARD_EARLY_INIT_R
 #define CONFIG_LAST_STAGE_INIT
 
 #define CONFIG_FSL_ESDHC
 #define CONFIG_SYS_FSL_ESDHC_ADDR	CONFIG_SYS_MPC83xx_ESDHC_ADDR
-
-#define CONFIG_GENERIC_MMC
-#define CONFIG_DOS_PARTITION
 
 #define CONFIG_SYS_ALT_MEMTEST
 
@@ -635,8 +631,6 @@ void fpga_control_clear(unsigned int bus, int pin);
 #if defined(CONFIG_TSEC_ENET)
 #define CONFIG_HAS_ETH0
 #endif
-
-#define CONFIG_BAUDRATE 115200
 
 #define CONFIG_LOADADDR	800000	/* default location for tftp and bootm */
 

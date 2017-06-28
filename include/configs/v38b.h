@@ -27,7 +27,6 @@
 #define CONFIG_NETCONSOLE		1
 
 #define CONFIG_BOARD_EARLY_INIT_R	1	/* do board-specific init */
-#define CONFIG_BOARD_EARLY_INIT_F	1	/* do board-specific init */
 #define CONFIG_MISC_INIT_R
 
 #define CONFIG_SYS_XLB_PIPELINING		1	/* gives better performance */
@@ -38,7 +37,6 @@
  * Serial console configuration
  */
 #define CONFIG_PSC_CONSOLE	1	/* console is on PSC1 */
-#define CONFIG_BAUDRATE		115200	/* ... at 115200 bps */
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200, 230400 }
 
 /*
@@ -56,12 +54,6 @@
 /*
  * PCI - no support
  */
-
-/*
- * Partitions
- */
-#define CONFIG_MAC_PARTITION	1
-#define CONFIG_DOS_PARTITION	1
 
 /*
  * USB
@@ -291,8 +283,6 @@
 /*
  * Status LED
  */
-#define  CONFIG_STATUS_LED		/* Status LED enabled */
-#define  CONFIG_BOARD_SPECIFIC_LED	/* version has board specific leds */
 
 #define CONFIG_SYS_LED_BASE	MPC5XXX_GPT7_ENABLE	/* Timer 7 GPIO */
 #ifndef __ASSEMBLY__

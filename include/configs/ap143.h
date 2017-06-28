@@ -7,8 +7,6 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#define CONFIG_BOARD_EARLY_INIT_F
-
 #define CONFIG_SYS_HZ                   1000
 #define CONFIG_SYS_MHZ                  325
 #define CONFIG_SYS_MIPS_TIMER_FREQ      (CONFIG_SYS_MHZ * 1000000)
@@ -21,8 +19,6 @@
 #define CONFIG_SYS_SDRAM_BASE           0x80000000
 #define CONFIG_SYS_LOAD_ADDR            0x81000000
 
-#define CONFIG_SYS_NO_FLASH
-
 #define CONFIG_SYS_INIT_RAM_ADDR        0xbd000000
 #define CONFIG_SYS_INIT_RAM_SIZE        0x2000
 #define CONFIG_SYS_INIT_SP_ADDR \
@@ -32,7 +28,6 @@
  * Serial Port
  */
 #define CONFIG_SYS_NS16550_CLK          25000000
-#define CONFIG_BAUDRATE                 115200
 #define CONFIG_SYS_BAUDRATE_TABLE \
 	{9600, 19200, 38400, 57600, 115200}
 

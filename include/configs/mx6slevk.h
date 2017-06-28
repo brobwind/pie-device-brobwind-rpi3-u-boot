@@ -15,13 +15,10 @@
 #include "imx6_spl.h"
 #endif
 
-#define MACH_TYPE_MX6SLEVK		4307
-#define CONFIG_MACH_TYPE		MACH_TYPE_MX6SLEVK
+#define CONFIG_MACH_TYPE		MACH_TYPE_MX6SL_EVK
 
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN		(3 * SZ_1M)
-
-#define CONFIG_BOARD_EARLY_INIT_F
 
 #define CONFIG_MXC_UART
 #define CONFIG_MXC_UART_BASE		UART1_IPS_BASE_ADDR
@@ -30,18 +27,11 @@
 #define CONFIG_SYS_FSL_ESDHC_ADDR	USDHC2_BASE_ADDR
 
 /* I2C Configs */
-#define CONFIG_SYS_I2C
 #define CONFIG_SYS_I2C_MXC
 #define CONFIG_SYS_I2C_MXC_I2C1		/* enable I2C bus 1 */
 #define CONFIG_SYS_I2C_MXC_I2C2		/* enable I2C bus 2 */
 #define CONFIG_SYS_I2C_MXC_I2C3		/* enable I2C bus 3 */
 #define CONFIG_SYS_I2C_SPEED		  100000
-
-/* PMIC */
-#define CONFIG_POWER
-#define CONFIG_POWER_I2C
-#define CONFIG_POWER_PFUZE100
-#define CONFIG_POWER_PFUZE100_I2C_ADDR	0x08
 
 #define CONFIG_FEC_MXC
 #define CONFIG_MII
@@ -130,8 +120,6 @@
 #define CONFIG_SYS_MEMTEST_START	0x80000000
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + SZ_512M)
 
-#define CONFIG_STACKSIZE		SZ_128K
-
 /* Physical Memory Map */
 #define CONFIG_NR_DRAM_BANKS		1
 #define PHYS_SDRAM			MMDC0_ARB_BASE_ADDR
@@ -148,7 +136,7 @@
 /* Environment organization */
 #define CONFIG_ENV_SIZE			SZ_8K
 
-#if defined CONFIG_SYS_BOOT_SPINOR
+#if defined CONFIG_SPI_BOOT
 #define CONFIG_ENV_IS_IN_SPI_FLASH
 #define CONFIG_ENV_OFFSET               (768 * 1024)
 #define CONFIG_ENV_SECT_SIZE            (64 * 1024)

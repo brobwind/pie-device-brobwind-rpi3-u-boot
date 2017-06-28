@@ -38,8 +38,6 @@
 
 #if !defined(CONFIG_VCT_NAND) && !defined(CONFIG_VCT_ONENAND)
 #define CONFIG_VCT_NOR
-#else
-#define CONFIG_SYS_NO_FLASH
 #endif
 
 /*
@@ -56,7 +54,6 @@
 #define CONFIG_SYS_NS16550_COM1		UART_1_BASE
 #define CONFIG_CONS_INDEX		1
 #define CONFIG_SYS_NS16550_CLK		921600
-#define CONFIG_BAUDRATE			115200
 
 /*
  * SDRAM
@@ -97,9 +94,6 @@
 #endif
 
 #if defined(CONFIG_CMD_USB)
-#define CONFIG_DOS_PARTITION
-#define CONFIG_ISO_PARTITION
-
 #define CONFIG_SUPPORT_VFAT
 
 /*

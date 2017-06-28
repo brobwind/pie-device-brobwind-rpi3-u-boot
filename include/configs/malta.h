@@ -11,7 +11,6 @@
  * System configuration
  */
 #define CONFIG_MALTA
-#define CONFIG_BOARD_EARLY_INIT_F
 
 #define CONFIG_MEMSIZE_IN_BYTES
 
@@ -64,7 +63,6 @@
 /*
  * Serial driver
  */
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_NS16550_PORT_MAPPED
 
 /*

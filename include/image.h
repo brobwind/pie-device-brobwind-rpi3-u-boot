@@ -67,7 +67,6 @@ struct lmb;
 #  endif
 # else
 #  define CONFIG_CRC32		/* FIT images need CRC32 support */
-#  define CONFIG_MD5		/* and MD5 */
 #  define CONFIG_SHA1		/* and SHA1 */
 #  define CONFIG_SHA256		/* and SHA256 */
 #  define IMAGE_ENABLE_CRC32	1
@@ -98,12 +97,6 @@ struct lmb;
 #endif
 
 #endif /* IMAGE_ENABLE_FIT */
-
-#ifdef CONFIG_SYS_BOOT_RAMDISK_HIGH
-# define IMAGE_ENABLE_RAMDISK_HIGH	1
-#else
-# define IMAGE_ENABLE_RAMDISK_HIGH	0
-#endif
 
 #ifdef CONFIG_SYS_BOOT_GET_CMDLINE
 # define IMAGE_BOOT_GET_CMDLINE		1
@@ -872,6 +865,8 @@ int bootz_setup(ulong image, ulong *start, ulong *end);
 
 /* image node */
 #define FIT_DATA_PROP		"data"
+#define FIT_DATA_OFFSET_PROP	"data-offset"
+#define FIT_DATA_SIZE_PROP	"data-size"
 #define FIT_TIMESTAMP_PROP	"timestamp"
 #define FIT_DESC_PROP		"description"
 #define FIT_ARCH_PROP		"arch"
@@ -950,6 +945,8 @@ int fit_image_get_load(const void *fit, int noffset, ulong *load);
 int fit_image_get_entry(const void *fit, int noffset, ulong *entry);
 int fit_image_get_data(const void *fit, int noffset,
 				const void **data, size_t *size);
+int fit_image_get_data_offset(const void *fit, int noffset, int *data_offset);
+int fit_image_get_data_size(const void *fit, int noffset, int *data_size);
 
 int fit_image_hash_get_algo(const void *fit, int noffset, char **algo);
 int fit_image_hash_get_value(const void *fit, int noffset, uint8_t **value,
@@ -965,6 +962,7 @@ int fit_set_timestamp(void *fit, int noffset, time_t timestamp);
  * @fit:	Pointer to the FIT format image header
  * @comment:	Comment to add to signature nodes
  * @require_keys: Mark all keys as 'required'
+ * @engine_id:	Engine to use for signing
  *
  * Adds hash values for all component images in the FIT blob.
  * Hashes are calculated for all component images which have hash subnodes
@@ -977,7 +975,8 @@ int fit_set_timestamp(void *fit, int noffset, time_t timestamp);
  *     libfdt error code, on failure
  */
 int fit_add_verification_data(const char *keydir, void *keydest, void *fit,
-			      const char *comment, int require_keys);
+			      const char *comment, int require_keys,
+			      const char *engine_id);
 
 int fit_image_verify(const void *fit, int noffset);
 int fit_config_verify(const void *fit, int conf_noffset);
@@ -1057,6 +1056,7 @@ struct image_sign_info {
 	const void *fdt_blob;		/* FDT containing public keys */
 	int required_keynode;		/* Node offset of key to use: -1=any */
 	const char *require_keys;	/* Value for 'required' property */
+	const char *engine_id;		/* Engine to use for signing */
 };
 #endif /* Allow struct image_region to always be defined for rsa.h */
 
@@ -1275,7 +1275,8 @@ long android_image_load(struct blk_desc *dev_desc,
  */
 int board_fit_config_name_match(const char *name);
 
-#ifdef CONFIG_SPL_FIT_IMAGE_POST_PROCESS
+#if defined(CONFIG_SPL_FIT_IMAGE_POST_PROCESS) || \
+	defined(CONFIG_FIT_IMAGE_POST_PROCESS)
 /**
  * board_fit_image_post_process() - Do any post-process on FIT binary data
  *

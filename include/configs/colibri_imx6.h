@@ -10,7 +10,6 @@
 #define __CONFIG_H
 
 #include "mx6_common.h"
-#define CONFIG_SYS_THUMB_BUILD
 
 #undef CONFIG_DISPLAY_BOARDINFO
 #define CONFIG_DISPLAY_BOARDINFO_LATE	/* Calls show_board_info() */
@@ -34,8 +33,6 @@
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN		(32 * 1024 * 1024)
 
-#define CONFIG_BOARD_EARLY_INIT_F
-#define CONFIG_BOARD_LATE_INIT
 #define CONFIG_MISC_INIT_R
 
 #define CONFIG_MXC_UART
@@ -67,10 +64,8 @@
 #define CONFIG_SYS_FSL_USDHC_NUM	2
 
 #define CONFIG_SUPPORT_EMMC_BOOT	/* eMMC specific */
-#define CONFIG_GENERIC_MMC
 #define CONFIG_BOUNCE_BUFFER
 #define CONFIG_FAT_WRITE
-#define CONFIG_DOS_PARTITION
 
 /* Network */
 #define CONFIG_FEC_MXC
@@ -130,7 +125,6 @@
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 #define CONFIG_CONS_INDEX		1
-#define CONFIG_BAUDRATE			115200
 
 /* Command definition */
 #undef CONFIG_CMD_LOADB
@@ -176,6 +170,7 @@
 		"${fdt_file} && setenv dtbparam \" - ${fdt_addr_r}\" && true\0"
 
 #define MEM_LAYOUT_ENV_SETTINGS \
+	"bootm_size=0x10000000\0" \
 	"fdt_addr_r=0x12000000\0" \
 	"fdt_high=0xffffffff\0" \
 	"initrd_high=0xffffffff\0" \
@@ -278,9 +273,7 @@
 #define CONFIG_SYS_INIT_SP_ADDR \
 	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
 
-/* FLASH and environment organization */
-#define CONFIG_SYS_NO_FLASH
-
+/* environment organization */
 #define CONFIG_ENV_SIZE			(8 * 1024)
 
 #define CONFIG_ENV_IS_IN_MMC
