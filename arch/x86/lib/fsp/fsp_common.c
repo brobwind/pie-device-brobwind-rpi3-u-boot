@@ -14,6 +14,11 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+int checkcpu(void)
+{
+	return 0;
+}
+
 int print_cpuinfo(void)
 {
 	post_code(POST_CPU_INFO);
@@ -70,7 +75,7 @@ static __maybe_unused void *fsp_prepare_mrc_cache(void)
 	return cache->data;
 }
 
-int x86_fsp_init(void)
+int arch_fsp_init(void)
 {
 	void *nvs;
 

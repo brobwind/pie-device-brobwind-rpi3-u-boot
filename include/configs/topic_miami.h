@@ -10,8 +10,6 @@
 #ifndef __CONFIG_TOPIC_MIAMI_H
 #define __CONFIG_TOPIC_MIAMI_H
 
-#define CONFIG_ZYNQ_PS_CLK_FREQ		33333333UL
-
 #define CONFIG_ZYNQ_I2C0
 #define CONFIG_ZYNQ_I2C1
 
@@ -110,7 +108,7 @@
 	"bootscript=autorun.scr\0" \
 	"loadbit_addr=0x100000\0"	\
 	"loadbootenv_addr=0x2000000\0" \
-	"kernel_size=0x400000\0"	\
+	"kernel_size=0x440000\0"	\
 	"devicetree_size=0x10000\0"	\
 	"boot_size=0xF00000\0"	\
 	"fdt_high=0x20000000\0"	\

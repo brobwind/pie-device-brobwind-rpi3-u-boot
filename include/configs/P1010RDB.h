@@ -130,8 +130,6 @@
 #endif
 
 /* High Level Configuration Options */
-#define CONFIG_FSL_IFC			/* Enable IFC Support */
-#define CONFIG_FSL_CAAM			/* Enable SEC/CAAM */
 #define CONFIG_SYS_HAS_SERDES		/* common SERDES init code */
 
 #if defined(CONFIG_PCI)
@@ -193,7 +191,6 @@
 #endif
 
 #define CONFIG_PCI_SCAN_SHOW		/* show pci devices on startup */
-#define CONFIG_DOS_PARTITION
 #endif
 
 #define CONFIG_TSEC_ENET
@@ -305,9 +302,6 @@ extern unsigned long get_sdram_size(void);
  * IFC Definitions
  */
 /* NOR Flash on IFC */
-#ifdef CONFIG_SPL_BUILD
-#define CONFIG_SYS_NO_FLASH
-#endif
 
 #define CONFIG_SYS_FLASH_BASE		0xee000000
 #define CONFIG_SYS_MAX_FLASH_SECT	256	/* 32M */
@@ -504,7 +498,6 @@ extern unsigned long get_sdram_size(void);
 #endif
 #endif
 
-#define CONFIG_BOARD_EARLY_INIT_F	/* Call board_pre_init */
 #define CONFIG_BOARD_EARLY_INIT_R
 
 #define CONFIG_SYS_INIT_RAM_LOCK
@@ -670,9 +663,7 @@ extern unsigned long get_sdram_size(void);
 #endif /* #ifdef CONFIG_FSL_SATA  */
 
 #ifdef CONFIG_MMC
-#define CONFIG_DOS_PARTITION
 #define CONFIG_FSL_ESDHC
-#define CONFIG_GENERIC_MMC
 #define CONFIG_SYS_FSL_ESDHC_ADDR	CONFIG_SYS_MPC85xx_ESDHC_ADDR
 #endif
 
@@ -745,7 +736,6 @@ extern unsigned long get_sdram_size(void);
 
 #if defined(CONFIG_MMC) || defined(CONFIG_USB_EHCI) \
 		 || defined(CONFIG_FSL_SATA)
-#define CONFIG_DOS_PARTITION
 #endif
 
 /* Hash command with SHA acceleration supported in hardware */
@@ -802,8 +792,6 @@ extern unsigned long get_sdram_size(void);
 #define CONFIG_LOADADDR		1000000
 
 #undef  CONFIG_BOOTARGS		/* the boot command will set bootargs */
-
-#define CONFIG_BAUDRATE		115200
 
 #define	CONFIG_EXTRA_ENV_SETTINGS				\
 	"hwconfig=" __stringify(CONFIG_DEF_HWCONFIG)  "\0"	\

@@ -15,10 +15,8 @@
 #elif defined(CONFIG_NETSPACE_V2)
 #define CONFIG_MACH_TYPE		MACH_TYPE_NETSPACE_V2
 #elif defined(CONFIG_NETSPACE_LITE_V2)
-#define MACH_TYPE_NETSPACE_LITE_V2	2983 /* missing in mach-types.h */
 #define CONFIG_MACH_TYPE		MACH_TYPE_NETSPACE_LITE_V2
 #elif defined(CONFIG_NETSPACE_MINI_V2)
-#define MACH_TYPE_NETSPACE_MINI_V2	2831 /* missing in mach-types.h */
 #define CONFIG_MACH_TYPE		MACH_TYPE_NETSPACE_MINI_V2
 #elif defined(CONFIG_NETSPACE_MAX_V2)
 #define CONFIG_MACH_TYPE		MACH_TYPE_NETSPACE_MAX_V2
@@ -45,7 +43,6 @@
 /*
  * Commands configuration
  */
-#define CONFIG_SYS_NO_FLASH		/* Declare no flash (NOR/SPI) */
 #define CONFIG_CMD_ENV
 #define CONFIG_CMD_IDE
 #ifndef CONFIG_NETSPACE_MINI_V2 /* No USB ports on Network Space v2 Mini */
@@ -135,8 +132,6 @@
 /*
  * Partition support
  */
-#define CONFIG_DOS_PARTITION
-#define CONFIG_EFI_PARTITION
 
 /*
  * File systems support

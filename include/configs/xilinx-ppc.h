@@ -85,10 +85,8 @@
 #define CONFIG_FLASH_CFI_MTD
 #else
 #define CONFIG_ENV_IS_NOWHERE
-#define CONFIG_SYS_NO_FLASH
 #endif
 
-#define CONFIG_BAUDRATE			115200
 /* The following table includes the supported baudrates */
 # define CONFIG_SYS_BAUDRATE_TABLE \
 	{300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400}

@@ -31,7 +31,6 @@
 
 #define CONFIG_CONS_INDEX		3
 #define CONFIG_SYS_NS16550_COM3		UART3_BASE
-#define CONFIG_BAUDRATE			115200
 
 #define CONFIG_MISC_INIT_R
 /* MMC ENV related defines */
@@ -43,8 +42,6 @@
 #define CONFIG_SYS_REDUNDAND_ENVIRONMENT
 
 /* Enhance our eMMC support / experience. */
-#define CONFIG_CMD_GPT
-#define CONFIG_EFI_PARTITION
 #define CONFIG_HSMMC2_8BIT
 #define CONFIG_SUPPORT_EMMC_BOOT
 

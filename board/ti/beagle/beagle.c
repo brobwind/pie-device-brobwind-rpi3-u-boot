@@ -16,7 +16,7 @@
 #include <common.h>
 #include <dm.h>
 #include <ns16550.h>
-#ifdef CONFIG_STATUS_LED
+#ifdef CONFIG_LED_STATUS
 #include <status_led.h>
 #endif
 #include <twl4030.h>
@@ -75,7 +75,8 @@ static struct {
 static const struct ns16550_platdata beagle_serial = {
 	.base = OMAP34XX_UART3,
 	.reg_shift = 2,
-	.clock = V_NS16550_CLK
+	.clock = V_NS16550_CLK,
+	.fcr = UART_FCR_DEFVAL,
 };
 
 U_BOOT_DEVICE(beagle_uart) = {
@@ -95,8 +96,8 @@ int board_init(void)
 	/* boot param addr */
 	gd->bd->bi_boot_params = (OMAP34XX_SDRC_CS0 + 0x100);
 
-#if defined(CONFIG_STATUS_LED) && defined(STATUS_LED_BOOT)
-	status_led_set (STATUS_LED_BOOT, STATUS_LED_ON);
+#if defined(CONFIG_LED_STATUS) && defined(CONFIG_LED_STATUS_BOOT_ENABLE)
+	status_led_set(CONFIG_LED_STATUS_BOOT, CONFIG_LED_STATUS_ON);
 #endif
 
 	return 0;
@@ -523,7 +524,7 @@ void set_muxconf_regs(void)
 	MUX_BEAGLE();
 }
 
-#if defined(CONFIG_GENERIC_MMC) && !defined(CONFIG_SPL_BUILD)
+#if defined(CONFIG_GENERIC_MMC)
 int board_mmc_init(bd_t *bis)
 {
 	return omap_mmc_init(0, 0, 0, -1, -1);

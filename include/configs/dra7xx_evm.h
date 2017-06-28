@@ -15,7 +15,6 @@
 #include <environment/ti/dfu.h>
 
 #define CONFIG_DRA7XX
-#define CONFIG_BOARD_EARLY_INIT_F
 
 #ifdef CONFIG_SPL_BUILD
 #define CONFIG_IODELAY_RECALIBRATION
@@ -43,7 +42,6 @@
 #define CONFIG_SYS_NS16550_COM1		UART1_BASE	/* Base EVM has UART0 */
 #define CONFIG_SYS_NS16550_COM2		UART2_BASE	/* UART2 */
 #define CONFIG_SYS_NS16550_COM3		UART3_BASE	/* UART3 */
-#define CONFIG_BAUDRATE			115200
 
 #define CONFIG_SYS_OMAP_ABE_SYSCK
 
@@ -101,8 +99,6 @@
 #include <configs/ti_omap5_common.h>
 
 /* Enhance our eMMC support / experience. */
-#define CONFIG_CMD_GPT
-#define CONFIG_EFI_PARTITION
 #define CONFIG_RANDOM_UUID
 #define CONFIG_HSMMC2_8BIT
 
@@ -125,11 +121,6 @@
 #define CONFIG_SF_DEFAULT_SPEED                76800000
 #define CONFIG_SF_DEFAULT_MODE                 SPI_MODE_0
 #define CONFIG_QSPI_QUAD_SUPPORT
-
-#ifdef CONFIG_SPL_BUILD
-#undef CONFIG_DM_SPI
-#undef CONFIG_DM_SPI_FLASH
-#endif
 
 /*
  * Default to using SPI for environment, etc.
@@ -169,7 +160,6 @@
 #define CONFIG_OMAP_USB2PHY2_HOST
 
 /* SATA */
-#define CONFIG_BOARD_LATE_INIT
 #define CONFIG_SCSI
 #define CONFIG_LIBATA
 #define CONFIG_SCSI_AHCI
@@ -236,7 +226,6 @@
 #define CONFIG_SYS_FLASH_CFI_WIDTH	FLASH_CFI_16BIT
 #define CONFIG_SYS_FLASH_SIZE		(64 * 1024 * 1024) /* 64 MB */
 /* #define CONFIG_INIT_IGNORE_ERROR */
-#undef CONFIG_SYS_NO_FLASH
 #define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
 #define CONFIG_SYS_FLASH_PROTECTION
 #define CONFIG_SYS_FLASH_CFI
@@ -265,9 +254,5 @@
 #define CONFIG_ENV_OFFSET_REDUND	0x001e0000
 #endif
 #endif  /* NOR support */
-
-/* EEPROM */
-#define CONFIG_EEPROM_CHIP_ADDRESS 0x50
-#define CONFIG_EEPROM_BUS_ADDRESS 0
 
 #endif /* __CONFIG_DRA7XX_EVM_H */

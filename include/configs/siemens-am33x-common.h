@@ -25,8 +25,6 @@
 #define CONFIG_ENV_SIZE			(0x2000)
 #define CONFIG_SYS_MALLOC_LEN		(16 * 1024 * 1024)
 #define CONFIG_SYS_LONGHELP		/* undef to save memory */
-#define CONFIG_BOARD_LATE_INIT
-#define CONFIG_SYS_NO_FLASH
 #ifdef CONFIG_SIEMENS_MACH_TYPE
 #define CONFIG_MACH_TYPE		CONFIG_SIEMENS_MACH_TYPE
 #endif
@@ -77,10 +75,6 @@
 
 #define CONFIG_SYS_LOAD_ADDR		0x81000000 /* Default load address */
 
-#define CONFIG_GENERIC_MMC
-#define CONFIG_OMAP_HSMMC
-#define CONFIG_DOS_PARTITION
-
 #define CONFIG_SPI
 #define CONFIG_OMAP3_SPI
 #define CONFIG_MTD_DEVICE
@@ -105,8 +99,6 @@
 #define CONFIG_SYS_NS16550_CLK		(48000000)
 #define CONFIG_SYS_NS16550_COM1		0x44e09000
 #define CONFIG_SYS_NS16550_COM4		0x481a6000
-
-#define CONFIG_BAUDRATE		115200
 
 #define CONFIG_SERIAL1                  1
 #define CONFIG_CONS_INDEX               1
@@ -192,7 +184,6 @@
  * USB configuration
  */
 #define CONFIG_USB_MUSB_DSPS
-#define CONFIG_ARCH_MISC_INIT
 #define CONFIG_USB_MUSB_PIO_ONLY
 #define CONFIG_USB_MUSB_DISABLE_BULK_COMBINE_SPLIT
 #undef CONFIG_USB_GADGET_DUALSPEED
@@ -236,9 +227,6 @@
 # define CONFIG_ENV_OFFSET		(892 << 10) /* 892 KiB in */
 # define CONFIG_ENV_SECT_SIZE		(4 << 10) /* 4 KB sectors */
 #endif /* SPI support */
-
-/* Unsupported features */
-#undef CONFIG_USE_IRQ
 
 #define CONFIG_DRIVER_TI_CPSW
 #define CONFIG_MII

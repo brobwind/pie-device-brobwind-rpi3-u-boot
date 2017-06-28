@@ -38,7 +38,9 @@ unsigned long get_board_ddr_clk(void);
 #define SPD_EEPROM_ADDRESS		0x51
 #define CONFIG_SYS_SPD_BUS_NUM		0
 
+#ifndef CONFIG_SPL
 #define CONFIG_FSL_DDR_INTERACTIVE	/* Interactive debugging */
+#endif
 
 #define CONFIG_DDR_ECC
 #ifdef CONFIG_DDR_ECC
@@ -118,7 +120,7 @@ unsigned long get_board_ddr_clk(void);
 #define CONFIG_SYS_FLASH_BASE_PHYS		CONFIG_SYS_FLASH_BASE
 #define CONFIG_SYS_FLASH_BASE_PHYS_EARLY	0x00000000
 
-#ifndef CONFIG_SYS_NO_FLASH
+#ifdef CONFIG_MTD_NOR_FLASH
 #define CONFIG_FLASH_CFI_DRIVER
 #define CONFIG_SYS_FLASH_CFI
 #define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
@@ -135,13 +137,23 @@ unsigned long get_board_ddr_clk(void);
 #define CFG_LPUART_EN		0x2
 #endif
 
+/* USB */
+#define CONFIG_HAS_FSL_XHCI_USB
+#ifdef CONFIG_HAS_FSL_XHCI_USB
+#define CONFIG_USB_XHCI_HCD
+#define CONFIG_USB_XHCI_FSL
+#define CONFIG_USB_XHCI_DWC3
+#define CONFIG_USB_MAX_CONTROLLER_COUNT         3
+#define CONFIG_SYS_USB_XHCI_MAX_ROOT_PORTS      2
+#define CONFIG_CMD_USB
+#define CONFIG_USB_STORAGE
+#endif
+
 /* SATA */
 #define CONFIG_LIBATA
 #define CONFIG_SCSI_AHCI
 #define CONFIG_SCSI_AHCI_PLAT
 #define CONFIG_SCSI
-#define CONFIG_DOS_PARTITION
-#define CONFIG_BOARD_LATE_INIT
 
 /* EEPROM */
 #define CONFIG_ID_EEPROM
@@ -257,7 +269,6 @@ unsigned long get_board_ddr_clk(void);
 #if defined(CONFIG_QSPI_BOOT) || defined(CONFIG_SD_BOOT_QSPI)
 #define CONFIG_QIXIS_I2C_ACCESS
 #define CONFIG_SYS_I2C_EARLY_INIT
-#define CONFIG_SYS_NO_FLASH
 #endif
 
 /*
@@ -423,12 +434,6 @@ unsigned long get_board_ddr_clk(void);
 
 #define CONFIG_SYS_HZ			1000
 
-/*
- * Stack sizes
- * The stack sizes are set up in start.S using the settings below
- */
-#define CONFIG_STACKSIZE		(30 * 1024)
-
 #define CONFIG_SYS_INIT_SP_OFFSET \
 	(CONFIG_SYS_INIT_RAM_SIZE - GENERATED_GBL_DATA_SIZE)
 
@@ -474,12 +479,14 @@ unsigned long get_board_ddr_clk(void);
 #define MTDPARTS_DEFAULT "mtdparts=1550000.quadspi:2m(uboot)," \
 			"14m(free)"
 #else
-#define MTDPARTS_DEFAULT "mtdparts=60000000.nor:1m(nor_bank0_rcw)," \
-			"1m(nor_bank0_uboot),1m(nor_bank0_uboot_env)," \
-			"1m(nor_bank0_fman_uconde),40m(nor_bank0_fit)," \
-			"1m(nor_bank4_rcw),1m(nor_bank4_uboot)," \
-			"1m(nor_bank4_uboot_env),1m(nor_bank4_fman_ucode)," \
-			"40m(nor_bank4_fit);7e800000.flash:" \
+#define MTDPARTS_DEFAULT "mtdparts=60000000.nor:" \
+			"2m@0x100000(nor_bank0_uboot),"\
+			"40m@0x1100000(nor_bank0_fit)," \
+			"7m(nor_bank0_user)," \
+			"2m@0x4100000(nor_bank4_uboot)," \
+			"40m@0x5100000(nor_bank4_fit),"\
+			"-(nor_bank4_user);" \
+			"7e800000.flash:" \
 			"4m(nand_uboot),36m(nand_kernel)," \
 			"472m(nand_free);spi0.0:2m(uboot)," \
 			"14m(free)"

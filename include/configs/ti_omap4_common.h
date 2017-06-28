@@ -18,8 +18,6 @@
 #define CONFIG_OMAP4430		1	/* which is in a 4430 */
 #define CONFIG_MISC_INIT_R
 
-#define CONFIG_SYS_THUMB_BUILD
-
 #ifndef CONFIG_SYS_L2CACHE_OFF
 #define CONFIG_SYS_L2_PL310		1
 #define CONFIG_SYS_PL310_BASE	0x48242000
@@ -106,6 +104,7 @@
 	"run distro_bootcmd"
 
 #include <config_distro_bootcmd.h>
+#include <environment/ti/mmc.h>
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	DEFAULT_LINUX_BOOT_ENV \

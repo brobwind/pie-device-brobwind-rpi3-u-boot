@@ -50,8 +50,22 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#define GPIO_ETH_LCD		GPIO_TO_PIN(2, 22)
 /* GPIO 7_11 */
 #define GPIO_DDR_VTT_EN 203
+
+/* Touch screen controller to identify the LCD */
+#define OSD_TS_FT_BUS_ADDRESS	0
+#define OSD_TS_FT_CHIP_ADDRESS	0x38
+#define OSD_TS_FT_REG_ID	0xA3
+/*
+ * Touchscreen IDs for various OSD panels
+ * Ref: http://www.osddisplays.com/TI/OSD101T2587-53TS_A.1.pdf
+ */
+/* Used on newer osd101t2587 Panels */
+#define OSD_TS_FT_ID_5x46	0x54
+/* Used on older osd101t2045 Panels */
+#define OSD_TS_FT_ID_5606	0x08
 
 #define SYSINFO_BOARD_NAME_MAX_LEN	45
 
@@ -449,12 +463,83 @@ void hw_data_init(void)
 	*ctrl = &dra7xx_ctrl;
 }
 
+bool am571x_idk_needs_lcd(void)
+{
+	bool needs_lcd;
+
+	gpio_request(GPIO_ETH_LCD, "nLCD_Detect");
+	if (gpio_get_value(GPIO_ETH_LCD))
+		needs_lcd = false;
+	else
+		needs_lcd = true;
+
+	gpio_free(GPIO_ETH_LCD);
+
+	return needs_lcd;
+}
+
 int board_init(void)
 {
 	gpmc_init();
 	gd->bd->bi_boot_params = (CONFIG_SYS_SDRAM_BASE + 0x100);
 
 	return 0;
+}
+
+void am57x_idk_lcd_detect(void)
+{
+	int r = -ENODEV;
+	char *idk_lcd = "no";
+	uint8_t buf = 0;
+
+	/* Only valid for IDKs */
+	if (board_is_x15() || board_is_am572x_evm())
+		return;
+
+	/* Only AM571x IDK has gpio control detect.. so check that */
+	if (board_is_am571x_idk() && !am571x_idk_needs_lcd())
+		goto out;
+
+	r = i2c_set_bus_num(OSD_TS_FT_BUS_ADDRESS);
+	if (r) {
+		printf("%s: Failed to set bus address to %d: %d\n",
+		       __func__, OSD_TS_FT_BUS_ADDRESS, r);
+		goto out;
+	}
+	r = i2c_probe(OSD_TS_FT_CHIP_ADDRESS);
+	if (r) {
+		/* AM572x IDK has no explicit settings for optional LCD kit */
+		if (board_is_am571x_idk()) {
+			printf("%s: Touch screen detect failed: %d!\n",
+			       __func__, r);
+		}
+		goto out;
+	}
+
+	/* Read FT ID */
+	r = i2c_read(OSD_TS_FT_CHIP_ADDRESS, OSD_TS_FT_REG_ID, 1, &buf, 1);
+	if (r) {
+		printf("%s: Touch screen ID read %d:0x%02x[0x%02x] failed:%d\n",
+		       __func__, OSD_TS_FT_BUS_ADDRESS, OSD_TS_FT_CHIP_ADDRESS,
+		       OSD_TS_FT_REG_ID, r);
+		goto out;
+	}
+
+	switch (buf) {
+	case OSD_TS_FT_ID_5606:
+		idk_lcd = "osd101t2045";
+		break;
+	case OSD_TS_FT_ID_5x46:
+		idk_lcd = "osd101t2587";
+		break;
+	default:
+		printf("%s: Unidentifed Touch screen ID 0x%02x\n",
+		       __func__, buf);
+		/* we will let default be "no lcd" */
+	}
+out:
+	setenv("idk_lcd", idk_lcd);
+	return;
 }
 
 int board_late_init(void)
@@ -486,6 +571,14 @@ int board_late_init(void)
 	val = val | TPS65903X_PAD2_POWERHOLD_MASK;
 	palmas_i2c_write_u8(TPS65903X_CHIP_P1, TPS65903X_PRIMARY_SECONDARY_PAD2,
 			    val);
+
+	omap_die_id_serial();
+
+	am57x_idk_lcd_detect();
+
+#if !defined(CONFIG_SPL_BUILD)
+	board_ti_set_ethaddr(2);
+#endif
 
 	return 0;
 }
@@ -549,6 +642,17 @@ void recalibrate_iodelay(void)
 		do_set_mux32((*ctrl)->control_padconf_core_base, pconf, pconf_sz);
 	}
 
+	if (board_is_am571x_idk()) {
+		if (am571x_idk_needs_lcd()) {
+			pconf = core_padconf_array_vout_am571x_idk;
+			pconf_sz = ARRAY_SIZE(core_padconf_array_vout_am571x_idk);
+		} else {
+			pconf = core_padconf_array_icss1eth_am571x_idk;
+			pconf_sz = ARRAY_SIZE(core_padconf_array_icss1eth_am571x_idk);
+		}
+		do_set_mux32((*ctrl)->control_padconf_core_base, pconf, pconf_sz);
+	}
+
 	/* Setup IOdelay configuration */
 	ret = do_set_iodelay((*ctrl)->iodelay_config_base, iod, iod_sz);
 err:
@@ -557,7 +661,7 @@ err:
 }
 #endif
 
-#if !defined(CONFIG_SPL_BUILD) && defined(CONFIG_GENERIC_MMC)
+#if defined(CONFIG_GENERIC_MMC)
 int board_mmc_init(bd_t *bis)
 {
 	omap_mmc_init(0, 0, 0, -1, -1);

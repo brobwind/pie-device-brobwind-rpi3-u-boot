@@ -42,8 +42,6 @@
  */
 
 /* Startup hooks */
-#define CONFIG_BOARD_EARLY_INIT_F
-#define CONFIG_ARCH_MISC_INIT
 
 /* SPL */
 #define CONFIG_SPL_NO_CPU_SUPPORT_CODE
@@ -116,9 +114,6 @@
 #define CONFIG_PL01x_PORTS		{ (void *)MXS_UARTDBG_BASE }
 #define CONFIG_CONS_INDEX		0
 /* Default baudrate can be overridden by board! */
-#ifndef CONFIG_BAUDRATE
-#define CONFIG_BAUDRATE			115200
-#endif
 
 /* FEC Ethernet on SoC */
 #ifdef CONFIG_FEC_MXC
@@ -148,9 +143,7 @@
 
 /* MMC */
 #ifdef CONFIG_CMD_MMC
-#define CONFIG_GENERIC_MMC
 #define CONFIG_BOUNCE_BUFFER
-#define CONFIG_MXS_MMC
 #endif
 
 /* NAND */

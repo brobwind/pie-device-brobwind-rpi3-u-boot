@@ -104,8 +104,10 @@ struct fsl_esdhc_priv {
 	struct udevice *dev;
 	int non_removable;
 	int wp_enable;
+#ifdef CONFIG_DM_GPIO
 	struct gpio_desc cd_gpio;
 	struct gpio_desc wp_gpio;
+#endif
 };
 
 /* Return the XFERTYP flags for a given command and data packet */
@@ -592,7 +594,7 @@ static void esdhc_clock_control(struct mmc *mmc, bool enable)
 }
 #endif
 
-static void esdhc_set_ios(struct mmc *mmc)
+static int esdhc_set_ios(struct mmc *mmc)
 {
 	struct fsl_esdhc_priv *priv = mmc->priv;
 	struct fsl_esdhc *regs = priv->esdhc_regs;
@@ -614,6 +616,7 @@ static void esdhc_set_ios(struct mmc *mmc)
 	else if (mmc->bus_width == 8)
 		esdhc_setbits32(&regs->proctl, PROCTL_DTW_8);
 
+	return 0;
 }
 
 static int esdhc_init(struct mmc *mmc)
@@ -687,9 +690,10 @@ static int esdhc_getcd(struct mmc *mmc)
 #ifdef CONFIG_DM_MMC
 	if (priv->non_removable)
 		return 1;
-
+#ifdef CONFIG_DM_GPIO
 	if (dm_gpio_is_valid(&priv->cd_gpio))
 		return dm_gpio_get_value(&priv->cd_gpio);
+#endif
 #endif
 
 	while (!(esdhc_read32(&regs->prsstat) & PRSSTAT_CINS) && --timeout)
@@ -908,17 +912,26 @@ void mmc_adapter_card_type_ident(void)
 #endif
 
 #ifdef CONFIG_OF_LIBFDT
+__weak int esdhc_status_fixup(void *blob, const char *compat)
+{
+#ifdef CONFIG_FSL_ESDHC_PIN_MUX
+	if (!hwconfig("esdhc")) {
+		do_fixup_by_compat(blob, compat, "status", "disabled",
+				sizeof("disabled"), 1);
+		return 1;
+	}
+#endif
+	do_fixup_by_compat(blob, compat, "status", "okay",
+			   sizeof("okay"), 1);
+	return 0;
+}
+
 void fdt_fixup_esdhc(void *blob, bd_t *bd)
 {
 	const char *compat = "fsl,esdhc";
 
-#ifdef CONFIG_FSL_ESDHC_PIN_MUX
-	if (!hwconfig("esdhc")) {
-		do_fixup_by_compat(blob, compat, "status", "disabled",
-				8 + 1, 1);
+	if (esdhc_status_fixup(blob, compat))
 		return;
-	}
-#endif
 
 #ifdef CONFIG_FSL_ESDHC_USE_PERIPHERAL_CLK
 	do_fixup_by_compat_u32(blob, compat, "peripheral-frequency",
@@ -931,19 +944,21 @@ void fdt_fixup_esdhc(void *blob, bd_t *bd)
 	do_fixup_by_compat_u32(blob, compat, "adapter-type",
 			       (u32)(gd->arch.sdhc_adapter), 1);
 #endif
-	do_fixup_by_compat(blob, compat, "status", "okay",
-			   4 + 1, 1);
 }
 #endif
 
 #ifdef CONFIG_DM_MMC
 #include <asm/arch/clock.h>
+__weak void init_clk_usdhc(u32 index)
+{
+}
+
 static int fsl_esdhc_probe(struct udevice *dev)
 {
 	struct mmc_uclass_priv *upriv = dev_get_uclass_priv(dev);
 	struct fsl_esdhc_priv *priv = dev_get_priv(dev);
 	const void *fdt = gd->fdt_blob;
-	int node = dev->of_offset;
+	int node = dev_of_offset(dev);
 	fdt_addr_t addr;
 	unsigned int val;
 	int ret;
@@ -967,17 +982,20 @@ static int fsl_esdhc_probe(struct udevice *dev)
 		priv->non_removable = 1;
 	 } else {
 		priv->non_removable = 0;
+#ifdef CONFIG_DM_GPIO
 		gpio_request_by_name_nodev(fdt, node, "cd-gpios", 0,
 					   &priv->cd_gpio, GPIOD_IS_IN);
+#endif
 	}
 
 	priv->wp_enable = 1;
 
+#ifdef CONFIG_DM_GPIO
 	ret = gpio_request_by_name_nodev(fdt, node, "wp-gpios", 0,
 					 &priv->wp_gpio, GPIOD_IS_IN);
 	if (ret)
 		priv->wp_enable = 0;
-
+#endif
 	/*
 	 * TODO:
 	 * Because lack of clk driver, if SDHC clk is not enabled,
@@ -997,6 +1015,9 @@ static int fsl_esdhc_probe(struct udevice *dev)
 	 * correctly get the seq as 2 and 3, then let mxc_get_clock
 	 * work as expected.
 	 */
+
+	init_clk_usdhc(dev->seq);
+
 	priv->sdhc_clk = mxc_get_clock(MXC_ESDHC_CLK + dev->seq);
 	if (priv->sdhc_clk <= 0) {
 		dev_err(dev, "Unable to get clk for %s\n", dev->name);
@@ -1021,6 +1042,8 @@ static const struct udevice_id fsl_esdhc_ids[] = {
 	{ .compatible = "fsl,imx6sl-usdhc", },
 	{ .compatible = "fsl,imx6q-usdhc", },
 	{ .compatible = "fsl,imx7d-usdhc", },
+	{ .compatible = "fsl,imx7ulp-usdhc", },
+	{ .compatible = "fsl,esdhc", },
 	{ /* sentinel */ }
 };
 

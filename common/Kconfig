@@ -90,7 +90,7 @@ config BOOTSTAGE_STASH_ADDR
 
 config BOOTSTAGE_STASH_SIZE
 	hex "Size of boot timing stash region"
-	default 4096
+	default 0x1000
 	help
 	  This should be large enough to hold the bootstage stash. A value of
 	  4096 (4KiB) is normally plenty.
@@ -155,6 +155,75 @@ config SPI_BOOT
 	  Enabling this will make a U-Boot binary that is capable of being
 	  booted via SPI flash. This is not a must, some SoCs need this,
 	  some not.
+
+endmenu
+
+menu "Environment"
+
+if ARCH_SUNXI
+
+choice
+	prompt "Environment Device"
+	default ENV_IS_IN_MMC if ARCH_SUNXI
+
+config ENV_IS_IN_MMC
+	bool "Environment in an MMC device"
+	depends on CMD_MMC
+	help
+	  Define this if you have an MMC device which you want to use for the
+	  environment.
+
+config ENV_IS_IN_NAND
+	bool "Environment in a NAND device"
+	depends on CMD_NAND
+	help
+	  Define this if you have a NAND device which you want to use for the
+	  environment.
+
+config ENV_IS_IN_UBI
+	bool "Environment in a UBI volume"
+	depends on CMD_UBI
+	depends on CMD_MTDPARTS
+	help
+	  Define this if you have a UBI volume which you want to use for the
+	  environment.
+
+config ENV_IS_NOWHERE
+	bool "Environment is not stored"
+	help
+	  Define this if you don't want to or can't have an environment stored
+	  on a storage medium
+
+endchoice
+
+config ENV_OFFSET
+	hex "Environment Offset"
+	depends on !ENV_IS_IN_UBI
+	depends on !ENV_IS_NOWHERE
+	default 0x88000 if ARCH_SUNXI
+	help
+	  Offset from the start of the device (or partition)
+
+config ENV_SIZE
+	hex "Environment Size"
+	depends on !ENV_IS_NOWHERE
+	default 0x20000 if ARCH_SUNXI
+	help
+	  Size of the environment storage area
+
+config ENV_UBI_PART
+	string "UBI partition name"
+	depends on ENV_IS_IN_UBI
+	help
+	  MTD partition containing the UBI device
+
+config ENV_UBI_VOLUME
+	string "UBI volume name"
+	depends on ENV_IS_IN_UBI
+	help
+	  Name of the volume that you want to store the environment in.
+
+endif
 
 endmenu
 
@@ -357,12 +426,6 @@ config DEFAULT_FDT_FILE
 	help
 	  This option is used to set the default fdt file to boot OS.
 
-config SYS_NO_FLASH
-	bool "Disable support for parallel NOR flash"
-	default n
-	help
-	  This option is used to disable support for parallel NOR flash.
-
 config VERSION_VARIABLE
 	bool "add U-Boot environment variable vers"
 	default n
@@ -373,9 +436,19 @@ config VERSION_VARIABLE
 	  Any change to this variable will be reverted at the
 	  next reset.
 
+config BOARD_LATE_INIT
+	bool
+	help
+	  Sometimes board require some initialization code that might
+	  require once the actual init done, example saving board specific env,
+	  boot-modes etc. which eventually done at late.
+
+	  So this config enable the late init code with the help of board_late_init
+	  function which should defined on respective boards.
+
 config DISPLAY_CPUINFO
 	bool "Display information about the CPU during start up"
-	default y if ARM || BLACKFIN || NIOS2 || X86 || XTENSA
+	default y if ARM || NIOS2 || X86 || XTENSA || MPC5xxx
 	help
 	  Display information about the CPU that U-Boot is running on
 	  when U-Boot starts up. The function print_cpuinfo() is called
@@ -383,7 +456,7 @@ config DISPLAY_CPUINFO
 
 config DISPLAY_BOARDINFO
 	bool "Display information about the board during start up"
-	default y if ARM || M68K || MIPS || PPC || SPARC || XTENSA
+	default y if ARM || M68K || MIPS || PPC || XTENSA
 	help
 	  Display information about the board that U-Boot is running on
 	  when U-Boot starts up. The board function checkboard() is called
@@ -417,5 +490,36 @@ config ANDROID_BOOT_IMAGE
 	help
 	  This enables support for booting images which use the Android
 	  image format header.
+
+menu "Start-up hooks"
+
+config ARCH_EARLY_INIT_R
+	bool "Call arch-specific init soon after relocation"
+	default y if X86
+	help
+	  With this option U-Boot will call arch_early_init_r() soon after
+	  relocation. Driver model is running by this point, and the cache
+	  is on. Note that board_early_init_r() is called first, if
+	  enabled. This can be used to set up architecture-specific devices.
+
+config ARCH_MISC_INIT
+	bool "Call arch-specific init after relocation, when console is ready"
+	help
+	  With this option U-Boot will call arch_misc_init() after
+	  relocation to allow miscellaneous arch-dependent initialisation
+	  to be performed. This function should be defined by the board
+	  and will be called after the console is set up, after relocaiton.
+
+config BOARD_EARLY_INIT_F
+	bool "Call board-specific init before relocation"
+	default y if X86
+	help
+	  Some boards need to perform initialisation as soon as possible
+	  after boot. With this option, U-Boot calls board_early_init_f()
+	  after driver model is ready in the pre-relocation init sequence.
+	  Note that the normal serial console is not yet set up, but the
+	  debug UART will be available if enabled.
+
+endmenu
 
 source "common/spl/Kconfig"

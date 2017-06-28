@@ -32,7 +32,6 @@
 #endif
 
 /* uart */
-# define CONFIG_BAUDRATE	115200
 /* The following table includes the supported baudrates */
 # define CONFIG_SYS_BAUDRATE_TABLE \
 	{300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400}
@@ -45,7 +44,6 @@
 # define CONFIG_XILINX_GPIO
 # define CONFIG_SYS_GPIO_0_ADDR		XILINX_GPIO_BASEADDR
 #endif
-#define CONFIG_BOARD_LATE_INIT
 
 /* watchdog */
 #if defined(XILINX_WATCHDOG_BASEADDR) && defined(XILINX_WATCHDOG_IRQ)
@@ -112,7 +110,6 @@
 #else /* !FLASH */
 
 #ifdef SPIFLASH
-# define CONFIG_SYS_NO_FLASH		1
 # define CONFIG_SYS_SPI_BASE		XILINX_SPI_FLASH_BASEADDR
 # define CONFIG_SPI			1
 # define CONFIG_SF_DEFAULT_MODE		SPI_MODE_3
@@ -138,7 +135,6 @@
 #else /* !SPIFLASH */
 
 /* ENV in RAM */
-# define CONFIG_SYS_NO_FLASH	1
 # define CONFIG_ENV_IS_NOWHERE	1
 # define CONFIG_ENV_SIZE	0x1000
 # define CONFIG_ENV_ADDR	(CONFIG_SYS_MONITOR_BASE - CONFIG_ENV_SIZE)
@@ -235,15 +231,13 @@
 #define	CONFIG_BOOTARGS		"root=romfs"
 #define	CONFIG_HOSTNAME		XILINX_BOARD_NAME
 #define	CONFIG_BOOTCOMMAND	"base 0;tftp 11000000 image.img;bootm"
-#define	CONFIG_IPADDR		192.168.0.3
-#define	CONFIG_SERVERIP		192.168.0.5
-#define	CONFIG_GATEWAYIP	192.168.0.1
 
 /* architecture dependent code */
 #define	CONFIG_SYS_USR_EXCEP	/* user exception */
 
 #define	CONFIG_PREBOOT	"echo U-BOOT for ${hostname};setenv preboot;echo"
 
+#ifndef CONFIG_EXTRA_ENV_SETTINGS
 #define	CONFIG_EXTRA_ENV_SETTINGS	"unlock=yes\0" \
 					"nor0=flash-0\0"\
 					"mtdparts=mtdparts=flash-0:"\
@@ -253,6 +247,7 @@
 					"setenv stdin nc\0" \
 					"serial=setenv stdout serial;"\
 					"setenv stdin serial\0"
+#endif
 
 #define CONFIG_CMDLINE_EDITING
 
@@ -284,7 +279,6 @@
 
 #define CONFIG_SPL_LDSCRIPT	"arch/microblaze/cpu/u-boot-spl.lds"
 
-#define CONFIG_SPL_RAM_DEVICE
 #ifdef CONFIG_SYS_FLASH_BASE
 # define CONFIG_SYS_UBOOT_BASE		CONFIG_SYS_FLASH_BASE
 #endif

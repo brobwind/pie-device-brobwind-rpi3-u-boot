@@ -25,7 +25,6 @@
 
 #define CONFIG_4xx_DCACHE		/* enable cache in SDRAM	*/
 
-#define CONFIG_BOARD_EARLY_INIT_F	/* Call board_early_init_f	*/
 #define CONFIG_BOARD_EARLY_INIT_R	/* Call board_early_init_r	*/
 #define CONFIG_BOARD_POSTCLK_INIT	/* Call board_postclk_init	*/
 #define CONFIG_MISC_INIT_R		/* Call misc_init_r		*/
@@ -100,7 +99,6 @@
 #define CONFIG_SYS_NS16550_REG_SIZE	1
 #define CONFIG_SYS_NS16550_CLK		get_serial_clock()
 #undef CONFIG_SYS_EXT_SERIAL_CLOCK		/* no external clock provided	*/
-#define CONFIG_BAUDRATE		115200
 
 #define CONFIG_SYS_BAUDRATE_TABLE						\
 	{300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200}
@@ -372,9 +370,6 @@
 #define CONFIG_EHCI_HCD_INIT_AFTER_RESET /* re-init HCD after CMD_RESET */
 
 /* Partitions */
-#define CONFIG_MAC_PARTITION
-#define CONFIG_DOS_PARTITION
-#define CONFIG_ISO_PARTITION
 
 /*
  * BOOTP options

@@ -15,8 +15,6 @@
 
 /* #define CONFIG_ARMV8_SWITCH_TO_EL1 */
 
-#define CONFIG_SYS_NO_FLASH
-
 /* Generic Interrupt Controller Definitions */
 #define CONFIG_GICV2
 #define GICD_BASE	0xF9010000
@@ -50,17 +48,11 @@
 #define CONFIG_ZYNQ_SERIAL
 
 #define CONFIG_CONS_INDEX		0
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE \
 	{ 4800, 9600, 19200, 38400, 57600, 115200 }
 
 /* Command line configuration */
 #define CONFIG_CMD_ENV
-#define CONFIG_DOS_PARTITION
-#define CONFIG_EFI_PARTITION
-#ifndef CONFIG_SPL_BUILD
-# define CONFIG_ISO_PARTITION
-#endif
 #define CONFIG_MP
 
 /* BOOTP options */
@@ -80,15 +72,18 @@
 #endif
 #define CONFIG_AUTO_COMPLETE
 
-#if defined(CONFIG_ZYNQ_SDHCI)
-# define CONFIG_GENERIC_MMC
+#if defined(CONFIG_MMC_SDHCI_ZYNQ)
 # define CONFIG_SUPPORT_EMMC_BOOT
 # ifndef CONFIG_ZYNQ_SDHCI_MAX_FREQ
 #  define CONFIG_ZYNQ_SDHCI_MAX_FREQ	200000000
 # endif
+# define CONFIG_ENV_IS_IN_FAT
+# define FAT_ENV_DEVICE_AND_PART	"0:auto"
+# define FAT_ENV_FILE			"uboot.env"
+# define FAT_ENV_INTERFACE		"mmc"
 #endif
 
-#if defined(CONFIG_ZYNQ_SDHCI) || defined(CONFIG_ZYNQMP_USB)
+#if defined(CONFIG_MMC_SDHCI_ZYNQ) || defined(CONFIG_ZYNQMP_USB)
 # define CONFIG_FAT_WRITE
 #endif
 
@@ -105,7 +100,6 @@
 
 #if defined(CONFIG_ZYNQMP_USB)
 #define CONFIG_SYS_USB_XHCI_MAX_ROOT_PORTS      2
-#define CONFIG_USB_XHCI_ZYNQMP
 
 #define CONFIG_SYS_DFU_DATA_BUF_SIZE	0x1800000
 #define DFU_DEFAULT_POLL_TIMEOUT	300
@@ -123,17 +117,39 @@
 
 #define DFU_ALT_INFO  \
 		DFU_ALT_INFO_RAM
+
+#ifndef CONFIG_SPL_BUILD
+# define CONFIG_USB_FUNCTION_FASTBOOT
+# define CONFIG_CMD_FASTBOOT
+# define CONFIG_ANDROID_BOOT_IMAGE
+# define CONFIG_FASTBOOT_BUF_ADDR 0x100000
+# define CONFIG_FASTBOOT_BUF_SIZE 0x6000000
+# define CONFIG_FASTBOOT_FLASH
+# ifdef CONFIG_MMC_SDHCI_ZYNQ
+#  define CONFIG_FASTBOOT_FLASH_MMC_DEV 0
+# endif
+
+# define CONFIG_RANDOM_UUID
+# define PARTS_DEFAULT \
+	"partitions=uuid_disk=${uuid_gpt_disk};" \
+	"name=""boot"",size=16M,uuid=${uuid_gpt_boot};" \
+	"name=""Linux"",size=-M,uuid=${uuid_gpt_Linux}\0"
+#endif
 #endif
 
 #if !defined(DFU_ALT_INFO)
 # define DFU_ALT_INFO
 #endif
 
-#define CONFIG_BOARD_LATE_INIT
+#if !defined(PARTS_DEFAULT)
+# define PARTS_DEFAULT
+#endif
 
 /* Do not preserve environment */
+#if !defined(CONFIG_ENV_IS_IN_FAT)
 #define CONFIG_ENV_IS_NOWHERE		1
-#define CONFIG_ENV_SIZE			0x1000
+#endif
+#define CONFIG_ENV_SIZE			0x8000
 
 /* Monitor Command Prompt */
 /* Console I/O Buffer Size */
@@ -188,8 +204,6 @@
 
 #define CONFIG_SYS_BOOTM_LEN	(60 * 1024 * 1024)
 
-#define CONFIG_CMD_UNZIP
-
 #define CONFIG_BOARD_EARLY_INIT_R
 #define CONFIG_CLOCKS
 
@@ -202,7 +216,7 @@
 	"scriptaddr=0x02000000\0" \
 	"ramdisk_addr_r=0x02100000\0" \
 
-#if defined(CONFIG_ZYNQ_SDHCI)
+#if defined(CONFIG_MMC_SDHCI_ZYNQ)
 # define BOOT_TARGET_DEVICES_MMC(func)	func(MMC, mmc, 0) func(MMC, mmc, 1)
 #else
 # define BOOT_TARGET_DEVICES_MMC(func)
@@ -258,7 +272,6 @@
 
 #define CONFIG_SPL_FRAMEWORK
 #define CONFIG_SPL_BOARD_INIT
-#define CONFIG_SPL_RAM_DEVICE
 
 /* u-boot is like dtb */
 #define CONFIG_SPL_FS_LOAD_ARGS_NAME	"u-boot.bin"
@@ -271,7 +284,7 @@
 #define CONFIG_SPL_LOAD_FIT_ADDRESS	0x10000000
 
 /* MMC support */
-#ifdef CONFIG_ZYNQ_SDHCI
+#ifdef CONFIG_MMC_SDHCI_ZYNQ
 # define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION	1
 # define CONFIG_SYS_MMCSD_RAW_MODE_ARGS_SECTOR	0 /* unused */
 # define CONFIG_SYS_MMCSD_RAW_MODE_ARGS_SECTORS	0 /* unused */

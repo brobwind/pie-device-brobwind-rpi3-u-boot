@@ -473,7 +473,7 @@ void fdt_fixup_ethernet(void *fdt)
 	char *tmp, *end;
 	char mac[16];
 	const char *path;
-	unsigned char mac_addr[6];
+	unsigned char mac_addr[ARP_HLEN];
 	int offset;
 
 	if (fdt_path_offset(fdt, "/aliases") < 0)
@@ -482,7 +482,6 @@ void fdt_fixup_ethernet(void *fdt)
 	/* Cycle through all aliases */
 	for (prop = 0; ; prop++) {
 		const char *name;
-		int len = strlen("ethernet");
 
 		/* FDT might have been edited, recompute the offset */
 		offset = fdt_first_property_offset(fdt,
@@ -495,8 +494,13 @@ void fdt_fixup_ethernet(void *fdt)
 			break;
 
 		path = fdt_getprop_by_offset(fdt, offset, &name, NULL);
-		if (!strncmp(name, "ethernet", len)) {
-			i = trailing_strtol(name);
+		if (!strncmp(name, "ethernet", 8)) {
+			/* Treat plain "ethernet" same as "ethernet0". */
+			if (!strcmp(name, "ethernet"))
+				i = 0;
+			else
+				i = trailing_strtol(name);
+
 			if (i != -1) {
 				if (i == 0)
 					strcpy(mac, "ethaddr");
@@ -903,13 +907,8 @@ void fdt_fixup_mtdparts(void *blob, void *node_info, int node_info_size)
 {
 	struct node_info *ni = node_info;
 	struct mtd_device *dev;
-	char *parts;
 	int i, idx;
 	int noff;
-
-	parts = getenv("mtdparts");
-	if (!parts)
-		return;
 
 	if (mtdparts_init() != 0)
 		return;

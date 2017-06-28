@@ -9,19 +9,17 @@
 #ifndef __CONFIG_AM43XX_EVM_H
 #define __CONFIG_AM43XX_EVM_H
 
-#define CONFIG_BOARD_LATE_INIT
 #define CONFIG_ARCH_CPU_INIT
 #define CONFIG_MAX_RAM_BANK_SIZE	(1024 << 21)	/* 2GB */
 #define CONFIG_SYS_TIMERBASE		0x48040000	/* Use Timer2 */
 
-#include <environment/ti/dfu.h>
 #include <asm/arch/omap.h>
 
 /* NS16550 Configuration */
 #define CONFIG_SYS_NS16550_CLK		48000000
-#if defined(CONFIG_SPL_BUILD) || !defined(CONFIG_DM_SERIAL)
+#if !defined(CONFIG_SPL_DM) || !defined(CONFIG_DM_SERIAL)
+#define CONFIG_SYS_NS16550_REG_SIZE    (-4)
 #define CONFIG_SYS_NS16550_SERIAL
-#define CONFIG_SYS_NS16550_REG_SIZE	(-4)
 #endif
 
 /* I2C Configuration */
@@ -58,9 +56,6 @@
  * we need to call board_early_init_f.  This is taken care of in
  * s_init when we have SPL used.
  */
-#if !defined(CONFIG_SKIP_LOWLEVEL_INIT) && !defined(CONFIG_SPL)
-#define CONFIG_BOARD_EARLY_INIT_F
-#endif
 
 /* Now bring in the rest of the common code. */
 #include <configs/ti_armv7_omap.h>
@@ -115,9 +110,6 @@
  * DM support in SPL
  */
 #ifdef CONFIG_SPL_BUILD
-#undef CONFIG_DM_MMC
-#undef CONFIG_DM_SPI
-#undef CONFIG_DM_SPI_FLASH
 #undef CONFIG_TIMER
 #endif
 
@@ -168,11 +160,10 @@
 #define CONFIG_QSPI_QUAD_SUPPORT
 #define CONFIG_TI_EDMA3
 
-/* Enhance our eMMC support / experience. */
-#define CONFIG_CMD_GPT
-#define CONFIG_EFI_PARTITION
-
 #ifndef CONFIG_SPL_BUILD
+#include <environment/ti/dfu.h>
+#include <environment/ti/mmc.h>
+
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	DEFAULT_LINUX_BOOT_ENV \
 	DEFAULT_MMC_TI_ARGS \

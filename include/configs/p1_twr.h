@@ -40,7 +40,6 @@
 
 #define CONFIG_MP
 
-#define CONFIG_FSL_ELBC
 #define CONFIG_PCIE1	/* PCIE controller 1 (slot 1) */
 #define CONFIG_PCIE2	/* PCIE controller 2 (slot 2) */
 #define CONFIG_FSL_PCI_INIT	/* Use common FSL init code */
@@ -70,8 +69,6 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
  */
 #define CONFIG_L2_CACHE
 #define CONFIG_BTB
-
-#define CONFIG_BOARD_EARLY_INIT_F	/* Call board_pre_init */
 
 #define CONFIG_SYS_MEMTEST_START	0x00200000	/* memtest works on */
 #define CONFIG_SYS_MEMTEST_END		0x1fffffff
@@ -274,7 +271,6 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 #define CONFIG_CMD_PCI
 
 #define CONFIG_PCI_SCAN_SHOW	/* show pci devices on startup */
-#define CONFIG_DOS_PARTITION
 #endif /* CONFIG_PCI */
 
 #if defined(CONFIG_TSEC_ENET)
@@ -409,12 +405,6 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 #ifdef CONFIG_MMC
 #define CONFIG_FSL_ESDHC
 #define CONFIG_SYS_FSL_ESDHC_ADDR	CONFIG_SYS_MPC85xx_ESDHC_ADDR
-#define CONFIG_GENERIC_MMC
-#endif
-
-#if defined(CONFIG_MMC) || defined(CONFIG_USB_EHCI) \
-		 || defined(CONFIG_FSL_SATA)
-#define CONFIG_DOS_PARTITION
 #endif
 
 #undef CONFIG_WATCHDOG	/* watchdog disabled */
@@ -455,8 +445,6 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 #define CONFIG_LOADADDR	1000000
 
 #define CONFIG_BOOTARGS	/* the boot command will set bootargs */
-
-#define CONFIG_BAUDRATE	115200
 
 #define	CONFIG_EXTRA_ENV_SETTINGS	\
 "netdev=eth0\0"	\

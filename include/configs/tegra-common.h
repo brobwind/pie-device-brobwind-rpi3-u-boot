@@ -49,16 +49,9 @@
 
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
-#define CONFIG_BAUDRATE			115200
 
 /* turn on command-line edit/hist/auto */
-#define CONFIG_COMMAND_HISTORY
-
-/* turn on commonly used storage-related commands */
-#define CONFIG_PARTITION_UUIDS
-#define CONFIG_CMD_PART
-
-#define CONFIG_SYS_NO_FLASH
+#define CONFIG_CMDLINE_EDITING
 
 /*
  * Increasing the size of the IO buffer as default nfsargs size is more
@@ -98,15 +91,11 @@
 
 /* Defines for SPL */
 #define CONFIG_SPL_FRAMEWORK
-#define CONFIG_SPL_RAM_DEVICE
 #define CONFIG_SPL_BOARD_INIT
 #define CONFIG_SPL_NAND_SIMPLE
 #define CONFIG_SPL_MAX_FOOTPRINT	(CONFIG_SYS_TEXT_BASE - \
 						CONFIG_SPL_TEXT_BASE)
 #define CONFIG_SYS_SPL_MALLOC_SIZE	0x00010000
-
-#define CONFIG_BOARD_EARLY_INIT_F
-#define CONFIG_BOARD_LATE_INIT
 
 /* Misc utility code */
 #define CONFIG_BOUNCE_BUFFER

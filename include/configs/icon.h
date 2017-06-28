@@ -30,7 +30,6 @@
 #define CONFIG_HOSTNAME		icon
 #include "amcc-common.h"
 
-#define CONFIG_BOARD_EARLY_INIT_F	/* Call board_pre_init	*/
 #define CONFIG_BOARD_EARLY_INIT_R	/* Call board_early_init_r */
 
 /*
@@ -224,7 +223,6 @@
 #define CONFIG_SYSTEMACE		/* Enable SystemACE support	*/
 #define CONFIG_SYS_SYSTEMACE_WIDTH	16	/* Data bus width is 16	*/
 #define CONFIG_SYS_SYSTEMACE_BASE	CONFIG_SYS_ACE_BASE
-#define CONFIG_DOS_PARTITION
 
 /*
  * External Bus Controller (EBC) Setup

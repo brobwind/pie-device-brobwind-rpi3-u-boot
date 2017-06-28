@@ -15,14 +15,8 @@
 #define CONFIG_OMAP			/* in a TI OMAP core */
 #define CONFIG_OMAP3_MCX		/* working with mcx */
 #define CONFIG_OMAP_GPIO
-/* Common ARM Erratas */
-#define CONFIG_ARM_ERRATA_454179
-#define CONFIG_ARM_ERRATA_430973
-#define CONFIG_ARM_ERRATA_621766
 
-#define MACH_TYPE_MCX			3656
 #define CONFIG_MACH_TYPE	MACH_TYPE_MCX
-#define CONFIG_BOARD_LATE_INIT
 
 #define CONFIG_EMIF4	/* The chip has EMIF4 controller */
 
@@ -78,12 +72,8 @@
 
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{4800, 9600, 19200, 38400, 57600,\
 					115200}
-#define CONFIG_OMAP_HSMMC
-#define CONFIG_GENERIC_MMC
-#define CONFIG_DOS_PARTITION
 
 /* EHCI */
 #define CONFIG_OMAP3_GPIO_2
@@ -108,7 +98,6 @@
 #define CONFIG_MTD_DEVICE
 #define CONFIG_CMD_MTDPARTS
 
-#define CONFIG_SYS_NO_FLASH
 #define CONFIG_SYS_I2C
 #define CONFIG_SYS_OMAP24_I2C_SPEED	100000
 #define CONFIG_SYS_OMAP24_I2C_SLAVE	1

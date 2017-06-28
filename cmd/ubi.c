@@ -308,7 +308,7 @@ int ubi_volume_begin_write(char *volume, void *buf, size_t size,
 		return ENODEV;
 
 	rsvd_bytes = vol->reserved_pebs * (ubi->leb_size - vol->data_pad);
-	if (size < 0 || size > rsvd_bytes) {
+	if (size > rsvd_bytes) {
 		printf("size > volume size! Aborting!\n");
 		return EINVAL;
 	}
@@ -600,7 +600,8 @@ static int do_ubi(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 		}
 		/* E.g., create volume size */
 		if (argc == 4) {
-			size = simple_strtoull(argv[3], NULL, 16);
+			if (argv[3][0] != '-')
+				size = simple_strtoull(argv[3], NULL, 16);
 			argc--;
 		}
 		/* Use maximum available size */
@@ -691,8 +692,9 @@ U_BOOT_CMD(
 		" - Display volume and ubi layout information\n"
 	"ubi check volumename"
 		" - check if volumename exists\n"
-	"ubi create[vol] volume [size] [type] [id]"
-		" - create volume name with size\n"
+	"ubi create[vol] volume [size] [type] [id]\n"
+		" - create volume name with size ('-' for maximum"
+		" available size)\n"
 	"ubi write[vol] address volume size"
 		" - Write volume from address with size\n"
 	"ubi write.part address volume size [fullsize]\n"

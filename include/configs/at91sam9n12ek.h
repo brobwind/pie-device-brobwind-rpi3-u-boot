@@ -27,7 +27,6 @@
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_INITRD_TAG
 #define CONFIG_SKIP_LOWLEVEL_INIT
-#define CONFIG_BOARD_EARLY_INIT_F
 
 /* general purpose I/O */
 #define CONFIG_AT91_GPIO
@@ -36,7 +35,6 @@
 #define CONFIG_ATMEL_USART
 #define CONFIG_USART_BASE		ATMEL_BASE_DBGU
 #define CONFIG_USART_ID			ATMEL_ID_SYS
-#define CONFIG_BAUDRATE			115200
 
 /* LCD */
 #define LCD_BPP				LCD_COLOR16
@@ -56,9 +54,6 @@
 #define CONFIG_BOOTP_BOOTPATH
 #define CONFIG_BOOTP_GATEWAY
 #define CONFIG_BOOTP_HOSTNAME
-
-/* NOR flash - no real flash on this board */
-#define CONFIG_SYS_NO_FLASH
 
 /*
  * Command line configuration.
@@ -123,13 +118,7 @@
 
 /* MMC */
 #ifdef CONFIG_CMD_MMC
-#define CONFIG_GENERIC_MMC
 #define CONFIG_GENERIC_ATMEL_MCI
-#endif
-
-/* FAT */
-#ifdef CONFIG_CMD_FAT
-#define CONFIG_DOS_PARTITION
 #endif
 
 /* Ethernet */

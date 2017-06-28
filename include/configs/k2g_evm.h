@@ -10,6 +10,9 @@
 #ifndef __CONFIG_K2G_EVM_H
 #define __CONFIG_K2G_EVM_H
 
+#include <environment/ti/mmc.h>
+#include <environment/ti/spi.h>
+
 /* Platform type */
 #define CONFIG_SOC_K2G
 
@@ -60,10 +63,6 @@
 #define CONFIG_PHY_MICREL
 #define PHY_ANEG_TIMEOUT	10000 /* PHY needs longer aneg time */
 
-/* MMC/SD */
-#define CONFIG_GENERIC_MMC
-#define CONFIG_OMAP_HSMMC
-
 #undef CONFIG_ENV_IS_IN_NAND
 #define CONFIG_ENV_IS_IN_FAT
 #define FAT_ENV_INTERFACE		"mmc"
@@ -80,4 +79,5 @@
 #define CONFIG_BOUNCE_BUFFER
 #endif
 
+#define SPI_MTD_PARTS	KEYSTONE_SPI1_MTD_PARTS
 #endif /* __CONFIG_K2G_EVM_H */

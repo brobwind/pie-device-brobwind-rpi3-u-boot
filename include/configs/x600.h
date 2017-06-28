@@ -16,7 +16,6 @@
  */
 #define CONFIG_SPEAR600				/* SPEAr600 SoC */
 #define CONFIG_X600				/* on X600 board */
-#define CONFIG_SYS_THUMB_BUILD
 
 #include <asm/arch/hardware.h>
 
@@ -44,7 +43,6 @@
 #define CONFIG_PL011_SERIAL
 #define CONFIG_PL011_CLOCK			(48 * 1000 * 1000)
 #define CONFIG_CONS_INDEX			0
-#define CONFIG_BAUDRATE				115200
 #define CONFIG_SYS_BAUDRATE_TABLE		{ 9600, 19200, 38400, \
 						  57600, 115200 }
 #define CONFIG_SYS_LOADS_BAUD_CHANGE
@@ -120,7 +118,6 @@
 
 /* Filesystem support (for USB key) */
 #define CONFIG_SUPPORT_VFAT
-#define CONFIG_DOS_PARTITION
 
 
 /*
@@ -140,7 +137,6 @@
 #define CONFIG_CMDLINE_TAG
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_MISC_INIT_R
-#define CONFIG_BOARD_LATE_INIT
 #define CONFIG_MX_CYCLIC		/* enable mdc/mwc commands      */
 
 #define CONFIG_SYS_MEMTEST_START		0x00800000

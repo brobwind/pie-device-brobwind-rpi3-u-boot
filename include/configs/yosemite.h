@@ -32,7 +32,6 @@
  */
 #include "amcc-common.h"
 
-#define CONFIG_BOARD_EARLY_INIT_F 1     /* Call board_early_init_f	*/
 #define CONFIG_MISC_INIT_R	1	/* call misc_init_r()		*/
 #define CONFIG_BOARD_RESET	1	/* call board_reset()		*/
 
@@ -158,9 +157,6 @@
 #define CONFIG_PHY1_ADDR        3
 
 /* Partitions */
-#define CONFIG_MAC_PARTITION
-#define CONFIG_DOS_PARTITION
-#define CONFIG_ISO_PARTITION
 
 #ifdef CONFIG_440EP
 /* USB */

@@ -312,8 +312,6 @@
 #error CONFIG_PSC_CONSOLE must be 3
 #endif
 
-#define CONFIG_BAUDRATE			115200	/* ... at 115200 bps */
-
 #define CONSOLE_FIFO_TX_SIZE		FIFOC_PSC3_TX_SIZE
 #define CONSOLE_FIFO_TX_ADDR		FIFOC_PSC3_TX_ADDR
 #define CONSOLE_FIFO_RX_SIZE		FIFOC_PSC3_RX_SIZE
@@ -395,12 +393,6 @@
 #if defined(CONFIG_PCI)
 #define CONFIG_CMD_PCI
 #endif
-
-#if defined(CONFIG_CMD_IDE) || defined(CONFIG_CMD_EXT2)
-#define CONFIG_DOS_PARTITION
-#define CONFIG_MAC_PARTITION
-#define CONFIG_ISO_PARTITION
-#endif /* defined(CONFIG_CMD_IDE) */
 
 /*
  * Miscellaneous configurable options

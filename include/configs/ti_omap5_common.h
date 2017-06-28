@@ -17,9 +17,6 @@
 #ifndef __CONFIG_TI_OMAP5_COMMON_H
 #define __CONFIG_TI_OMAP5_COMMON_H
 
-/* Common ARM Erratas */
-#define CONFIG_ARM_ERRATA_798870
-
 /* Use General purpose timer 1 */
 #define CONFIG_SYS_TIMERBASE		GPT2_BASE
 
@@ -45,7 +42,7 @@
  * Hardware drivers
  */
 #define CONFIG_SYS_NS16550_CLK		48000000
-#if defined(CONFIG_SPL_BUILD) || !defined(CONFIG_DM_SERIAL)
+#if !defined(CONFIG_DM_SERIAL)
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	(-4)
 #endif
@@ -60,6 +57,8 @@
 #ifndef DFUARGS
 #define DFUARGS
 #endif
+
+#include <environment/ti/mmc.h>
 
 #define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -163,14 +162,8 @@
 #define CONFIG_SPL_NAND_AM33XX_BCH	/* ELM support */
 #endif
 
-/*
- * Disable MMC DM for SPL build and can be re-enabled after adding
- * DM support in SPL
- */
 #ifdef CONFIG_SPL_BUILD
-#undef CONFIG_DM_MMC
 #undef CONFIG_TIMER
-#undef CONFIG_DM_ETH
 #endif
 
 #endif /* __CONFIG_TI_OMAP5_COMMON_H */

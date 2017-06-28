@@ -15,10 +15,6 @@
  */
 #define CONFIG_OMAP		/* in a TI OMAP core */
 #define CONFIG_OMAP_GPIO
-/* Common ARM Erratas */
-#define CONFIG_ARM_ERRATA_454179
-#define CONFIG_ARM_ERRATA_430973
-#define CONFIG_ARM_ERRATA_621766
 
 #define CONFIG_SYS_TEXT_BASE 0x80008000
 
@@ -70,13 +66,8 @@
 
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{4800, 9600, 19200, 38400, 57600,\
 					115200}
-#define CONFIG_OMAP_HSMMC
-#define CONFIG_GENERIC_MMC
-#define CONFIG_DOS_PARTITION
-
 /* EHCI */
 #define CONFIG_OMAP3_GPIO_5
 #define CONFIG_USB_EHCI
@@ -88,7 +79,6 @@
 #define CONFIG_CMD_NAND		/* NAND support			*/
 #define CONFIG_CMD_EEPROM
 
-#define CONFIG_SYS_NO_FLASH
 #define CONFIG_SYS_I2C
 #define CONFIG_SYS_OMAP24_I2C_SPEED	400000
 #define CONFIG_SYS_OMAP24_I2C_SLAVE	1

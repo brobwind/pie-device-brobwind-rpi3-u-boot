@@ -37,7 +37,6 @@
 #define CONFIG_HOSTNAME		katmai
 #include "amcc-common.h"
 
-#define CONFIG_BOARD_EARLY_INIT_F 1	/* Call board_pre_init		*/
 #undef  CONFIG_SHOW_BOOT_PROGRESS
 
 /*-----------------------------------------------------------------------
@@ -238,7 +237,6 @@
 #define CONFIG_SYSTEMACE	1	/* Enable SystemACE support	*/
 #define CONFIG_SYS_SYSTEMACE_WIDTH	16	/* Data bus width is 16		*/
 #define CONFIG_SYS_SYSTEMACE_BASE	CONFIG_SYS_ACE_BASE
-#define CONFIG_DOS_PARTITION	1
 
 /*-----------------------------------------------------------------------
  * External Bus Controller (EBC) Setup

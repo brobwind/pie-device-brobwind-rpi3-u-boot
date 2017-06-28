@@ -205,21 +205,6 @@ void spl_board_init(void)
 #endif
 }
 
-__weak int board_mmc_init(bd_t *bis)
-{
-	switch (spl_boot_device()) {
-	case BOOT_DEVICE_MMC1:
-		omap_mmc_init(0, 0, 0, -1, -1);
-		break;
-	case BOOT_DEVICE_MMC2:
-	case BOOT_DEVICE_MMC2_2:
-		omap_mmc_init(0, 0, 0, -1, -1);
-		omap_mmc_init(1, 0, 0, -1, -1);
-		break;
-	}
-	return 0;
-}
-
 void __noreturn jump_to_image_no_args(struct spl_image_info *spl_image)
 {
 	typedef void __noreturn (*image_entry_noargs_t)(u32 *);
@@ -228,7 +213,7 @@ void __noreturn jump_to_image_no_args(struct spl_image_info *spl_image)
 
 	u32 boot_params = *((u32 *)OMAP_SRAM_SCRATCH_BOOT_PARAMS);
 
-	debug("image entry point: 0x%X\n", spl_image->entry_point);
+	debug("image entry point: 0x%lX\n", spl_image->entry_point);
 	/* Pass the saved boot_params from rom code */
 	image_entry((u32 *)boot_params);
 }

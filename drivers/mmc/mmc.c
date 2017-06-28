@@ -1111,7 +1111,6 @@ static int mmc_startup(struct mmc *mmc)
 	struct mmc_cmd cmd;
 	ALLOC_CACHE_ALIGN_BUFFER(u8, ext_csd, MMC_MAX_BLOCK_LEN);
 	ALLOC_CACHE_ALIGN_BUFFER(u8, test_csd, MMC_MAX_BLOCK_LEN);
-	int timeout = 1000;
 	bool has_parts = false;
 	bool part_completed;
 	struct blk_desc *bdesc;
@@ -1166,9 +1165,6 @@ static int mmc_startup(struct mmc *mmc)
 	cmd.cmdarg = mmc->rca << 16;
 
 	err = mmc_send_cmd(mmc, &cmd, NULL);
-
-	/* Waiting for the ready status */
-	mmc_send_status(mmc, timeout);
 
 	if (err)
 		return err;
@@ -1751,7 +1747,9 @@ int mmc_init(struct mmc *mmc)
 
 	if (!err)
 		err = mmc_complete_init(mmc);
-	debug("%s: %d, time %lu\n", __func__, err, get_timer(start));
+	if (err)
+		printf("%s: %d, time %lu\n", __func__, err, get_timer(start));
+
 	return err;
 }
 

@@ -36,7 +36,6 @@
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_INITRD_TAG
 #define CONFIG_SKIP_LOWLEVEL_INIT_ONLY
-#define CONFIG_BOARD_EARLY_INIT_F
 
 /* general purpose I/O */
 #define CONFIG_ATMEL_LEGACY		/* required until (g)pio is fixed */
@@ -75,9 +74,6 @@
 #define CONFIG_SYS_INIT_SP_ADDR \
 	(CONFIG_SYS_SDRAM_BASE + SZ_4K - GENERATED_GBL_DATA_SIZE)
 
-/* No NOR flash */
-#define CONFIG_SYS_NO_FLASH
-
 /* NAND flash */
 #ifdef CONFIG_CMD_NAND
 #define CONFIG_NAND_ATMEL
@@ -103,7 +99,6 @@
 #define CONFIG_USB_EHCI
 #define CONFIG_USB_EHCI_ATMEL
 #define CONFIG_SYS_USB_EHCI_MAX_ROOT_PORTS	2
-#define CONFIG_DOS_PARTITION
 
 /* USB DFU support */
 #define CONFIG_CMD_MTDPARTS
@@ -131,8 +126,6 @@
 	"256k(env),256k(env_redundant),256k(spare),"			\
 	"512k(dtb),6M(kernel)ro,-(rootfs) "				\
 	"root=/dev/mtdblock7 rw rootfstype=jffs2"
-
-#define CONFIG_BAUDRATE			115200
 
 #define CONFIG_SYS_CBSIZE		256
 #define CONFIG_SYS_MAXARGS		16

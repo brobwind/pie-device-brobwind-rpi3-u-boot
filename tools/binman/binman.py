@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 # Copyright (c) 2016 Google, Inc
 # Written by Simon Glass <sjg@chromium.org>
@@ -19,6 +19,7 @@ import unittest
 our_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(our_path, '../patman'))
 sys.path.append(os.path.join(our_path, '../dtoc'))
+sys.path.append(os.path.join(our_path, '../'))
 
 # Also allow entry-type modules to be brought in from the etype directory.
 sys.path.append(os.path.join(our_path, 'etype'))

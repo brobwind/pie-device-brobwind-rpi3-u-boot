@@ -4,6 +4,15 @@
 
 menu "Serial drivers"
 
+config BAUDRATE
+	int "Default baudrate"
+	default 115200
+	help
+	  Select a default baudrate, where "default" has a driver-specific
+	  meaning of either setting the baudrate for the early debug UART
+	  in the SPL stage (most drivers) or for choosing a default baudrate
+	  in the absence of an environment setting (serial_mxc.c).
+
 config REQUIRE_SERIAL_CONSOLE
 	bool "Require a serial port for console"
 	# Running without a serial console is not supported by the
@@ -35,11 +44,42 @@ config SPL_SERIAL_PRESENT
 	  This option enables the full UART in SPL, so if is it disabled,
 	  the full UART driver will be omitted, thus saving space.
 
+config CONS_INDEX
+	int "UART used for console"
+	depends on ARCH_SUNXI
+	default 2 if MACH_SUN5I
+	default 5 if MACH_SUN8I_A23 || MACH_SUN8I_A33
+	default 1
+	help
+	  Configures the console index.
+	  For Allwinner SoC., default values are 2 for SUN5I and 5 for A23/A33.
+	  Otherwise, the index equals 1.
+
 config DM_SERIAL
 	bool "Enable Driver Model for serial drivers"
 	depends on DM
 	help
 	  Enable driver model for serial. This replaces
+	  drivers/serial/serial.c with the serial uclass, which
+	  implements serial_putc() etc. The uclass interface is
+	  defined in include/serial.h.
+
+config SPL_DM_SERIAL
+	bool "Enable Driver Model for serial drivers"
+	depends on DM_SERIAL
+	default y if SPL && DM_SERIAL
+	help
+	  Enable driver model for serial in SPL. This replaces
+	  drivers/serial/serial.c with the serial uclass, which
+	  implements serial_putc() etc. The uclass interface is
+	  defined in include/serial.h.
+
+config TPL_DM_SERIAL
+	bool "Enable Driver Model for serial drivers"
+	depends on DM_SERIAL
+	default y if TPL && DM_SERIAL
+	help
+	  Enable driver model for serial in TPL. This replaces
 	  drivers/serial/serial.c with the serial uclass, which
 	  implements serial_putc() etc. The uclass interface is
 	  defined in include/serial.h.
@@ -347,12 +387,21 @@ config SYS_NS16550
 	  be used. It can be a constant or a function to get clock, eg,
 	  get_serial_clock().
 
+config INTEL_MID_SERIAL
+	bool "Intel MID platform UART support"
+	depends on DM_SERIAL && OF_CONTROL
+	depends on INTEL_MID
+	select SYS_NS16550
+	help
+	  Select this to enable a UART for Intel MID platforms.
+	  This uses the ns16550 driver as a library.
+
 config ROCKCHIP_SERIAL
 	bool "Rockchip on-chip UART support"
 	depends on DM_SERIAL && SPL_OF_PLATDATA
 	help
 	  Select this to enable a debug UART for Rockchip devices when using
-	  CONFIG_OF_PLATDATA (i.e. a compiled-in device tree replacemenmt).
+	  CONFIG_SPL_OF_PLATDATA (i.e. a compiled-in device tree replacemenmt).
 	  This uses the ns16550 driver, converting the platdata from of-platdata
 	  to the ns16550 format.
 
@@ -412,5 +461,13 @@ config PXA_SERIAL
 	help
 	  If you have a machine based on a Marvell XScale PXA2xx CPU you
 	  can enable its onboard serial ports by enabling this option.
+
+config STI_ASC_SERIAL
+	bool "STMicroelectronics on-chip UART"
+	depends on DM_SERIAL && ARCH_STI
+	help
+	  Select this to enable Asynchronous Serial Controller available
+	  on STiH410 SoC. This is a basic implementation,  it supports
+	  following baudrate 9600, 19200, 38400, 57600 and 115200.
 
 endmenu
