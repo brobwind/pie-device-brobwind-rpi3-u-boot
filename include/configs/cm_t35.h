@@ -25,10 +25,6 @@
 #define CONFIG_OMAP	/* in a TI OMAP core */
 #define CONFIG_OMAP_GPIO
 #define CONFIG_CM_T3X	/* working with CM-T35 and CM-T3730 */
-/* Common ARM Erratas */
-#define CONFIG_ARM_ERRATA_454179
-#define CONFIG_ARM_ERRATA_430973
-#define CONFIG_ARM_ERRATA_621766
 
 #define CONFIG_SDRC	/* The chip has SDRC controller */
 
@@ -76,13 +72,8 @@
 
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{4800, 9600, 19200, 38400, 57600,\
 					115200}
-
-#define CONFIG_GENERIC_MMC
-#define CONFIG_OMAP_HSMMC
-#define CONFIG_DOS_PARTITION
 
 /* USB */
 #define CONFIG_USB_OMAP3
@@ -106,7 +97,6 @@
 
 #define CONFIG_CMD_NAND		/* NAND support			*/
 
-#define CONFIG_SYS_NO_FLASH
 #define CONFIG_SYS_I2C
 #define CONFIG_SYS_OMAP24_I2C_SPEED	100000
 #define CONFIG_SYS_OMAP24_I2C_SLAVE	1
@@ -255,20 +245,12 @@
 					 GENERATED_GBL_DATA_SIZE)
 
 /* Status LED */
-#define CONFIG_STATUS_LED		/* Status LED enabled */
-#define CONFIG_BOARD_SPECIFIC_LED
-#define CONFIG_GPIO_LED
 #define GREEN_LED_GPIO			186 /* CM-T35 Green LED is GPIO186 */
-#define GREEN_LED_DEV			0
-#define STATUS_LED_BIT			GREEN_LED_GPIO
-#define STATUS_LED_STATE		STATUS_LED_ON
-#define STATUS_LED_PERIOD		(CONFIG_SYS_HZ / 2)
-#define STATUS_LED_BOOT			GREEN_LED_DEV
 
 #define CONFIG_SPLASHIMAGE_GUARD
 
 /* GPIO banks */
-#ifdef CONFIG_STATUS_LED
+#ifdef CONFIG_LED_STATUS
 #define CONFIG_OMAP3_GPIO_6	/* GPIO186 is in GPIO bank 6  */
 #endif
 

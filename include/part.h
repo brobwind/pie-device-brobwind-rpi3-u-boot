@@ -53,11 +53,14 @@ typedef struct disk_partition {
 	uchar	name[32];	/* partition name			*/
 	uchar	type[32];	/* string type description		*/
 	int	bootable;	/* Active/Bootable flag is set		*/
-#ifdef CONFIG_PARTITION_UUIDS
+#if CONFIG_IS_ENABLED(PARTITION_UUIDS)
 	char	uuid[37];	/* filesystem UUID as string, if exists	*/
 #endif
 #ifdef CONFIG_PARTITION_TYPE_GUID
 	char	type_guid[37];	/* type GUID as string, if exists	*/
+#endif
+#ifdef CONFIG_DOS_PARTITION
+	uchar	sys_ind;	/* partition type 			*/
 #endif
 } disk_partition_t;
 
@@ -256,7 +259,7 @@ struct part_driver {
 #define U_BOOT_PART_TYPE(__name)					\
 	ll_entry_declare(struct part_driver, __name, part_driver)
 
-#ifdef CONFIG_EFI_PARTITION
+#if CONFIG_IS_ENABLED(EFI_PARTITION)
 #include <part_efi.h>
 /* disk/part_efi.c */
 /**
@@ -366,7 +369,7 @@ int gpt_verify_partitions(struct blk_desc *dev_desc,
 			  gpt_header *gpt_head, gpt_entry **gpt_pte);
 #endif
 
-#ifdef CONFIG_DOS_PARTITION
+#if CONFIG_IS_ENABLED(DOS_PARTITION)
 /**
  * is_valid_dos_buf() - Ensure that a DOS MBR image is valid
  *

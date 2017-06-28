@@ -42,17 +42,11 @@
  */
 #define CONFIG_SYS_LONGHELP		/* undef to save memory */
 
-/*-------------------------------------------------
- * FLASH configuration
- */
-#define CONFIG_SYS_NO_FLASH
-
 /*------------------------------------------------------------
  * Console Configuration
  */
 #define CONFIG_SYS_CBSIZE		1024 /* Console I/O Buffer Size   */
 #define CONFIG_SYS_MAXARGS		16   /* max number of command args*/
-#define CONFIG_BAUDRATE			115200
 
 /* -------------------------------------------------
  * Environment

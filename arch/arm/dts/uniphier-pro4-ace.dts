@@ -14,11 +14,6 @@
 	model = "UniPhier Pro4 Ace Board";
 	compatible = "socionext,uniphier-pro4-ace", "socionext,uniphier-pro4";
 
-	memory {
-		device_type = "memory";
-		reg = <0x80000000 0x40000000>;
-	};
-
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
@@ -33,6 +28,11 @@
 		i2c3 = &i2c3;
 		i2c5 = &i2c5;
 		i2c6 = &i2c6;
+	};
+
+	memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 0x40000000>;
 	};
 };
 
@@ -54,6 +54,7 @@
 	eeprom@54 {
 		compatible = "st,24c64", "i2c-eeprom";
 		reg = <0x54>;
+		pagesize = <32>;
 		u-boot,i2c-offset-len = <2>;
 	};
 };

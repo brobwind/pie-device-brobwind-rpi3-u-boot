@@ -46,8 +46,6 @@
 #endif
 
 /* High Level Configuration Options */
-#define CONFIG_FSL_IFC			/* Enable IFC Support */
-#define CONFIG_FSL_CAAM			/* Enable SEC/CAAM */
 
 #define CONFIG_TSEC_ENET
 #define CONFIG_ENV_OVERWRITE
@@ -148,7 +146,6 @@ extern unsigned long get_sdram_size(void);
 /*
  * IFC Definitions
  */
-#define CONFIG_SYS_NO_FLASH
 
 /* NAND Flash on IFC */
 #define CONFIG_SYS_NAND_BASE		0xff800000
@@ -197,8 +194,6 @@ extern unsigned long get_sdram_size(void);
 #define CONFIG_SYS_CS0_FTIM1		CONFIG_SYS_NAND_FTIM1
 #define CONFIG_SYS_CS0_FTIM2		CONFIG_SYS_NAND_FTIM2
 #define CONFIG_SYS_CS0_FTIM3		CONFIG_SYS_NAND_FTIM3
-
-#define CONFIG_BOARD_EARLY_INIT_F	/* Call board_pre_init */
 
 #define CONFIG_SYS_INIT_RAM_LOCK
 #define CONFIG_SYS_INIT_RAM_ADDR	0xffd00000	/* stack in RAM */
@@ -301,7 +296,6 @@ extern unsigned long get_sdram_size(void);
  */
 #define CONFIG_CMD_ERRATA
 #define CONFIG_CMD_IRQ
-#define CONFIG_DOS_PARTITION
 #define CONFIG_CMD_REGINFO
 
 /*
@@ -370,8 +364,6 @@ extern unsigned long get_sdram_size(void);
 #define CONFIG_ROOTPATH		"/opt/nfsroot"
 #define CONFIG_BOOTFILE		"uImage"
 #define CONFIG_UBOOTPATH	"u-boot.bin" /* U-Boot image on TFTP server */
-
-#define CONFIG_BAUDRATE		115200
 
 #define	CONFIG_EXTRA_ENV_SETTINGS				\
 	"netdev=eth0\0"						\

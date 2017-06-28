@@ -23,8 +23,8 @@
 struct spl_image_info {
 	const char *name;
 	u8 os;
-	u32 load_addr;
-	u32 entry_point;
+	ulong load_addr;
+	ulong entry_point;
 	u32 size;
 	u32 flags;
 };
@@ -85,7 +85,7 @@ void spl_set_header_raw_uboot(struct spl_image_info *spl_image);
  * This parses the legacy image header information at @header and sets up
  * @spl_image according to what is found. If no image header is found, then
  * a raw image or bootz is assumed. If CONFIG_SPL_PANIC_ON_RAW_IMAGE is
- * enabled, then this causes a panic. If CONFIG_SPL_ABORT_ON_RAW_IMAGE is
+ * enabled, then this causes a panic. If CONFIG_SPL_RAW_IMAGE_SUPPORT is not
  * enabled then U-Boot gives up. Otherwise U-Boot sets up the image using
  * spl_set_header_raw_uboot(), or possibly the bootz header.
  *
@@ -213,11 +213,29 @@ int spl_load_image_ext_os(struct spl_image_info *spl_image,
 			  struct blk_desc *block_dev, int partition);
 
 /**
- * spl_init() - Set up device tree and driver model in SPL if enabled
+ * spl_early_init() - Set up device tree and driver model in SPL if enabled
  *
  * Call this function in board_init_f() if you want to use device tree and
- * driver model early, before board_init_r() is called. This function will
- * be called from board_init_r() if not called earlier.
+ * driver model early, before board_init_r() is called.
+ *
+ * If this is not called, then driver model will be inactive in SPL's
+ * board_init_f(), and no device tree will be available.
+ */
+int spl_early_init(void);
+
+/**
+ * spl_init() - Set up device tree and driver model in SPL if enabled
+ *
+ * You can optionally call spl_early_init(), then optionally call spl_init().
+ * This function will be called from board_init_r() if not called earlier.
+ *
+ * Both spl_early_init() and spl_init() perform a similar function except that
+ * the latter will not set up the malloc() area if
+ * CONFIG_SPL_STACK_R_MALLOC_SIMPLE_LEN is enabled, since it is assumed to
+ * already be done by a calll to spl_relocate_stack_gd() before board_init_r()
+ * is reached.
+ *
+ * This function will be called from board_init_r() if not called earlier.
  *
  * If this is not called, then driver model will be inactive in SPL's
  * board_init_f(), and no device tree will be available.

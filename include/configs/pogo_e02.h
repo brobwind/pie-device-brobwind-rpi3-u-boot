@@ -16,7 +16,6 @@
 /*
  * Machine type definition and ID
  */
-#define MACH_TYPE_POGO_E02		3542
 #define CONFIG_MACH_TYPE		MACH_TYPE_POGO_E02
 
 /*
@@ -29,7 +28,6 @@
 /*
  * Commands configuration
  */
-#define CONFIG_SYS_NO_FLASH		/* Declare no flash (NOR/SPI) */
 #define CONFIG_SYS_MVFS
 #define CONFIG_CMD_ENV
 #define CONFIG_CMD_NAND

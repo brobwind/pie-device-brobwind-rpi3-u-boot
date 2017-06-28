@@ -11,6 +11,8 @@
 
 #include "mt48lc16m16a2-75.h"
 
+DECLARE_GLOBAL_DATA_PTR;
+
 #ifndef CONFIG_SYS_RAMBOOT
 static void sdram_start (int hi_addr)
 {
@@ -53,12 +55,12 @@ static void sdram_start (int hi_addr)
 #endif
 
 /*
- * ATTENTION: Although partially referenced initdram does NOT make real use
+ * ATTENTION: Although partially referenced dram_init does NOT make real use
  *            use of CONFIG_SYS_SDRAM_BASE. The code does not work if CONFIG_SYS_SDRAM_BASE
  *            is something else than 0x00000000.
  */
 
-phys_size_t initdram (int board_type)
+int dram_init(void)
 {
 	ulong dramsize = 0;
 	ulong dramsize2 = 0;
@@ -125,7 +127,9 @@ phys_size_t initdram (int board_type)
 
 #endif /* CONFIG_SYS_RAMBOOT */
 
-	return dramsize + dramsize2;
+	gd->ram_size = dramsize + dramsize2;
+
+	return 0;
 }
 
 int checkboard (void)

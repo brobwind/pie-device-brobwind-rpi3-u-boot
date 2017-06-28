@@ -10,12 +10,12 @@
 #include <asm/armv7m.h>
 #include <asm/arch/stm32.h>
 #include <asm/arch/gpio.h>
-#include <asm/arch/rcc.h>
 #include <asm/arch/fmc.h>
 #include <dm/platdata.h>
 #include <dm/platform_data/serial_stm32x7.h>
 #include <asm/arch/stm32_periph.h>
 #include <asm/arch/stm32_defs.h>
+#include <asm/arch/syscfg.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -25,14 +25,6 @@ const struct stm32_gpio_ctl gpio_ctl_gpout = {
 	.speed = STM32_GPIO_SPEED_50M,
 	.pupd = STM32_GPIO_PUPD_NO,
 	.af = STM32_GPIO_AF0
-};
-
-const struct stm32_gpio_ctl gpio_ctl_usart = {
-	.mode = STM32_GPIO_MODE_AF,
-	.otype = STM32_GPIO_OTYPE_PP,
-	.speed = STM32_GPIO_SPEED_50M,
-	.pupd = STM32_GPIO_PUPD_UP,
-	.af = STM32_GPIO_AF7
 };
 
 const struct stm32_gpio_ctl gpio_ctl_fmc = {
@@ -114,11 +106,6 @@ out:
 	return rv;
 }
 
-/*
- * STM32 RCC FMC specific definitions
- */
-#define RCC_ENR_FMC	(1 << 0)	/* FMC module clock  */
-
 static inline u32 _ns2clk(u32 ns, u32 freq)
 {
 	u32 tmp = freq/1000000;
@@ -176,7 +163,7 @@ int dram_init(void)
 	if (rv)
 		return rv;
 
-	setbits_le32(RCC_BASE + RCC_AHB3ENR, RCC_ENR_FMC);
+	clock_setup(FMC_CLOCK_CFG);
 
 	/*
 	 * Get frequency for NS2CLK calculation.
@@ -250,37 +237,40 @@ int dram_init(void)
 	return rv;
 }
 
-static const struct stm32_gpio_dsc usart_gpio[] = {
-	{STM32_GPIO_PORT_A, STM32_GPIO_PIN_9},	/* TX */
-	{STM32_GPIO_PORT_B, STM32_GPIO_PIN_7},	/* RX */
-};
-
 int uart_setup_gpio(void)
 {
-	int i;
-	int rv = 0;
-
 	clock_setup(GPIO_A_CLOCK_CFG);
 	clock_setup(GPIO_B_CLOCK_CFG);
-	for (i = 0; i < ARRAY_SIZE(usart_gpio); i++) {
-		rv = stm32_gpio_config(&usart_gpio[i], &gpio_ctl_usart);
-		if (rv)
-			goto out;
-	}
-
-out:
-	return rv;
+	return 0;
 }
 
-static const struct stm32x7_serial_platdata serial_platdata = {
-	.base = (struct stm32_usart *)USART1_BASE,
-	.clock = CONFIG_SYS_CLK_FREQ,
-};
+#ifdef CONFIG_ETH_DESIGNWARE
 
-U_BOOT_DEVICE(stm32x7_serials) = {
-	.name = "serial_stm32x7",
-	.platdata = &serial_platdata,
-};
+static int stmmac_setup(void)
+{
+	clock_setup(SYSCFG_CLOCK_CFG);
+	/* Set >RMII mode */
+	STM32_SYSCFG->pmc |= SYSCFG_PMC_MII_RMII_SEL;
+
+	clock_setup(GPIO_A_CLOCK_CFG);
+	clock_setup(GPIO_C_CLOCK_CFG);
+	clock_setup(GPIO_G_CLOCK_CFG);
+	clock_setup(STMMAC_CLOCK_CFG);
+
+	return 0;
+}
+#endif
+
+#ifdef CONFIG_STM32_QSPI
+
+static int qspi_setup(void)
+{
+	clock_setup(GPIO_B_CLOCK_CFG);
+	clock_setup(GPIO_D_CLOCK_CFG);
+	clock_setup(GPIO_E_CLOCK_CFG);
+	return 0;
+}
+#endif
 
 u32 get_board_rev(void)
 {
@@ -292,9 +282,20 @@ int board_early_init_f(void)
 	int res;
 
 	res = uart_setup_gpio();
-	clock_setup(USART1_CLOCK_CFG);
 	if (res)
 		return res;
+
+#ifdef CONFIG_ETH_DESIGNWARE
+	res = stmmac_setup();
+	if (res)
+		return res;
+#endif
+
+#ifdef CONFIG_STM32_QSPI
+	res = qspi_setup();
+	if (res)
+		return res;
+#endif
 
 	return 0;
 }

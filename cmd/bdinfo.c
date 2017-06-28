@@ -114,7 +114,7 @@ static inline void print_bi_flash(const bd_t *bd)
 	print_num("flash size     ",	(ulong)bd->bi_flashsize);
 	print_num("flash offset   ",	(ulong)bd->bi_flashoffset);
 
-#elif defined(CONFIG_NIOS2) || defined(CONFIG_OPENRISC)
+#elif defined(CONFIG_NIOS2)
 	print_num("flash start",	(ulong)bd->bi_flashstart);
 	print_num("flash size",		(ulong)bd->bi_flashsize);
 	print_num("flash offset",	(ulong)bd->bi_flashoffset);
@@ -152,8 +152,6 @@ static inline void print_baudrate(void)
 {
 #if defined(CONFIG_PPC)
 	printf("baudrate    = %6u bps\n", gd->baudrate);
-#elif defined(CONFIG_SPARC)
-	printf("baudrate               = %6u bps\n", gd->baudrate);
 #else
 	printf("baudrate    = %u bps\n", gd->baudrate);
 #endif
@@ -277,36 +275,6 @@ int do_bdinfo(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	return 0;
 }
 
-#elif defined(CONFIG_SPARC)
-
-int do_bdinfo(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
-{
-	bd_t *bd = gd->bd;
-
-#ifdef DEBUG
-	print_num("bd address             ", (ulong) bd);
-#endif
-	print_num("memstart               ", bd->bi_memstart);
-	print_lnum("memsize                ", bd->bi_memsize);
-	print_num("flashstart             ", bd->bi_flashstart);
-	print_num("CONFIG_SYS_MONITOR_BASE       ", CONFIG_SYS_MONITOR_BASE);
-	print_num("CONFIG_ENV_ADDR           ", CONFIG_ENV_ADDR);
-	printf("CONFIG_SYS_RELOC_MONITOR_BASE = 0x%x (%d)\n", CONFIG_SYS_RELOC_MONITOR_BASE,
-	       CONFIG_SYS_MONITOR_LEN);
-	printf("CONFIG_SYS_MALLOC_BASE        = 0x%x (%d)\n", CONFIG_SYS_MALLOC_BASE,
-	       CONFIG_SYS_MALLOC_LEN);
-	printf("CONFIG_SYS_INIT_SP_OFFSET     = 0x%x (%d)\n", CONFIG_SYS_INIT_SP_OFFSET,
-	       CONFIG_SYS_STACK_SIZE);
-	printf("CONFIG_SYS_PROM_OFFSET        = 0x%x (%d)\n", CONFIG_SYS_PROM_OFFSET,
-	       CONFIG_SYS_PROM_SIZE);
-	printf("CONFIG_SYS_GBL_DATA_OFFSET    = 0x%x (%d)\n", CONFIG_SYS_GBL_DATA_OFFSET,
-	       GENERATED_GBL_DATA_SIZE);
-
-	print_eth_ip_addr();
-	print_baudrate();
-	return 0;
-}
-
 #elif defined(CONFIG_M68K)
 
 int do_bdinfo(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
@@ -334,24 +302,6 @@ int do_bdinfo(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 #endif
 	print_eth_ip_addr();
 	print_baudrate();
-
-	return 0;
-}
-
-#elif defined(CONFIG_BLACKFIN)
-
-int do_bdinfo(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
-{
-	bd_t *bd = gd->bd;
-
-	printf("U-Boot      = %s\n", bd->bi_r_version);
-	printf("CPU         = %s\n", bd->bi_cpu);
-	printf("Board       = %s\n", bd->bi_board_name);
-	print_mhz("VCO",	bd->bi_vco);
-	print_mhz("CCLK",	bd->bi_cclk);
-	print_mhz("SCLK",	bd->bi_sclk);
-
-	print_std_bdinfo(bd);
 
 	return 0;
 }
@@ -391,6 +341,10 @@ static int do_bdinfo(cmd_tbl_t *cmdtp, int flag, int argc,
 		print_num("Secure ram",
 			  gd->arch.secure_ram & MEM_RESERVE_SECURE_ADDR_MASK);
 	}
+#endif
+#ifdef CONFIG_RESV_RAM
+	if (gd->arch.resv_ram)
+		print_num("Reserved ram", gd->arch.resv_ram);
 #endif
 #if defined(CONFIG_CMD_NET) && !defined(CONFIG_DM_ETH)
 	print_eths();
@@ -483,20 +437,6 @@ int do_bdinfo(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	print_num("arch_number",	bd->bi_arch_number);
 	print_bi_boot_params(bd);
 	print_bi_dram(bd);
-	print_eth_ip_addr();
-	print_baudrate();
-
-	return 0;
-}
-
-#elif defined(CONFIG_OPENRISC)
-
-int do_bdinfo(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
-{
-	bd_t *bd = gd->bd;
-
-	print_bi_mem(bd);
-	print_bi_flash(bd);
 	print_eth_ip_addr();
 	print_baudrate();
 

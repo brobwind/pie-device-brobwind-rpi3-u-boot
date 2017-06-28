@@ -15,10 +15,15 @@ typedef volatile unsigned long	vu_long;
 typedef volatile unsigned short vu_short;
 typedef volatile unsigned char	vu_char;
 
+/* Allow sharing constants with type modifiers between C and assembly. */
+#define _AC(X, Y)       (X##Y)
+
 #include <config.h>
 #include <errno.h>
+#include <time.h>
 #include <asm-offsets.h>
 #include <linux/bitops.h>
+#include <linux/delay.h>
 #include <linux/types.h>
 #include <linux/string.h>
 #include <linux/stringify.h>
@@ -70,9 +75,6 @@ typedef volatile unsigned char	vu_char;
 #endif
 #ifdef	CONFIG_4xx
 #include <asm/ppc4xx.h>
-#endif
-#ifdef CONFIG_BLACKFIN
-#include <asm/blackfin.h>
 #endif
 #ifdef CONFIG_SOC_DA8XX
 #include <asm/arch/hardware.h>
@@ -201,13 +203,27 @@ typedef void (interrupt_handler_t)(void *);
  */
 int dram_init(void);
 
+/**
+ * dram_init_banksize() - Set up DRAM bank sizes
+ *
+ * This can be implemented by boards to set up the DRAM bank information in
+ * gd->bd->bi_dram(). It is called just before relocation, after dram_init()
+ * is called.
+ *
+ * If this is not provided, a default implementation will try to set up a
+ * single bank. It will do this if CONFIG_NR_DRAM_BANKS and
+ * CONFIG_SYS_SDRAM_BASE are set. The bank will have a start address of
+ * CONFIG_SYS_SDRAM_BASE and the size will be determined by a call to
+ * get_effective_memsize().
+ *
+ * @return 0 if OK, -ve on error
+ */
+int dram_init_banksize(void);
+
 void	hang		(void) __attribute__ ((noreturn));
 
 int	timer_init(void);
 int	cpu_init(void);
-
-/* */
-phys_size_t initdram (int);
 
 #include <display_options.h>
 
@@ -279,16 +295,25 @@ int mac_read_from_eeprom(void);
 extern u8 __dtb_dt_begin[];	/* embedded device tree blob */
 int set_cpu_clk_info(void);
 int mdm_init(void);
-#if defined(CONFIG_DISPLAY_CPUINFO)
 int print_cpuinfo(void);
-#else
-static inline int print_cpuinfo(void)
-{
-	return 0;
-}
-#endif
 int update_flash_size(int flash_size);
 int arch_early_init_r(void);
+
+/*
+ * setup_board_extra() - Fill in extra details in the bd_t structure
+ *
+ * @return 0 if OK, -ve on error
+ */
+int setup_board_extra(void);
+
+/**
+ * arch_fsp_init() - perform firmware support package init
+ *
+ * Where U-Boot relies on binary blobs to handle part of the system init, this
+ * function can be used to set up the blobs. This is used on some Intel
+ * platforms.
+ */
+int arch_fsp_init(void);
 
 /**
  * arch_cpu_init_dm() - init CPU after driver model is available
@@ -347,9 +372,6 @@ int	source (ulong addr, const char *fit_uname);
 extern ulong load_addr;		/* Default Load Address */
 extern ulong save_addr;		/* Default Save Address */
 extern ulong save_size;		/* Default Save Size */
-
-/* common/cmd_doc.c */
-void	doc_probe(unsigned long physadr);
 
 /* common/cmd_net.c */
 int do_tftpb(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[]);
@@ -502,6 +524,7 @@ extern ssize_t spi_write (uchar *, int, uchar *, int);
 
 /* $(BOARD)/$(BOARD).c */
 int board_early_init_f (void);
+int board_fix_fdt (void *rw_fdt_blob); /* manipulate the U-Boot fdt before its relocation */
 int board_late_init (void);
 int board_postclk_init (void); /* after clocks/timebase, before env/serial */
 int board_early_init_r (void);
@@ -576,12 +599,6 @@ void ddr_enable_ecc(unsigned int dram_size);
 #endif
 #endif
 
-/*
- * Return the current value of a monotonically increasing microsecond timer.
- * Granularity may be larger than 1us if hardware does not support this.
- */
-ulong timer_get_us(void);
-
 /* $(CPU)/cpu.c */
 static inline int cpumask_next(int cpu, unsigned int mask)
 {
@@ -601,7 +618,17 @@ int	cpu_num_dspcores(void);
 u32	cpu_mask      (void);
 u32	cpu_dsp_mask(void);
 int	is_core_valid (unsigned int);
-int	probecpu      (void);
+
+/**
+ * arch_cpu_init() - basic cpu-dependent setup for an architecture
+ *
+ * This is called after early malloc is available. It should handle any
+ * CPU- or SoC- specific init needed to continue the init sequence. See
+ * board_f.c for where it is called. If this is not provided, a default
+ * version (which does nothing) will be used.
+ */
+int arch_cpu_init(void);
+
 int	checkcpu      (void);
 int	checkicache   (void);
 int	checkdcache   (void);
@@ -631,12 +658,7 @@ int serial_stub_tstc(struct stdio_dev *sdev);
 
 /* $(CPU)/speed.c */
 int	get_clocks (void);
-int	get_clocks_866 (void);
-int	sdram_adjust_866 (void);
-int	adjust_sdram_tbs_8xx (void);
-#if defined(CONFIG_MPC8260)
-int	prt_8260_clks (void);
-#elif defined(CONFIG_MPC5xxx)
+#if defined(CONFIG_MPC5xxx)
 int	prt_mpc5xxx_clks (void);
 #endif
 #ifdef CONFIG_4xx
@@ -707,11 +729,6 @@ ulong cpu_init_f(void);
 #endif
 
 int	cpu_init_r    (void);
-#if defined(CONFIG_MPC8260)
-int	prt_8260_rsr  (void);
-#elif defined(CONFIG_MPC83xx)
-int	prt_83xx_rsr  (void);
-#endif
 
 /* $(CPU)/interrupts.c */
 int	interrupt_init	   (void);
@@ -720,7 +737,6 @@ void	external_interrupt (struct pt_regs *);
 void	irq_install_handler(int, interrupt_handler_t *, void *);
 void	irq_free_handler   (int);
 void	reset_timer	   (void);
-ulong	get_timer	   (ulong base);
 
 /* Return value of monotonic microsecond timer */
 unsigned long timer_get_us(void);
@@ -776,10 +792,8 @@ uint64_t get_ticks(void);
 void	wait_ticks    (unsigned long);
 
 /* arch/$(ARCH)/lib/time.c */
-void	__udelay      (unsigned long);
 ulong	usec2ticks    (unsigned long usec);
 ulong	ticks2usec    (unsigned long ticks);
-int	init_timebase (void);
 
 /* lib/gunzip.c */
 int gunzip(void *, int, unsigned char *, unsigned long *);
@@ -832,10 +846,6 @@ int ulz4fn(const void *src, size_t srcn, void *dst, size_t *dstn);
 void qsort(void *base, size_t nmemb, size_t size,
 	   int(*compar)(const void *, const void *));
 int strcmp_compar(const void *, const void *);
-
-/* lib/time.c */
-void	udelay        (unsigned long);
-void mdelay(unsigned long);
 
 /* lib/uuid.c */
 #include <uuid.h>
@@ -918,7 +928,7 @@ static inline struct in_addr getenv_ip(char *var)
 
 int	pcmcia_init (void);
 
-#ifdef CONFIG_STATUS_LED
+#ifdef CONFIG_LED_STATUS
 # include <status_led.h>
 #endif
 
@@ -936,7 +946,12 @@ int cpu_disable(int nr);
 int cpu_release(int nr, int argc, char * const argv[]);
 #endif
 
-#endif /* __ASSEMBLY__ */
+#else	/* __ASSEMBLY__ */
+
+/* Drop a C type modifier (like in 3UL) for constants used in assembly. */
+#define _AC(X, Y)       X
+
+#endif	/* __ASSEMBLY__ */
 
 #ifdef CONFIG_PPC
 /*
@@ -947,6 +962,9 @@ int cpu_release(int nr, int argc, char * const argv[]);
 #endif
 
 /* Put only stuff here that the assembler can digest */
+
+/* Declare an unsigned long constant digestable both by C and an assembler. */
+#define UL(x)           _AC(x, UL)
 
 #ifdef CONFIG_POST
 #define CONFIG_HAS_POST

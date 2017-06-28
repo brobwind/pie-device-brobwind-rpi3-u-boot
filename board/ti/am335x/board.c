@@ -651,6 +651,21 @@ int board_late_init(void)
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 	char *name = NULL;
 
+	if (board_is_bone_lt()) {
+		/* BeagleBoard.org BeagleBone Black Wireless: */
+		if (!strncmp(board_ti_get_rev(), "BWA", 3)) {
+			name = "BBBW";
+		}
+		/* SeeedStudio BeagleBone Green Wireless */
+		if (!strncmp(board_ti_get_rev(), "GW1", 3)) {
+			name = "BBGW";
+		}
+		/* BeagleBoard.org BeagleBone Blue */
+		if (!strncmp(board_ti_get_rev(), "BLA", 3)) {
+			name = "BBBL";
+		}
+	}
+
 	if (board_is_bbg1())
 		name = "BBG1";
 	set_board_info_env(name);

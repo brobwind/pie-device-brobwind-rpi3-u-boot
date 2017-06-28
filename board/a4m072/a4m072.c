@@ -23,6 +23,8 @@
 
 #include "mt46v32m16.h"
 
+DECLARE_GLOBAL_DATA_PTR;
+
 #ifndef CONFIG_SYS_RAMBOOT
 static void sdram_start (int hi_addr)
 {
@@ -66,12 +68,12 @@ static void sdram_start (int hi_addr)
 #endif
 
 /*
- * ATTENTION: Although partially referenced initdram does NOT make real use
+ * ATTENTION: Although partially referenced dram_init does NOT make real use
  *            use of CONFIG_SYS_SDRAM_BASE. The code does not work if CONFIG_SYS_SDRAM_BASE
  *            is something else than 0x00000000.
  */
 
-phys_size_t initdram (int board_type)
+int dram_init(void)
 {
 	ulong dramsize = 0;
 	uint svr, pvr;
@@ -150,7 +152,9 @@ phys_size_t initdram (int board_type)
 		__asm__ volatile ("sync");
 	}
 
-	return dramsize;
+	gd->ram_size = dramsize;
+
+	return 0;
 }
 
 int checkboard (void)

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier:	GPL-2.0+
 #
 
-obj-$(CONFIG_$(SPL_)DM)		+= core/
+obj-$(CONFIG_$(SPL_TPL_)DM)	+= core/
 obj-$(CONFIG_$(SPL_)CLK)	+= clk/
 obj-$(CONFIG_$(SPL_)LED)	+= led/
 obj-$(CONFIG_$(SPL_)PINCTRL)	+= pinctrl/
@@ -10,6 +10,7 @@ obj-$(CONFIG_$(SPL_)RAM)	+= ram/
 
 ifdef CONFIG_SPL_BUILD
 
+obj-$(CONFIG_SPL_CPU_SUPPORT) += cpu/
 obj-$(CONFIG_SPL_CRYPTO_SUPPORT) += crypto/
 obj-$(CONFIG_SPL_I2C_SUPPORT) += i2c/
 obj-$(CONFIG_SPL_GPIO_SUPPORT) += gpio/
@@ -22,7 +23,7 @@ obj-$(CONFIG_SPL_SERIAL_SUPPORT) += serial/
 obj-$(CONFIG_SPL_SPI_SUPPORT) += spi/
 obj-$(CONFIG_SPL_POWER_SUPPORT) += power/ power/pmic/
 obj-$(CONFIG_SPL_POWER_SUPPORT) += power/regulator/
-obj-$(CONFIG_SPL_DRIVERS_MISC_SUPPORT) += misc/ sysreset/
+obj-$(CONFIG_SPL_DRIVERS_MISC_SUPPORT) += misc/ sysreset/ firmware/
 obj-$(CONFIG_SPL_MTD_SUPPORT) += mtd/
 obj-$(CONFIG_SPL_NAND_SUPPORT) += mtd/nand/
 obj-$(CONFIG_SPL_ONENAND_SUPPORT) += mtd/onenand/
@@ -32,6 +33,10 @@ obj-$(CONFIG_SPL_DMA_SUPPORT) += dma/
 obj-$(CONFIG_SPL_ETH_SUPPORT) += net/
 obj-$(CONFIG_SPL_ETH_SUPPORT) += net/phy/
 obj-$(CONFIG_SPL_USBETH_SUPPORT) += net/phy/
+obj-$(CONFIG_SPL_PCI_SUPPORT) += pci/
+obj-$(CONFIG_SPL_PCH_SUPPORT) += pch/
+obj-$(CONFIG_SPL_RTC_SUPPORT) += rtc/
+obj-$(CONFIG_SPL_TIMER_SUPPORT) += timer/
 obj-$(CONFIG_SPL_MUSB_NEW_SUPPORT) += usb/musb-new/
 obj-$(CONFIG_SPL_USB_GADGET_SUPPORT) += usb/gadget/
 obj-$(CONFIG_SPL_USB_GADGET_SUPPORT) += usb/gadget/udc/
@@ -47,7 +52,7 @@ endif
 ifdef CONFIG_TPL_BUILD
 
 obj-$(CONFIG_TPL_I2C_SUPPORT) += i2c/
-obj-$(CONFIG_TPL_DRIVERS_MISC_SUPPORT) += misc/ sysreset/
+obj-$(CONFIG_TPL_DRIVERS_MISC_SUPPORT) += misc/ sysreset/ firmware/
 obj-$(CONFIG_TPL_MMC_SUPPORT) += mmc/
 obj-$(CONFIG_TPL_MPC8XXX_INIT_DDR_SUPPORT) += ddr/fsl/
 obj-$(CONFIG_TPL_NAND_SUPPORT) += mtd/nand/
@@ -66,6 +71,7 @@ obj-y += block/
 obj-$(CONFIG_BOOTCOUNT_LIMIT) += bootcount/
 obj-$(CONFIG_CPU) += cpu/
 obj-y += crypto/
+obj-y += firmware/
 obj-$(CONFIG_FPGA) += fpga/
 obj-y += hwmon/
 obj-y += misc/

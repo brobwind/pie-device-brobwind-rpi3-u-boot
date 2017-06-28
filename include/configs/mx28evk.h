@@ -16,8 +16,6 @@
 #define CONFIG_MACH_TYPE	MACH_TYPE_MX28EVK
 
 /* U-Boot Commands */
-#define CONFIG_SYS_NO_FLASH
-#define CONFIG_DOS_PARTITION
 
 #define CONFIG_CMD_DATE
 #define CONFIG_CMD_NAND

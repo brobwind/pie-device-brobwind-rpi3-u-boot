@@ -20,8 +20,6 @@
 #define CONFIG_IODELAY_RECALIBRATION
 #endif
 
-#define CONFIG_BOARD_EARLY_INIT_F
-
 #define CONFIG_NR_DRAM_BANKS		2
 
 #define CONFIG_ENV_SIZE			(64 << 10)
@@ -34,7 +32,6 @@
 #define CONFIG_SYS_NS16550_COM1		UART1_BASE	/* Base EVM has UART0 */
 #define CONFIG_SYS_NS16550_COM2		UART2_BASE	/* UART2 */
 #define CONFIG_SYS_NS16550_COM3		UART3_BASE	/* UART3 */
-#define CONFIG_BAUDRATE			115200
 
 #define CONFIG_SYS_OMAP_ABE_SYSCK
 
@@ -70,8 +67,6 @@
 #include <configs/ti_omap5_common.h>
 
 /* Enhance our eMMC support / experience. */
-#define CONFIG_CMD_GPT
-#define CONFIG_EFI_PARTITION
 #define CONFIG_RANDOM_UUID
 #define CONFIG_HSMMC2_8BIT
 
@@ -98,7 +93,6 @@
 #define CONFIG_OMAP_USB3PHY1_HOST
 
 /* SATA */
-#define CONFIG_BOARD_LATE_INIT
 #define CONFIG_SCSI
 #define CONFIG_LIBATA
 #define CONFIG_SCSI_AHCI
@@ -107,10 +101,6 @@
 #define CONFIG_SYS_SCSI_MAX_LUN		1
 #define CONFIG_SYS_SCSI_MAX_DEVICE	(CONFIG_SYS_SCSI_MAX_SCSI_ID * \
 						CONFIG_SYS_SCSI_MAX_LUN)
-
-/* EEPROM */
-#define CONFIG_EEPROM_CHIP_ADDRESS 0x50
-#define CONFIG_EEPROM_BUS_ADDRESS 0
 
 /*
  * Default to using SPI for environment, etc.
@@ -125,11 +115,6 @@
 #define CONFIG_SYS_SPI_KERNEL_OFFS      0x1E0000
 #define CONFIG_SYS_SPI_ARGS_OFFS        0x140000
 #define CONFIG_SYS_SPI_ARGS_SIZE        0x80000
-
-#ifdef CONFIG_SPL_BUILD
-#undef CONFIG_DM_SPI
-#undef CONFIG_DM_SPI_FLASH
-#endif
 
 /* SPI SPL */
 #define CONFIG_TI_EDMA3

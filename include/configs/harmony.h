@@ -26,10 +26,6 @@
 
 #define CONFIG_MACH_TYPE		MACH_TYPE_HARMONY
 
-/* SD/MMC */
-#define CONFIG_GENERIC_MMC
-#define CONFIG_TEGRA_MMC
-
 /* NAND support */
 #define CONFIG_CMD_NAND
 #define CONFIG_TEGRA_NAND

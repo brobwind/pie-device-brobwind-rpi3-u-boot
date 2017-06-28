@@ -9,11 +9,8 @@
 #define __CONFIG_STV0991_H
 #define CONFIG_SYS_DCACHE_OFF
 #define CONFIG_SYS_EXCEPTION_VECTORS_HIGH
-#define CONFIG_BOARD_EARLY_INIT_F
 
 #define CONFIG_SYS_CORTEX_R4
-
-#define CONFIG_SYS_NO_FLASH
 
 /* ram memory-related information */
 #define CONFIG_NR_DRAM_BANKS			1
@@ -31,7 +28,6 @@
 #define CONFIG_SYS_MALLOC_LEN			(CONFIG_ENV_SIZE + 16 * 1024)
 
 /* serial port (PL011) configuration */
-#define CONFIG_BAUDRATE				115200
 #define CONFIG_PL01X_SERIAL
 
 /* user interface */

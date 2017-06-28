@@ -16,7 +16,6 @@
 /* High Level Configuration Options */
 #define CONFIG_MX51
 
-#define CONFIG_SYS_NO_FLASH		/* No NOR Flash */
 #define CONFIG_SKIP_LOWLEVEL_INIT	/* U-Boot is a 2nd stage bootloader */
 
 #define CONFIG_HW_WATCHDOG
@@ -59,9 +58,6 @@
 #define CONFIG_FSL_ESDHC
 #define CONFIG_SYS_FSL_ESDHC_ADDR	MMC_SDHC1_BASE_ADDR
 
-#define CONFIG_GENERIC_MMC
-#define CONFIG_DOS_PARTITION
-
 /*
  * Eth Configs
  */
@@ -77,7 +73,6 @@
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE		/* disable vendor parameters protection (serial#, ethaddr) */
 #define CONFIG_CONS_INDEX		1 /* use UART0 : used by serial driver */
-#define CONFIG_BAUDRATE			115200
 
 /***********************************************************
  * Command definition
@@ -149,8 +144,6 @@
 #define CONFIG_SYS_SDRAM_BASE		(PHYS_SDRAM_1)
 #define CONFIG_SYS_INIT_RAM_ADDR	(IRAM_BASE_ADDR)
 #define CONFIG_SYS_INIT_RAM_SIZE	(IRAM_SIZE)
-
-#define CONFIG_BOARD_EARLY_INIT_F
 
 #define CONFIG_SYS_INIT_SP_OFFSET \
 	(CONFIG_SYS_INIT_RAM_SIZE - GENERATED_GBL_DATA_SIZE)

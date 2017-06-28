@@ -116,7 +116,7 @@ int uclass_destroy(struct uclass *uc)
 	while (!list_empty(&uc->dev_head)) {
 		dev = list_first_entry(&uc->dev_head, struct udevice,
 				       uclass_node);
-		ret = device_remove(dev);
+		ret = device_remove(dev, DM_REMOVE_NORMAL);
 		if (ret)
 			return ret;
 		ret = device_unbind(dev);
@@ -250,7 +250,7 @@ int uclass_find_device_by_seq(enum uclass_id id, int seq_or_req_seq,
 		return ret;
 
 	list_for_each_entry(dev, &uc->dev_head, uclass_node) {
-		debug("   - %d %d\n", dev->req_seq, dev->seq);
+		debug("   - %d %d '%s'\n", dev->req_seq, dev->seq, dev->name);
 		if ((find_req_seq ? dev->req_seq : dev->seq) ==
 				seq_or_req_seq) {
 			*devp = dev;
@@ -278,7 +278,7 @@ int uclass_find_device_by_of_offset(enum uclass_id id, int node,
 		return ret;
 
 	list_for_each_entry(dev, &uc->dev_head, uclass_node) {
-		if (dev->of_offset == node) {
+		if (dev_of_offset(dev) == node) {
 			*devp = dev;
 			return 0;
 		}
@@ -299,7 +299,7 @@ static int uclass_find_device_by_phandle(enum uclass_id id,
 	int ret;
 
 	*devp = NULL;
-	find_phandle = fdtdec_get_int(gd->fdt_blob, parent->of_offset, name,
+	find_phandle = fdtdec_get_int(gd->fdt_blob, dev_of_offset(parent), name,
 				      -1);
 	if (find_phandle <= 0)
 		return -ENOENT;
@@ -308,7 +308,9 @@ static int uclass_find_device_by_phandle(enum uclass_id id,
 		return ret;
 
 	list_for_each_entry(dev, &uc->dev_head, uclass_node) {
-		uint phandle = fdt_get_phandle(gd->fdt_blob, dev->of_offset);
+		uint phandle;
+
+		phandle = fdt_get_phandle(gd->fdt_blob, dev_of_offset(dev));
 
 		if (phandle == find_phandle) {
 			*devp = dev;

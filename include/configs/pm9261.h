@@ -31,7 +31,6 @@
 #define CONFIG_ARCH_CPU_INIT
 #define CONFIG_SYS_TEXT_BASE	0
 
-#define MACH_TYPE_PM9261	1187
 #define CONFIG_MACH_TYPE	MACH_TYPE_PM9261
 
 /* clocks */
@@ -138,7 +137,6 @@
 #define CONFIG_INITRD_TAG	1
 
 #undef CONFIG_SKIP_LOWLEVEL_INIT
-#define CONFIG_BOARD_EARLY_INIT_F
 
 /*
  * Hardware drivers
@@ -226,7 +224,6 @@
 #define CONFIG_USB_ATMEL
 #define CONFIG_USB_ATMEL_CLK_SEL_PLLB
 #define CONFIG_USB_OHCI_NEW			1
-#define CONFIG_DOS_PARTITION			1
 #define CONFIG_SYS_USB_OHCI_CPU_INIT		1
 #define CONFIG_SYS_USB_OHCI_REGS_BASE		0x00500000
 #define CONFIG_SYS_USB_OHCI_SLOT_NAME		"at91sam9261"
@@ -321,8 +318,6 @@
 #else
 #error "Undefined memory device"
 #endif
-
-#define CONFIG_BAUDRATE			115200
 
 #define CONFIG_SYS_CBSIZE		256
 #define CONFIG_SYS_MAXARGS		16

@@ -20,7 +20,7 @@ static const int ether_rgmii_muxvals[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 					  0, 0, 0, 0};
 static const unsigned ether_rmii_pins[] = {30, 31, 32, 33, 34, 35, 36, 37, 39,
 					   41, 42, 45};
-static const int ether_rmii_muxvals[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+static const int ether_rmii_muxvals[] = {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1};
 static const unsigned i2c0_pins[] = {63, 64};
 static const int i2c0_muxvals[] = {0, 0};
 static const unsigned i2c1_pins[] = {65, 66};
@@ -106,7 +106,8 @@ static struct uniphier_pinctrl_socdata uniphier_ld20_pinctrl_socdata = {
 	.groups_count = ARRAY_SIZE(uniphier_ld20_groups),
 	.functions = uniphier_ld20_functions,
 	.functions_count = ARRAY_SIZE(uniphier_ld20_functions),
-	.caps = UNIPHIER_PINCTRL_CAPS_PERPIN_IECTRL,
+	.caps = UNIPHIER_PINCTRL_CAPS_PUPD_SIMPLE |
+		UNIPHIER_PINCTRL_CAPS_PERPIN_IECTRL,
 };
 
 static int uniphier_ld20_pinctrl_probe(struct udevice *dev)

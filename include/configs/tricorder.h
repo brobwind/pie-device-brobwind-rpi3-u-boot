@@ -17,12 +17,7 @@
 #define __CONFIG_H
 
 /* High Level Configuration Options */
-#define CONFIG_SYS_THUMB_BUILD
 #define CONFIG_OMAP			/* in a TI OMAP core */
-/* Common ARM Erratas */
-#define CONFIG_ARM_ERRATA_454179
-#define CONFIG_ARM_ERRATA_430973
-#define CONFIG_ARM_ERRATA_621766
 
 #define CONFIG_MACH_TYPE		MACH_TYPE_TRICORDER
 /*
@@ -61,18 +56,6 @@
 #define CONFIG_OMAP3_GPIO_2		/* GPIO32..63 are in GPIO bank 2 */
 
 /* LED support */
-#define CONFIG_STATUS_LED
-#define CONFIG_BOARD_SPECIFIC_LED
-#define CONFIG_CMD_LED			/* LED command */
-#define STATUS_LED_BIT			(1 << 0)
-#define STATUS_LED_STATE		STATUS_LED_ON
-#define STATUS_LED_PERIOD		(CONFIG_SYS_HZ / 2)
-#define STATUS_LED_BIT1			(1 << 1)
-#define STATUS_LED_STATE1		STATUS_LED_ON
-#define STATUS_LED_PERIOD1		(CONFIG_SYS_HZ / 2)
-#define STATUS_LED_BIT2			(1 << 2)
-#define STATUS_LED_STATE2		STATUS_LED_ON
-#define STATUS_LED_PERIOD2		(CONFIG_SYS_HZ / 2)
 
 /* NS16550 Configuration */
 #define CONFIG_SYS_NS16550_SERIAL
@@ -83,14 +66,8 @@
 #define CONFIG_CONS_INDEX		3
 #define CONFIG_SYS_NS16550_COM3		OMAP34XX_UART3
 #define CONFIG_SERIAL3			3
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{4800, 9600, 19200, 38400, 57600,\
 					115200}
-
-/* MMC */
-#define CONFIG_GENERIC_MMC
-#define CONFIG_OMAP_HSMMC
-#define CONFIG_DOS_PARTITION
 
 /* I2C */
 #define CONFIG_SYS_I2C
@@ -109,7 +86,6 @@
 #define CONFIG_TWL4030_LED
 
 /* Board NAND Info */
-#define CONFIG_SYS_NO_FLASH		/* no NOR flash */
 #define CONFIG_MTD_DEVICE		/* needed for mtdparts commands */
 #define MTDIDS_DEFAULT			"nand0=omap2-nand.0"
 #define MTDPARTS_DEFAULT		"mtdparts=omap2-nand.0:" \

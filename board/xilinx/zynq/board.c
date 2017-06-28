@@ -85,6 +85,12 @@ int board_init(void)
 int board_late_init(void)
 {
 	switch ((zynq_slcr_get_boot_mode()) & ZYNQ_BM_MASK) {
+	case ZYNQ_BM_QSPI:
+		setenv("modeboot", "qspiboot");
+		break;
+	case ZYNQ_BM_NAND:
+		setenv("modeboot", "nandboot");
+		break;
 	case ZYNQ_BM_NOR:
 		setenv("modeboot", "norboot");
 		break;
@@ -124,9 +130,11 @@ int zynq_board_read_rom_ethaddr(unsigned char *ethaddr)
 }
 
 #if !defined(CONFIG_SYS_SDRAM_BASE) && !defined(CONFIG_SYS_SDRAM_SIZE)
-void dram_init_banksize(void)
+int dram_init_banksize(void)
 {
 	fdtdec_setup_memory_banksize();
+
+	return 0;
 }
 
 int dram_init(void)

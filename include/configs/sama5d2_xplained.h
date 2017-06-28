@@ -10,12 +10,7 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-/* No NOR flash, this definition should put before common header */
-#define CONFIG_SYS_NO_FLASH
-
 #include "at91-sama5_common.h"
-
-#define CONFIG_BOARD_EARLY_INIT_F
 
 #define CONFIG_MISC_INIT_R
 
@@ -43,19 +38,10 @@
 /* NAND flash */
 #undef CONFIG_CMD_NAND
 
-/* MMC */
-#ifdef CONFIG_CMD_MMC
-#define CONFIG_GENERIC_MMC
-#endif
-
 /* USB device */
 #define CONFIG_USB_ETHER
 #define CONFIG_USB_ETH_RNDIS
 #define CONFIG_USBNET_MANUFACTURER      "Atmel SAMA5D2 XPlained"
-
-#if defined(CONFIG_CMD_USB) || defined(CONFIG_CMD_MMC)
-#define CONFIG_DOS_PARTITION
-#endif
 
 /* I2C */
 #define AT24MAC_ADDR		0x5c

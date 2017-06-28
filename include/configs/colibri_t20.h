@@ -11,8 +11,6 @@
 
 #include "tegra20-common.h"
 
-#define CONFIG_ARCH_MISC_INIT
-
 /* High-level configuration options */
 #define CONFIG_DISPLAY_BOARDINFO_LATE	/* Calls show_board_info() */
 
@@ -21,14 +19,10 @@
 #define CONFIG_TEGRA_UARTA_SDIO1
 #define CONFIG_SYS_NS16550_COM1		NV_PA_APB_UARTA_BASE
 
-#define CONFIG_MACH_TYPE		MACH_TYPE_COLIBRI_T20
+#define CONFIG_MACH_TYPE		MACH_TYPE_COLIBRI_TEGRA2
 
 /* I2C */
 #define CONFIG_SYS_I2C_TEGRA
-
-/* SD/MMC support */
-#define CONFIG_GENERIC_MMC
-#define CONFIG_TEGRA_MMC
 
 /* USB host support */
 #define CONFIG_USB_EHCI

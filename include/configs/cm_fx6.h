@@ -41,7 +41,6 @@
 /* Serial console */
 #define CONFIG_MXC_UART
 #define CONFIG_MXC_UART_BASE		UART4_BASE
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{9600, 19200, 38400, 57600, 115200}
 
 /* Shell */
@@ -238,7 +237,6 @@
 #define CONFIG_SERIAL_TAG
 
 /* misc */
-#define CONFIG_STACKSIZE			(128 * 1024)
 #define CONFIG_SYS_MALLOC_LEN			(10 * 1024 * 1024)
 #define CONFIG_MISC_INIT_R
 

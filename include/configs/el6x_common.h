@@ -19,9 +19,6 @@
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN		(10 * SZ_1M)
 
-#define CONFIG_BOARD_EARLY_INIT_F
-#define CONFIG_BOARD_LATE_INIT
-
 #define CONFIG_MXC_UART
 
 #ifdef CONFIG_SPL
@@ -58,7 +55,6 @@
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 #define CONFIG_MXC_UART_BASE	UART2_BASE
-#define CONFIG_BAUDRATE             115200
 
 /* Command definition */
 
@@ -103,8 +99,6 @@
 #define CONFIG_SYS_MEMTEST_END         0x10800000
 #define CONFIG_SYS_MEMTEST_SCRATCH     0x10800000
 
-#define CONFIG_STACKSIZE               (128 * 1024)
-
 /* Physical Memory Map */
 #define CONFIG_NR_DRAM_BANKS           1
 #define PHYS_SDRAM                     MMDC0_ARB_BASE_ADDR
@@ -118,8 +112,7 @@
 #define CONFIG_SYS_INIT_SP_ADDR \
 	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
 
-/* FLASH and environment organization */
-#define CONFIG_SYS_NO_FLASH
+/* environment organization */
 
 #define CONFIG_ENV_SIZE			(8 * 1024)
 

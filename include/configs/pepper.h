@@ -9,8 +9,6 @@
 
 #include <configs/ti_am335x_common.h>
 
-#undef CONFIG_BOARD_LATE_INIT
-
 /* Clock defines */
 #define V_OSCK				24000000  /* Clock output from T2 */
 #define V_SCLK				(V_OSCK)
@@ -18,7 +16,6 @@
 #define CONFIG_SYS_I2C_EEPROM_ADDR	0x50
 
 /* Mach type */
-#define MACH_TYPE_PEPPER		4207	/* Until the next sync */
 #define CONFIG_MACH_TYPE		MACH_TYPE_PEPPER
 
 #define CONFIG_ENV_SIZE			(128 << 10)	/* 128 KiB */

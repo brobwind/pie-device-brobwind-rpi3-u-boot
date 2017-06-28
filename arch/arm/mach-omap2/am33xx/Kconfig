@@ -1,15 +1,34 @@
 if AM33XX
 
+config AM33XX_CHILISOM
+	bool
+	select SUPPORT_SPL
+
 choice
 	prompt "AM33xx board select"
 	optional
 
 config TARGET_AM335X_EVM
 	bool "Support am335x_evm"
+	select BOARD_LATE_INIT
 	select DM
 	select DM_SERIAL
 	select DM_GPIO
 	select TI_I2C_BOARD_DETECT
+	imply SPL_ENV_SUPPORT
+	imply SPL_EXT_SUPPORT
+	imply SPL_FAT_SUPPORT
+	imply SPL_GPIO_SUPPORT
+	imply SPL_I2C_SUPPORT
+	imply SPL_LIBCOMMON_SUPPORT
+	imply SPL_LIBDISK_SUPPORT
+	imply SPL_LIBGENERIC_SUPPORT
+	imply SPL_MMC_SUPPORT
+	imply SPL_NAND_SUPPORT
+	imply SPL_POWER_SUPPORT
+	imply SPL_SERIAL_SUPPORT
+	imply SPL_WATCHDOG_SUPPORT
+	imply SPL_YMODEM_SUPPORT
 	help
 	  This option specifies support for the AM335x
 	  GP and HS EVM development platforms. The AM335x
@@ -20,6 +39,7 @@ config TARGET_AM335X_EVM
 
 config TARGET_AM335X_BALTOS
 	bool "Support am335x_baltos"
+	select BOARD_LATE_INIT
 	select DM
 	select DM_SERIAL
 	select DM_GPIO
@@ -32,18 +52,21 @@ config TARGET_AM335X_IGEP0033
 
 config TARGET_AM335X_SHC
 	bool "Support am335x based shc board from bosch"
+	select BOARD_LATE_INIT
 	select DM
 	select DM_SERIAL
 	select DM_GPIO
 
 config TARGET_AM335X_SL50
 	bool "Support am335x_sl50"
+	select BOARD_LATE_INIT
 	select DM
 	select DM_SERIAL
 	select DM_GPIO
 
 config TARGET_BAV335X
 	bool "Support bav335x"
+	select BOARD_LATE_INIT
 	select DM
 	select DM_SERIAL
 	help
@@ -54,6 +77,13 @@ config TARGET_BAV335X
 	  ethernet with simple connection to external connectors.
 
 	  For more information, visit: http://birdland.com/oem
+
+config TARGET_CHILIBOARD
+	bool "Grinn chiliBoard"
+	select AM33XX_CHILISOM
+	select BOARD_LATE_INIT
+	select DM
+	select DM_SERIAL
 
 config TARGET_CM_T335
 	bool "Support cm_t335"
@@ -85,18 +115,29 @@ endif
 
 if AM43XX
 
-config SPL_EXT_SUPPORT
-	default y
-
-config SPL_GPIO_SUPPORT
-	default y
-
-config SPL_I2C_SUPPORT
-	default y
-
 config TARGET_AM43XX_EVM
 	bool "Support am43xx_evm"
+	select BOARD_LATE_INIT
 	select TI_I2C_BOARD_DETECT
+	imply DM_ETH
+	imply DM_I2C
+	imply DM_SPI
+	imply DM_SPI_FLASH
+	imply SPI_FLASH_BAR
+	imply SPL_ENV_SUPPORT
+	imply SPL_EXT_SUPPORT
+	imply SPL_FAT_SUPPORT
+	imply SPL_GPIO_SUPPORT
+	imply SPL_I2C_SUPPORT
+	imply SPL_LIBCOMMON_SUPPORT
+	imply SPL_LIBDISK_SUPPORT
+	imply SPL_LIBGENERIC_SUPPORT
+	imply SPL_MMC_SUPPORT
+	imply SPL_NAND_SUPPORT
+	imply SPL_POWER_SUPPORT
+	imply SPL_SERIAL_SUPPORT
+	imply SPL_WATCHDOG_SUPPORT
+	imply SPL_YMODEM_SUPPORT
 	help
 	  This option specifies support for the AM43xx
 	  GP and HS EVM development platforms.The AM437x

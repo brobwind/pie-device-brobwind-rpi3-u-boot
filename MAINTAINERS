@@ -93,10 +93,9 @@ S:	Maintained
 T:	git git://git.denx.de/u-boot-imx.git
 F:	arch/arm/cpu/arm1136/mx*/
 F:	arch/arm/cpu/arm926ejs/mx*/
-F:	arch/arm/cpu/arm926ejs/imx/
 F:	arch/arm/cpu/armv7/mx*/
 F:	arch/arm/cpu/armv7/vf610/
-F:	arch/arm/cpu/imx-common/
+F:	arch/arm/imx-common/
 F:	arch/arm/include/asm/arch-imx/
 F:	arch/arm/include/asm/arch-mx*/
 F:	arch/arm/include/asm/arch-vf610/
@@ -165,12 +164,21 @@ S:	Maintained
 F:	arch/arm/cpu/armv7/stv0991/
 F:	arch/arm/include/asm/arch-stv0991/
 
+ARM STI
+M:	Patrice Chotard <patrice.chotard@st.com>
+S:	Maintained
+F:	arch/arm/mach-sti/
+F:	arch/arm/include/asm/arch-sti*/
+
 ARM SUNXI
 M:	Jagan Teki <jagan@openedev.com>
 M:	Maxime Ripard <maxime.ripard@free-electrons.com>
+S:	Maintained
 T:	git git://git.denx.de/u-boot-sunxi.git
 F:	arch/arm/cpu/armv7/sunxi/
 F:	arch/arm/include/asm/arch-sunxi/
+F:	arch/arm/mach-sunxi/
+F:	board/sunxi/
 
 ARM TEGRA
 M:	Tom Warren <twarren@nvidia.com>
@@ -216,12 +224,6 @@ S:	Maintained
 T:	git git://git.denx.de/u-boot-avr32.git
 F:	arch/avr32/
 
-BLACKFIN
-M:	Sonic Zhang <sonic.adi@gmail.com>
-S:	Maintained
-T:	git git://git.denx.de/u-boot-blackfin.git
-F:	arch/blackfin/
-
 BUILDMAN
 M:	Simon Glass <sjg@chromium.org>
 S:	Maintained
@@ -242,7 +244,7 @@ T:	git git://git.denx.de/u-boot-coldfire.git
 F:	arch/m68k/
 
 DFU
-M:	Lukasz Majewski <l.majewski@majess.pl>
+M:	Lukasz Majewski <lukma@denx.de>
 S:	Maintained
 T:	git git://git.denx.de/u-boot-dfu.git
 F:	drivers/dfu/
@@ -307,11 +309,6 @@ M:	Jaehoon Chung <jh80.chung@samsung.com>
 S:	Maintained
 T:	git git://git.denx.de/u-boot-mmc.git
 F:	drivers/mmc/
-
-OPENRISC
-M:	Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
-S:	Maintained
-F:	arch/openrisc/
 
 PATMAN
 M:	Simon Glass <sjg@chromium.org>
@@ -414,12 +411,6 @@ S:	Maintained
 T:	git git://git.denx.de/u-boot-sh.git
 F:	arch/sh/
 
-SPARC
-#M:	Francois Retief <fgretief@spaceteq.co.za>
-S:	Orphaned (Since 2016-02)
-T:	git git://git.denx.de/u-boot-sparc.git
-F:	arch/sparc/
-
 SPI
 M:	Jagan Teki <jagan@openedev.com>
 S:	Maintained
@@ -433,6 +424,21 @@ M:	Mateusz Kulikowski <mateusz.kulikowski@gmail.com>
 S:	Maintained
 F:	drivers/spmi/
 F:	include/spmi/
+
+TI SYSTEM SECURITY
+M:	Andrew F. Davis <afd@ti.com>
+S:	Supported
+F:	arch/arm/mach-omap2/omap5/sec_entry_cpu1.S
+F:	arch/arm/mach-omap2/omap5/sec-fxns.c
+F:	arch/arm/mach-omap2/sec-common.c
+F:	arch/arm/mach-omap2/config_secure.mk
+F:	configs/am335x_hs_evm_defconfig
+F:	configs/am43xx_hs_evm_defconfig
+F:	configs/am57xx_hs_evm_defconfig
+F:	configs/dra7xx_hs_evm_defconfig
+F:	configs/k2hk_hs_evm_defconfig
+F:	configs/k2e_hs_evm_defconfig
+F:	configs/k2g_hs_evm_defconfig
 
 TQ GROUP
 #M:	Martin Krause <martin.krause@tq-systems.de>

@@ -34,10 +34,6 @@
 	"led4=60,0,1\0" \
 	"led5=63,0,1\0"
 
-#undef CONFIG_DOS_PARTITION
-
-#define CONFIG_BOARD_LATE_INIT
-
  /* Physical Memory Map */
 #define CONFIG_MAX_RAM_BANK_SIZE	(1024 << 20)	/* 1GB */
 

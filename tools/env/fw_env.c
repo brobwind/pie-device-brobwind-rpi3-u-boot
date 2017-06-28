@@ -34,6 +34,7 @@
 # include <mtd/mtd-user.h>
 #endif
 
+#include "fw_env_private.h"
 #include "fw_env.h"
 
 struct env_opts default_opts = {
@@ -277,6 +278,7 @@ int fw_printenv(int argc, char *argv[], int value_only, struct env_opts *opts)
 
 			printf ("%s\n", env);
 		}
+		fw_env_close(opts);
 		return 0;
 	}
 
@@ -299,10 +301,12 @@ int fw_printenv(int argc, char *argv[], int value_only, struct env_opts *opts)
 		printf("%s=%s\n", name, val);
 	}
 
+	fw_env_close(opts);
+
 	return rc;
 }
 
-int fw_env_close(struct env_opts *opts)
+int fw_env_flush(struct env_opts *opts)
 {
 	int ret;
 
@@ -469,8 +473,10 @@ int fw_setenv(int argc, char *argv[], struct env_opts *opts)
 	int i;
 	size_t len;
 	char *name, **valv;
+	char *oldval;
 	char *value = NULL;
 	int valc;
+	int ret;
 
 	if (!opts)
 		opts = &default_opts;
@@ -490,8 +496,10 @@ int fw_setenv(int argc, char *argv[], struct env_opts *opts)
 	valv = argv + 1;
 	valc = argc - 1;
 
-	if (env_flags_validate_env_set_params(name, valv, valc) < 0)
+	if (env_flags_validate_env_set_params(name, valv, valc) < 0) {
+		fw_env_close(opts);
 		return -1;
+	}
 
 	len = 0;
 	for (i = 0; i < valc; ++i) {
@@ -500,11 +508,13 @@ int fw_setenv(int argc, char *argv[], struct env_opts *opts)
 
 		if (value)
 			value[len - 1] = ' ';
+		oldval = value;
 		value = realloc(value, len + val_len + 1);
 		if (!value) {
 			fprintf(stderr,
 				"Cannot malloc %zu bytes: %s\n",
 				len, strerror(errno));
+			free(oldval);
 			return -1;
 		}
 
@@ -517,7 +527,10 @@ int fw_setenv(int argc, char *argv[], struct env_opts *opts)
 
 	free(value);
 
-	return fw_env_close(opts);
+	ret = fw_env_flush(opts);
+	fw_env_close(opts);
+
+	return ret;
 }
 
 /*
@@ -638,7 +651,9 @@ int fw_parse_script(char *fname, struct env_opts *opts)
 	if (strcmp(fname, "-") != 0)
 		fclose(fp);
 
-	ret |= fw_env_close(opts);
+	ret |= fw_env_flush(opts);
+
+	fw_env_close(opts);
 
 	return ret;
 }
@@ -1104,11 +1119,11 @@ int fw_env_open(struct env_opts *opts)
 {
 	int crc0, crc0_ok;
 	unsigned char flag0;
-	void *addr0;
+	void *addr0 = NULL;
 
 	int crc1, crc1_ok;
 	unsigned char flag1;
-	void *addr1;
+	void *addr1 = NULL;
 
 	int ret;
 
@@ -1119,14 +1134,15 @@ int fw_env_open(struct env_opts *opts)
 		opts = &default_opts;
 
 	if (parse_config(opts))		/* should fill envdevices */
-		return -1;
+		return -EINVAL;
 
 	addr0 = calloc(1, CUR_ENVSIZE);
 	if (addr0 == NULL) {
 		fprintf(stderr,
 			"Not enough memory for environment (%ld bytes)\n",
 			CUR_ENVSIZE);
-		return -1;
+		ret = -ENOMEM;
+		goto open_cleanup;
 	}
 
 	/* read environment from FLASH to local buffer */
@@ -1145,8 +1161,10 @@ int fw_env_open(struct env_opts *opts)
 	}
 
 	dev_current = 0;
-	if (flash_io (O_RDONLY))
-		return -1;
+	if (flash_io(O_RDONLY)) {
+		ret = -EIO;
+		goto open_cleanup;
+	}
 
 	crc0 = crc32 (0, (uint8_t *) environment.data, ENV_SIZE);
 
@@ -1154,7 +1172,7 @@ int fw_env_open(struct env_opts *opts)
 		ret = env_aes_cbc_crypt(environment.data, 0,
 					opts->aes_key);
 		if (ret)
-			return ret;
+			goto open_cleanup;
 	}
 
 	crc0_ok = (crc0 == *environment.crc);
@@ -1173,7 +1191,8 @@ int fw_env_open(struct env_opts *opts)
 			fprintf(stderr,
 				"Not enough memory for environment (%ld bytes)\n",
 				CUR_ENVSIZE);
-			return -1;
+			ret = -ENOMEM;
+			goto open_cleanup;
 		}
 		redundant = addr1;
 
@@ -1182,8 +1201,10 @@ int fw_env_open(struct env_opts *opts)
 		 * other pointers in environment still point inside addr0
 		 */
 		environment.image = addr1;
-		if (flash_io (O_RDONLY))
-			return -1;
+		if (flash_io(O_RDONLY)) {
+			ret = -EIO;
+			goto open_cleanup;
+		}
 
 		/* Check flag scheme compatibility */
 		if (DEVTYPE(dev_current) == MTD_NORFLASH &&
@@ -1203,7 +1224,8 @@ int fw_env_open(struct env_opts *opts)
 			environment.flag_scheme = FLAG_INCREMENTAL;
 		} else {
 			fprintf (stderr, "Incompatible flash types!\n");
-			return -1;
+			ret = -EINVAL;
+			goto open_cleanup;
 		}
 
 		crc1 = crc32 (0, (uint8_t *) redundant->data, ENV_SIZE);
@@ -1212,7 +1234,7 @@ int fw_env_open(struct env_opts *opts)
 			ret = env_aes_cbc_crypt(redundant->data, 0,
 						opts->aes_key);
 			if (ret)
-				return ret;
+				goto open_cleanup;
 		}
 
 		crc1_ok = (crc1 == redundant->crc);
@@ -1283,6 +1305,28 @@ int fw_env_open(struct env_opts *opts)
 		fprintf(stderr, "Selected env in %s\n", DEVNAME(dev_current));
 #endif
 	}
+	return 0;
+
+open_cleanup:
+	if (addr0)
+		free(addr0);
+
+	if (addr1)
+		free(addr0);
+
+	return ret;
+}
+
+/*
+ * Simply free allocated buffer with environment
+ */
+int fw_env_close(struct env_opts *opts)
+{
+	if (environment.image)
+		free(environment.image);
+
+	environment.image = NULL;
+
 	return 0;
 }
 

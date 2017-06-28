@@ -14,11 +14,8 @@
 
 #include <asm/arch/imx-regs.h>
 
-#define CONFIG_VF610
-#define CONFIG_SYS_THUMB_BUILD
 #define CONFIG_SYS_FSL_CLK
 
-#define CONFIG_ARCH_MISC_INIT
 #define CONFIG_DISPLAY_BOARDINFO_LATE	/* Calls show_board_info() */
 
 #define CONFIG_SKIP_LOWLEVEL_INIT
@@ -28,16 +25,24 @@
 #define CONFIG_MXC_OCOTP
 #endif
 
+#ifdef CONFIG_VIDEO_FSL_DCU_FB
+#define CONFIG_CMD_BMP
+#define CONFIG_SPLASH_SCREEN_ALIGN
+#define CONFIG_VIDEO_LOGO
+#define CONFIG_VIDEO_BMP_LOGO
+#define CONFIG_SYS_FSL_DCU_LE
+
+#define CONFIG_SYS_DCU_ADDR		DCU0_BASE_ADDR
+#define DCU_LAYER_MAX_NUM		64
+#endif
+
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + 2 * 1024 * 1024)
-
-#define CONFIG_BOARD_EARLY_INIT_F
 
 /* Allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 #define CONFIG_ENV_VARS_UBOOT_CONFIG
 #define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
-#define CONFIG_BAUDRATE			115200
 
 /* NAND support */
 #define CONFIG_CMD_NAND
@@ -60,9 +65,6 @@
 #define CONFIG_SYS_FSL_ESDHC_ADDR	0
 #define CONFIG_SYS_FSL_ESDHC_NUM	1
 
-#define CONFIG_GENERIC_MMC
-#define CONFIG_DOS_PARTITION
-
 #define CONFIG_RBTREE
 #define CONFIG_LZO
 #define CONFIG_CMD_UBIFS	/* increases size by almost 60 KB */
@@ -78,8 +80,6 @@
 #define CONFIG_IPADDR		192.168.10.2
 #define CONFIG_NETMASK		255.255.255.0
 #define CONFIG_SERVERIP		192.168.10.1
-
-#define CONFIG_BOARD_LATE_INIT
 
 #define CONFIG_LOADADDR			0x80008000
 #define CONFIG_FDTADDR			0x84000000
@@ -141,6 +141,8 @@
 	"setupdate=run setsdupdate || run setusbupdate\0" \
 	"mtdparts=" MTDPARTS_DEFAULT "\0" \
 	"dfu_alt_info=" DFU_ALT_NAND_INFO "\0" \
+	"video-mode=dcufb:640x480-16@60,monitor=lcd\0" \
+	"splashpos=m,m\0" \
 	SD_BOOTCMD \
 	NFS_BOOTCMD \
 	UBI_BOOTCMD
@@ -161,12 +163,6 @@
 #define CONFIG_SYS_HZ			1000
 #define CONFIG_CMDLINE_EDITING
 
-/*
- * Stack sizes
- * The stack sizes are set up in start.S using the settings below
- */
-#define CONFIG_STACKSIZE		(128 * 1024)	/* regular stack */
-
 /* Physical memory map */
 #define CONFIG_NR_DRAM_BANKS		1
 #define PHYS_SDRAM			(0x80000000)
@@ -182,7 +178,6 @@
 	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
 
 /* Environment organization */
-#define CONFIG_SYS_NO_FLASH
 
 #ifdef CONFIG_ENV_IS_IN_MMC
 #define CONFIG_SYS_MMC_ENV_DEV		0
@@ -195,8 +190,6 @@
 #define CONFIG_ENV_RANGE		(4 * 64 * 2048)
 #define CONFIG_ENV_OFFSET		(12 * 64 * 2048)
 #endif
-
-#define CONFIG_SYS_NO_FLASH
 
 /* USB Host Support */
 #define CONFIG_USB_EHCI

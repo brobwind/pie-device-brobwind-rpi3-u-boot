@@ -205,7 +205,7 @@ int checkboard(void)
 }
 
 /*************************************************************************
- *  initdram -- doesn't use serial presence detect.
+ *  dram_init -- doesn't use serial presence detect.
  *
  *  Assumes:    256 MB, ECC, non-registered
  *              PLB @ 133 MHz
@@ -286,7 +286,7 @@ void sdram_tr1_set(int ram_address, int* tr1_value)
 	*tr1_value = (first_good + last_bad) / 2;
 }
 
-phys_size_t initdram(int board)
+int dram_init(void)
 {
 	register uint reg;
 	int tr1_bank1, tr1_bank2;
@@ -334,7 +334,10 @@ phys_size_t initdram(int board)
 	sdram_tr1_set(0x08000000, &tr1_bank2);
 	mtsdram(SDRAM0_TR1, (((tr1_bank1+tr1_bank2)/2) | 0x80800800));
 
-	return CONFIG_SYS_SDRAM_BANKS * (CONFIG_SYS_KBYTES_SDRAM * 1024);	/* return bytes */
+	gd->ram_size = CONFIG_SYS_SDRAM_BANKS *
+		(CONFIG_SYS_KBYTES_SDRAM * 1024);	/* set bytes */
+
+	return 0;
 }
 
 /*************************************************************************

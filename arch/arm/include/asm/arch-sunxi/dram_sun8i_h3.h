@@ -15,7 +15,9 @@
 
 struct sunxi_mctl_com_reg {
 	u32 cr;			/* 0x00 control register */
-	u8 res0[0xc];		/* 0x04 */
+	u32 cr_r1;		/* 0x04 rank 1 control register (R40 only) */
+	u8 res0[0x4];		/* 0x08 */
+	u32 tmr;		/* 0x0c (unused on H3) */
 	u32 mcr[16][2];		/* 0x10 */
 	u32 bwcr;		/* 0x90 bandwidth control register */
 	u32 maer;		/* 0x94 master enable register */
@@ -32,7 +34,9 @@ struct sunxi_mctl_com_reg {
 	u32 swoffr;		/* 0xc4 */
 	u8 res2[0x8];		/* 0xc8 */
 	u32 cccr;		/* 0xd0 */
-	u8 res3[0x72c];		/* 0xd4 */
+	u8 res3[0x54];		/* 0xd4 */
+	u32 mdfs_bwlr[3];	/* 0x128 (unused on H3) */
+	u8 res4[0x6cc];		/* 0x134 */
 	u32 protect;		/* 0x800 */
 };
 
@@ -60,6 +64,17 @@ struct sunxi_mctl_com_reg {
 #define MCTL_CR_DUAL_RANK	(0x1 << 0)
 #define MCTL_CR_SINGLE_RANK	(0x0 << 0)
 
+/*
+ * CR_R1 is a register found in the R40's DRAM controller. It sets various
+ * parameters for rank 1. Bits [11:0] have the same meaning as the bits in
+ * MCTL_CR, but they apply to rank 1 only. This implies we can have
+ * different chips for rank 1 than rank 0.
+ *
+ * As address line A15 and CS1 chip select for rank 1 are muxed on the same
+ * pin, if single rank is used, A15 must be muxed in.
+ */
+#define MCTL_CR_R1_MUX_A15	(0x1 << 21)
+
 #define PROTECT_MAGIC		(0x94be6fa3)
 
 struct sunxi_mctl_ctl_reg {
@@ -69,7 +84,8 @@ struct sunxi_mctl_ctl_reg {
 	u32 clken;		/* 0x0c */
 	u32 pgsr[2];		/* 0x10 PHY general status registers */
 	u32 statr;		/* 0x18 */
-	u8 res1[0x14];		/* 0x1c */
+	u8 res1[0x10];		/* 0x1c */
+	u32 lp3mr11;		/* 0x2c */
 	u32 mr[4];		/* 0x30 mode registers */
 	u32 pllgcr;		/* 0x40 */
 	u32 ptr[5];		/* 0x44 PHY timing registers */
@@ -81,7 +97,8 @@ struct sunxi_mctl_ctl_reg {
 	u32 rfshtmg;		/* 0x90 refresh timing */
 	u32 rfshctl1;		/* 0x94 */
 	u32 pwrtmg;		/* 0x98 */
-	u8  res3[0x20];		/* 0x9c */
+	u8 res3[0x1c];		/* 0x9c */
+	u32 vtfcr;		/* 0xb8 (unused on H3) */
 	u32 dqsgmr;		/* 0xbc */
 	u32 dtcr;		/* 0xc0 */
 	u32 dtar[4];		/* 0xc4 */
@@ -106,20 +123,24 @@ struct sunxi_mctl_ctl_reg {
 	u32 perfhpr[2];		/* 0x1c4 */
 	u32 perflpr[2];		/* 0x1cc */
 	u32 perfwr[2];		/* 0x1d4 */
-	u8 res8[0x2c];		/* 0x1dc */
-	u32 aciocr;		/* 0x208 */
-	u8 res9[0xf4];		/* 0x20c */
+	u8 res8[0x24];		/* 0x1dc */
+	u32 acmdlr;		/* 0x200 AC master delay line register */
+	u32 aclcdlr;		/* 0x204 AC local calibrated delay line register */
+	u32 aciocr;		/* 0x208 AC I/O configuration register */
+	u8 res9[0x4];		/* 0x20c */
+	u32 acbdlr[31];		/* 0x210 AC bit delay line registers */
+	u8 res10[0x74];		/* 0x28c */
 	struct {		/* 0x300 DATX8 modules*/
-		u32 mdlr;		/* 0x00 */
-		u32 lcdlr[3];		/* 0x04 */
-		u32 iocr[11];		/* 0x10 IO configuration register */
-		u32 bdlr6;		/* 0x3c */
-		u32 gtr;		/* 0x40 */
-		u32 gcr;		/* 0x44 */
-		u32 gsr[3];		/* 0x48 */
+		u32 mdlr;		/* 0x00 master delay line register */
+		u32 lcdlr[3];		/* 0x04 local calibrated delay line registers */
+		u32 bdlr[11];		/* 0x10 bit delay line registers */
+		u32 sdlr;		/* 0x3c output enable bit delay registers */
+		u32 gtr;		/* 0x40 general timing register */
+		u32 gcr;		/* 0x44 general configuration register */
+		u32 gsr[3];		/* 0x48 general status registers */
 		u8 res0[0x2c];		/* 0x54 */
-	} datx[4];
-	u8 res10[0x388];	/* 0x500 */
+	} dx[4];
+	u8 res11[0x388];	/* 0x500 */
 	u32 upd2;		/* 0x888 */
 };
 
@@ -172,14 +193,16 @@ struct sunxi_mctl_ctl_reg {
 
 #define PGSR_INIT_DONE	(0x1 << 0)	/* PHY init done */
 
-#define ZQCR_PWRDOWN	(0x1 << 31)	/* ZQ power down */
+#define ZQCR_PWRDOWN	(1U << 31)	/* ZQ power down */
 
-#define DATX_IOCR_DQ(x)	(x)		/* DQ0-7 IOCR index */
-#define DATX_IOCR_DM	(8)		/* DM IOCR index */
-#define DATX_IOCR_DQS	(9)		/* DQS IOCR index */
-#define DATX_IOCR_DQSN	(10)		/* DQSN IOCR index */
+#define ACBDLR_WRITE_DELAY(x)	((x) << 8)
 
-#define DATX_IOCR_WRITE_DELAY(x)	((x) << 8)
-#define DATX_IOCR_READ_DELAY(x)		((x) << 0)
+#define DXBDLR_DQ(x)	(x)		/* DQ0-7 BDLR index */
+#define DXBDLR_DM	8		/* DM BDLR index */
+#define DXBDLR_DQS	9		/* DQS BDLR index */
+#define DXBDLR_DQSN	10		/* DQSN BDLR index */
+
+#define DXBDLR_WRITE_DELAY(x)	((x) << 8)
+#define DXBDLR_READ_DELAY(x)	((x) << 0)
 
 #endif /* _SUNXI_DRAM_SUN8I_H3_H */

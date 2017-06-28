@@ -408,7 +408,7 @@ out:
 	priv->clock = clock;
 }
 
-static void tegra_mmc_set_ios(struct mmc *mmc)
+static int tegra_mmc_set_ios(struct mmc *mmc)
 {
 	struct tegra_mmc_priv *priv = mmc->priv;
 	unsigned char ctrl;
@@ -438,6 +438,8 @@ static void tegra_mmc_set_ios(struct mmc *mmc)
 
 	writeb(ctrl, &priv->reg->hostctl);
 	debug("mmc_set_ios: hostctl = %08X\n", ctrl);
+
+	return 0;
 }
 
 static void tegra_mmc_pad_init(struct tegra_mmc_priv *priv)
@@ -511,6 +513,22 @@ static int tegra_mmc_init(struct mmc *mmc)
 
 	tegra_mmc_reset(priv, mmc);
 
+#if defined(CONFIG_TEGRA124_MMC_DISABLE_EXT_LOOPBACK)
+	/*
+	 * Disable the external clock loopback and use the internal one on
+	 * SDMMC3 as per the SDMMC_VENDOR_MISC_CNTRL_0 register's SDMMC_SPARE1
+	 * bits being set to 0xfffd according to the TRM.
+	 *
+	 * TODO(marcel.ziswiler@toradex.com): Move to device tree controlled
+	 * approach once proper kernel integration made it mainline.
+	 */
+	if (priv->reg == (void *)0x700b0400) {
+		mask = readl(&priv->reg->venmiscctl);
+		mask &= ~TEGRA_MMC_MISCON_ENABLE_EXT_LOOPBACK;
+		writel(mask, &priv->reg->venmiscctl);
+	}
+#endif
+
 	priv->version = readw(&priv->reg->hcver);
 	debug("host version = %x\n", priv->version);
 
@@ -576,8 +594,8 @@ static int tegra_mmc_probe(struct udevice *dev)
 	priv->cfg.name = "Tegra SD/MMC";
 	priv->cfg.ops = &tegra_mmc_ops;
 
-	bus_width = fdtdec_get_int(gd->fdt_blob, dev->of_offset, "bus-width",
-				   1);
+	bus_width = fdtdec_get_int(gd->fdt_blob, dev_of_offset(dev),
+				   "bus-width", 1);
 
 	priv->cfg.voltages = MMC_VDD_32_33 | MMC_VDD_33_34 | MMC_VDD_165_195;
 	priv->cfg.host_caps = 0;

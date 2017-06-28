@@ -1,0 +1,151 @@
+/*
+ * Copyright 2016 - Michael Kurz <michi.kurz@gmail.com>
+ *
+ * Based on:
+ * stm32f429.dtsi from Linux
+ * Copyright 2015 - Maxime Coquelin <mcoquelin.stm32@gmail.com>
+ *
+ * This file is dual-licensed: you can use it either under the terms
+ * of the GPL or the X11 license, at your option. Note that this dual
+ * licensing only applies to this file, and not this project as a
+ * whole.
+ *
+ *  a) This file is free software; you can redistribute it and/or
+ *     modify it under the terms of the GNU General Public License as
+ *     published by the Free Software Foundation; either version 2 of the
+ *     License, or (at your option) any later version.
+ *
+ *     This file is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ * Or, alternatively,
+ *
+ *  b) Permission is hereby granted, free of charge, to any person
+ *     obtaining a copy of this software and associated documentation
+ *     files (the "Software"), to deal in the Software without
+ *     restriction, including without limitation the rights to use,
+ *     copy, modify, merge, publish, distribute, sublicense, and/or
+ *     sell copies of the Software, and to permit persons to whom the
+ *     Software is furnished to do so, subject to the following
+ *     conditions:
+ *
+ *     The above copyright notice and this permission notice shall be
+ *     included in all copies or substantial portions of the Software.
+ *
+ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *     OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+#include "armv7-m.dtsi"
+#include <dt-bindings/pinctrl/stm32f746-pinfunc.h>
+
+/ {
+	clocks {
+		clk_hse: clk-hse {
+			#clock-cells = <0>;
+			compatible = "fixed-clock";
+			clock-frequency = <0>;
+		};
+};
+
+	soc {
+		u-boot,dm-pre-reloc;
+		mac: ethernet@40028000 {
+			compatible = "st,stm32-dwmac";
+			reg = <0x40028000 0x8000>;
+			reg-names = "stmmaceth";
+			interrupts = <61>, <62>;
+			interrupt-names = "macirq", "eth_wake_irq";
+			snps,pbl = <8>;
+			snps,mixed-burst;
+			dma-ranges;
+			status = "disabled";
+		};
+
+		qspi: quadspi@A0001000 {
+			compatible = "st,stm32-qspi";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0xA0001000 0x1000>, <0x90000000 0x10000000>;
+			reg-names = "QuadSPI", "QuadSPI-memory";
+			interrupts = <92>;
+			spi-max-frequency = <108000000>;
+			status = "disabled";
+		};
+		usart1: serial@40011000 {
+			compatible = "st,stm32-usart", "st,stm32-uart";
+			reg = <0x40011000 0x400>;
+			interrupts = <37>;
+			clocks = <&rcc 0 164>;
+			status = "disabled";
+			u-boot,dm-pre-reloc;
+		};
+		rcc: rcc@40023810 {
+			#reset-cells = <1>;
+			#clock-cells = <2>;
+			compatible = "st,stm32f42xx-rcc", "st,stm32-rcc";
+			reg = <0x40023800 0x400>;
+			clocks = <&clk_hse>;
+			u-boot,dm-pre-reloc;
+		};
+
+		pinctrl: pin-controller {
+			#address-cells = <1>;
+			#size-cells = <1>;
+			compatible = "st,stm32f746-pinctrl";
+			ranges = <0 0x40020000 0x3000>;
+			u-boot,dm-pre-reloc;
+			pins-are-numbered;
+
+			usart1_pins_a: usart1@0 {
+				pins1 {
+					pinmux = <STM32F746_PA9_FUNC_USART1_TX>;
+					bias-disable;
+					drive-push-pull;
+					slew-rate = <2>;
+				};
+				pins2 {
+					pinmux = <STM32F746_PB7_FUNC_USART1_RX>;
+					bias-disable;
+				};
+			};
+			ethernet_mii: mii@0 {
+				pins {
+					pinmux = <STM32F746_PG13_FUNC_ETH_MII_TXD0_ETH_RMII_TXD0>,
+						 <STM32F746_PG14_FUNC_ETH_MII_TXD1_ETH_RMII_TXD1>,
+						 <STM32F746_PG11_FUNC_ETH_MII_TX_EN_ETH_RMII_TX_EN>,
+						 <STM32F746_PA2_FUNC_ETH_MDIO>,
+						 <STM32F746_PC1_FUNC_ETH_MDC>,
+						 <STM32F746_PA1_FUNC_ETH_MII_RX_CLK_ETH_RMII_REF_CLK>,
+						 <STM32F746_PA7_FUNC_ETH_MII_RX_DV_ETH_RMII_CRS_DV>,
+						 <STM32F746_PC4_FUNC_ETH_MII_RXD0_ETH_RMII_RXD0>,
+						 <STM32F746_PC5_FUNC_ETH_MII_RXD1_ETH_RMII_RXD1>;
+					slew-rate = <2>;
+				};
+			};
+			qspi_pins: qspi@0{
+				pins {
+					pinmux = <STM32F746_PB2_FUNC_QUADSPI_CLK>,
+						 <STM32F746_PB6_FUNC_QUADSPI_BK1_NCS>,
+						 <STM32F746_PD11_FUNC_QUADSPI_BK1_IO0>,
+						 <STM32F746_PD12_FUNC_QUADSPI_BK1_IO1>,
+						 <STM32F746_PD13_FUNC_QUADSPI_BK1_IO3>,
+						 <STM32F746_PE2_FUNC_QUADSPI_BK1_IO2>;
+					slew-rate = <2>;
+				};
+			};
+		};
+	};
+};
+
+&systick {
+	status = "okay";
+};

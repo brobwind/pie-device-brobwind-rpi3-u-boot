@@ -20,12 +20,9 @@
 
 #define	CONFIG_SYS_TEXT_BASE	0xFFFC8000
 
-#define CONFIG_BOARD_EARLY_INIT_F 1	/* call board_early_init_f()	*/
 #define CONFIG_MISC_INIT_R	1	/* call misc_init_r()		*/
 
 #define CONFIG_SYS_CLK_FREQ	33330000 /* external frequency to pll	*/
-
-#define CONFIG_BAUDRATE		9600
 
 #undef	CONFIG_BOOTARGS
 #undef  CONFIG_BOOTCOMMAND

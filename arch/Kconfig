@@ -12,6 +12,10 @@ config ARC
 	bool "ARC architecture"
 	select HAVE_PRIVATE_LIBGCC
 	select SUPPORT_OF_CONTROL
+	select ARCH_EARLY_INIT_R
+	select CLK
+	select TIMER
+	select ARC_TIMER
 
 config ARM
 	bool "ARM architecture"
@@ -22,9 +26,6 @@ config ARM
 config AVR32
 	bool "AVR32 architecture"
 	select CREATE_ARCH_SYMLINK
-
-config BLACKFIN
-	bool "Blackfin architecture"
 
 config M68K
 	bool "M68000 architecture"
@@ -50,9 +51,6 @@ config NIOS2
 	select DM
 	select CPU
 
-config OPENRISC
-	bool "OpenRISC architecture"
-
 config PPC
 	bool "PowerPC architecture"
 	select HAVE_PRIVATE_LIBGCC
@@ -60,6 +58,7 @@ config PPC
 
 config SANDBOX
 	bool "Sandbox"
+	select BOARD_LATE_INIT
 	select SUPPORT_OF_CONTROL
 	select DM
 	select DM_KEYBOARD
@@ -73,10 +72,6 @@ config SANDBOX
 config SH
 	bool "SuperH architecture"
 	select HAVE_PRIVATE_LIBGCC
-
-config SPARC
-	bool "SPARC architecture"
-	select CREATE_ARCH_SYMLINK
 
 config X86
 	bool "x86 architecture"
@@ -156,16 +151,13 @@ config SYS_CONFIG_NAME
 source "arch/arc/Kconfig"
 source "arch/arm/Kconfig"
 source "arch/avr32/Kconfig"
-source "arch/blackfin/Kconfig"
 source "arch/m68k/Kconfig"
 source "arch/microblaze/Kconfig"
 source "arch/mips/Kconfig"
 source "arch/nds32/Kconfig"
 source "arch/nios2/Kconfig"
-source "arch/openrisc/Kconfig"
 source "arch/powerpc/Kconfig"
 source "arch/sandbox/Kconfig"
 source "arch/sh/Kconfig"
-source "arch/sparc/Kconfig"
 source "arch/x86/Kconfig"
 source "arch/xtensa/Kconfig"

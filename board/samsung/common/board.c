@@ -108,7 +108,7 @@ int dram_init(void)
 	return 0;
 }
 
-void dram_init_banksize(void)
+int dram_init_banksize(void)
 {
 	unsigned int i;
 	unsigned long addr, size;
@@ -120,6 +120,8 @@ void dram_init_banksize(void)
 		gd->bd->bi_dram[i].start = addr;
 		gd->bd->bi_dram[i].size = size;
 	}
+
+	return 0;
 }
 
 static int board_uart_init(void)
@@ -260,7 +262,7 @@ static int init_mmc(void)
 
 static int init_dwmmc(void)
 {
-#ifdef CONFIG_DWMMC
+#ifdef CONFIG_MMC_DW
 	return exynos_dwmmc_init(gd->fdt_blob);
 #else
 	return 0;

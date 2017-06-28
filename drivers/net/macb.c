@@ -4,6 +4,7 @@
  * SPDX-License-Identifier:	GPL-2.0+
  */
 #include <common.h>
+#include <clk.h>
 #include <dm.h>
 
 /*
@@ -112,6 +113,9 @@ struct macb_device {
 	struct mii_dev		*bus;
 
 #ifdef CONFIG_DM_ETH
+#ifdef CONFIG_CLK
+	unsigned long		pclk_rate;
+#endif
 	phy_interface_t		phy_interface;
 #endif
 };
@@ -754,7 +758,11 @@ static int _macb_write_hwaddr(struct macb_device *macb, unsigned char *enetaddr)
 static u32 macb_mdc_clk_div(int id, struct macb_device *macb)
 {
 	u32 config;
+#if defined(CONFIG_DM_ETH) && defined(CONFIG_CLK)
+	unsigned long macb_hz = macb->pclk_rate;
+#else
 	unsigned long macb_hz = get_macb_pclk_rate(id);
+#endif
 
 	if (macb_hz < 20000000)
 		config = MACB_BF(CLK, MACB_CLK_DIV8);
@@ -771,7 +779,12 @@ static u32 macb_mdc_clk_div(int id, struct macb_device *macb)
 static u32 gem_mdc_clk_div(int id, struct macb_device *macb)
 {
 	u32 config;
+
+#if defined(CONFIG_DM_ETH) && defined(CONFIG_CLK)
+	unsigned long macb_hz = macb->pclk_rate;
+#else
 	unsigned long macb_hz = get_macb_pclk_rate(id);
+#endif
 
 	if (macb_hz < 20000000)
 		config = GEM_BF(CLK, GEM_CLK_DIV8);
@@ -991,26 +1004,57 @@ static const struct eth_ops macb_eth_ops = {
 	.write_hwaddr	= macb_write_hwaddr,
 };
 
+#ifdef CONFIG_CLK
+static int macb_enable_clk(struct udevice *dev)
+{
+	struct macb_device *macb = dev_get_priv(dev);
+	struct clk clk;
+	ulong clk_rate;
+	int ret;
+
+	ret = clk_get_by_index(dev, 0, &clk);
+	if (ret)
+		return -EINVAL;
+
+	ret = clk_enable(&clk);
+	if (ret)
+		return ret;
+
+	clk_rate = clk_get_rate(&clk);
+	if (!clk_rate)
+		return -EINVAL;
+
+	macb->pclk_rate = clk_rate;
+
+	return 0;
+}
+#endif
+
 static int macb_eth_probe(struct udevice *dev)
 {
 	struct eth_pdata *pdata = dev_get_platdata(dev);
 	struct macb_device *macb = dev_get_priv(dev);
-
-#ifdef CONFIG_DM_ETH
 	const char *phy_mode;
 
-	phy_mode = fdt_getprop(gd->fdt_blob, dev->of_offset, "phy-mode", NULL);
+	phy_mode = fdt_getprop(gd->fdt_blob, dev_of_offset(dev), "phy-mode",
+			       NULL);
 	if (phy_mode)
 		macb->phy_interface = phy_get_interface_by_name(phy_mode);
 	if (macb->phy_interface == -1) {
 		debug("%s: Invalid PHY interface '%s'\n", __func__, phy_mode);
 		return -EINVAL;
 	}
-#endif
 
 	macb->regs = (void *)pdata->iobase;
 
+#ifdef CONFIG_CLK
+	int ret = macb_enable_clk(dev);
+	if (ret)
+		return ret;
+#endif
+
 	_macb_eth_initialize(macb);
+
 #if defined(CONFIG_CMD_MII) || defined(CONFIG_PHYLIB)
 	int retval;
 	struct mii_dev *mdiodev = mdio_alloc();

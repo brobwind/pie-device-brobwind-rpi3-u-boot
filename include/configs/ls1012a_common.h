@@ -11,7 +11,7 @@
 #define CONFIG_GICV2
 
 #include <asm/arch/config.h>
-#define CONFIG_SYS_NO_FLASH
+#include <asm/arch/stream_id_lsch2.h>
 
 #define CONFIG_SUPPORT_RAW_INITRD
 
@@ -19,12 +19,9 @@
 
 #define CONFIG_SYS_TEXT_BASE		0x40100000
 
-#define CONFIG_SYS_FSL_CLK
-#define CONFIG_SYS_CLK_FREQ		100000000
-#define CONFIG_DDR_CLK_FREQ		125000000
+#define CONFIG_SYS_CLK_FREQ		125000000
 
 #define CONFIG_SKIP_LOWLEVEL_INIT
-#define CONFIG_BOARD_EARLY_INIT_F	1
 
 #define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_FSL_OCRAM_BASE + 0xfff0)
 #define CONFIG_SYS_LOAD_ADDR	(CONFIG_SYS_DDR_SDRAM_BASE + 0x10000000)
@@ -32,6 +29,7 @@
 #define CONFIG_SYS_DDR_SDRAM_BASE	0x80000000
 #define CONFIG_SYS_FSL_DDR_SDRAM_BASE_PHY	0
 #define CONFIG_SYS_SDRAM_BASE		CONFIG_SYS_DDR_SDRAM_BASE
+#define CONFIG_SYS_DDR_BLOCK2_BASE     0x880000000ULL
 
 /* Generic Timer Definitions */
 #define COUNTER_FREQUENCY		CONFIG_SYS_CLK_FREQ/4	/* 25MHz */
@@ -82,16 +80,13 @@
 #define CONFIG_CONS_INDEX       1
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE     1
-#define CONFIG_SYS_NS16550_CLK          (get_bus_freq(0)/2)
+#define CONFIG_SYS_NS16550_CLK          (get_serial_clock())
 
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
 /* Command line configuration */
 #define CONFIG_CMD_ENV
 #undef CONFIG_CMD_IMLS
-
-#define CONFIG_ARCH_EARLY_INIT_R
 
 #define CONFIG_SYS_HZ			1000
 
@@ -127,7 +122,5 @@
 
 #define CONFIG_PANIC_HANG
 #define CONFIG_SYS_BOOTM_LEN   (64 << 20)      /* Increase max gunzip size */
-
-#include <asm/fsl_secure_boot.h>
 
 #endif /* __LS1012A_COMMON_H */

@@ -59,8 +59,15 @@ struct arch_global_data {
 	phys_addr_t secure_ram;
 	unsigned long tlb_allocated;
 #endif
+#ifdef CONFIG_RESV_RAM
+	/*
+	 * Reserved RAM for memory resident, eg. Management Complex (MC)
+	 * driver which continues to run after U-Boot exits.
+	 */
+	phys_addr_t resv_ram;
+#endif
 
-#ifdef CONFIG_ARCH_OMAP2
+#ifdef CONFIG_ARCH_OMAP2PLUS
 	u32 omap_boot_device;
 	u32 omap_boot_mode;
 	u8 omap_ch_flags;

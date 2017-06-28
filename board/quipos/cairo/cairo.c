@@ -45,7 +45,7 @@ int board_init(void)
 {
 	gpmc_init(); /* in SRAM or SDRAM, finish GPMC */
 	/* board id for Linux */
-	gd->bd->bi_arch_number = MACH_TYPE_OMAP3_CAIRO;
+	gd->bd->bi_arch_number = CONFIG_MACH_TYPE;
 	/* boot param addr */
 	gd->bd->bi_boot_params = (OMAP34XX_SDRC_CS0 + 0x100);
 	return 0;
@@ -62,7 +62,7 @@ void set_muxconf_regs(void)
 	MUX_CAIRO();
 }
 
-#if defined(CONFIG_GENERIC_MMC) && !defined(CONFIG_SPL_BUILD)
+#if defined(CONFIG_GENERIC_MMC)
 int board_mmc_init(bd_t *bis)
 {
 	return omap_mmc_init(0, 0, 0, -1, -1);
@@ -93,7 +93,8 @@ void get_board_mem_timings(struct board_sdrc_timings *timings)
 static const struct ns16550_platdata cairo_serial = {
 	.base = OMAP34XX_UART2,
 	.reg_shift = 2,
-	.clock = V_NS16550_CLK
+	.clock = V_NS16550_CLK,
+	.fcr = UART_FCR_DEFVAL,
 };
 
 U_BOOT_DEVICE(cairo_uart) = {

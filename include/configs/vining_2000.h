@@ -18,8 +18,6 @@
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN		(3 * SZ_1M)
 
-#define CONFIG_BOARD_EARLY_INIT_F
-
 #define CONFIG_MXC_UART
 #define CONFIG_MXC_UART_BASE		UART1_BASE
 
@@ -34,8 +32,6 @@
 /* Miscellaneous configurable options */
 #define CONFIG_SYS_MEMTEST_START	0x80000000
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 0x10000)
-
-#define CONFIG_STACKSIZE		SZ_128K
 
 /* Physical Memory Map */
 #define CONFIG_NR_DRAM_BANKS		1
@@ -101,7 +97,6 @@
 
 #define CONFIG_PWM_IMX
 #define CONFIG_IMX6_PWM_PER_CLK 66000000
-#define CONFIG_BOARD_LATE_INIT
 
 #define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 #define CONFIG_ENV_OFFSET		(8 * SZ_64K)
@@ -112,8 +107,6 @@
 
 #ifdef CONFIG_ENV_IS_IN_MMC
 #define CONFIG_SUPPORT_EMMC_BOOT
-#define CONFIG_EFI_PARTITION
-#define CONFIG_DOS_PARTITION
 #define CONFIG_SUPPORT_EMMC_RPMB
 #define CONFIG_SYS_MMC_ENV_DEV		0 /* USDHC4 eMMC */
 /* 0=user, 1=boot0, 2=boot1, * 4..7=general0..3. */

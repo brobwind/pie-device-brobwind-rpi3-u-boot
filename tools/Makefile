@@ -32,7 +32,6 @@ CONFIG_BUILD_ENVCRC ?= $(ENVCRC-y)
 
 hostprogs-$(CONFIG_SPL_GENERATE_ATMEL_PMECC_HEADER) += atmel_pmecc_params
 
-hostprogs-$(CONFIG_CMD_LICENSE) += bin2header
 hostprogs-$(CONFIG_LCD_LOGO) += bmp_logo
 hostprogs-$(CONFIG_VIDEO_LOGO) += bmp_logo
 HOSTCFLAGS_bmp_logo.o := -pedantic
@@ -42,6 +41,10 @@ envcrc-objs := envcrc.o lib/crc32.o common/env_embedded.o lib/sha1.o
 
 hostprogs-$(CONFIG_CMD_NET) += gen_eth_addr
 HOSTCFLAGS_gen_eth_addr.o := -pedantic
+
+hostprogs-$(CONFIG_CMD_NET) += gen_ethaddr_crc
+gen_ethaddr_crc-objs := gen_ethaddr_crc.o lib/crc8.o
+HOSTCFLAGS_gen_ethaddr_crc.o := -pedantic
 
 hostprogs-$(CONFIG_CMD_LOADS) += img2srec
 HOSTCFLAGS_img2srec.o := -pedantic
@@ -111,13 +114,14 @@ fit_check_sign-objs   := $(dumpimage-mkimage-objs) fit_check_sign.o
 
 # Build a libfdt Python module if swig is available
 # Use 'sudo apt-get install swig libpython-dev' to enable this
-hostprogs-$(CONFIG_SPL_OF_PLATDATA) += \
+hostprogs-y += \
 	$(if $(shell which swig 2> /dev/null),_libfdt.so)
 _libfdt.so-sharedobjs += $(LIBFDT_OBJS)
 libfdt:
 
 tools/_libfdt.so: $(patsubst %.o,%.c,$(LIBFDT_OBJS)) tools/libfdt_wrap.c
-	python $(srctree)/lib/libfdt/setup.py "$(_hostc_flags)" $^
+	LDFLAGS="$(HOSTLDFLAGS)" CFLAGS= ${PYTHON} $(srctree)/lib/libfdt/setup.py \
+		"$(_hostc_flags)" $^
 	mv _libfdt.so $@
 
 tools/libfdt_wrap.c: $(srctree)/lib/libfdt/libfdt.swig
@@ -141,8 +145,12 @@ ifdef CONFIG_SYS_U_BOOT_OFFS
 HOSTCFLAGS_kwbimage.o += -DCONFIG_SYS_U_BOOT_OFFS=$(CONFIG_SYS_U_BOOT_OFFS)
 endif
 
+ifneq ($(CONFIG_ARMADA_38X)$(CONFIG_ARMADA_39X),)
+HOSTCFLAGS_kwbimage.o += -DCONFIG_KWB_SECURE
+endif
+
 # MXSImage needs LibSSL
-ifneq ($(CONFIG_MX23)$(CONFIG_MX28)$(CONFIG_FIT_SIGNATURE),)
+ifneq ($(CONFIG_MX23)$(CONFIG_MX28)$(CONFIG_ARMADA_38X)$(CONFIG_ARMADA_39X)$(CONFIG_FIT_SIGNATURE),)
 HOSTLOADLIBES_mkimage += \
 	$(shell pkg-config --libs libssl libcrypto 2> /dev/null || echo "-lssl -lcrypto")
 
@@ -171,6 +179,8 @@ hostprogs-$(CONFIG_MX28) += mxsboot
 HOSTCFLAGS_mxsboot.o := -pedantic
 
 hostprogs-$(CONFIG_ARCH_SUNXI) += mksunxiboot
+hostprogs-$(CONFIG_ARCH_SUNXI) += sunxi-spl-image-builder
+sunxi-spl-image-builder-objs := sunxi-spl-image-builder.o lib/bch.o
 
 hostprogs-$(CONFIG_NETCONSOLE) += ncb
 hostprogs-$(CONFIG_SHA1_CHECK_UB_IMG) += ubsha1
@@ -191,6 +201,7 @@ fdtgrep-objs += $(LIBFDT_OBJS) fdtgrep.o
 # that won't build on some weird host compiler -- though there are lots of
 # exceptions for files that aren't complaint.
 HOSTCFLAGS_crc32.o := -pedantic
+HOSTCFLAGS_crc8.o := -pedantic
 HOSTCFLAGS_md5.o := -pedantic
 HOSTCFLAGS_sha1.o := -pedantic
 HOSTCFLAGS_sha256.o := -pedantic
@@ -228,10 +239,6 @@ endif
 
 endif # !LOGO_BMP
 
-# Generated gziped GPL-2.0 license text
-LICENSE_H = $(objtree)/include/license.h
-LICENSE-$(CONFIG_CMD_LICENSE) += $(LICENSE_H)
-
 #
 # Use native tools and options
 # Define __KERNEL_STRICT_NAMES to prevent typedef overlaps
@@ -241,12 +248,11 @@ HOST_EXTRACFLAGS += -include $(srctree)/include/libfdt_env.h \
 		$(patsubst -I%,-idirafter%, $(filter -I%, $(UBOOTINCLUDE))) \
 		-I$(srctree)/lib/libfdt \
 		-I$(srctree)/tools \
-		-DCONFIG_SYS_TEXT_BASE=$(CONFIG_SYS_TEXT_BASE) \
 		-DUSE_HOSTCC \
 		-D__KERNEL_STRICT_NAMES \
 		-D_GNU_SOURCE
 
-__build:	$(LOGO-y) $(LICENSE-y)
+__build:	$(LOGO-y)
 
 $(LOGO_H):	$(obj)/bmp_logo $(LOGO_BMP)
 	$(obj)/bmp_logo --gen-info $(LOGO_BMP) > $@
@@ -254,15 +260,11 @@ $(LOGO_H):	$(obj)/bmp_logo $(LOGO_BMP)
 $(LOGO_DATA_H):	$(obj)/bmp_logo $(LOGO_BMP)
 	$(obj)/bmp_logo --gen-data $(LOGO_BMP) > $@
 
-$(LICENSE_H): $(obj)/bin2header $(srctree)/Licenses/gpl-2.0.txt
-	cat $(srctree)/Licenses/gpl-2.0.txt | gzip -9 -c | \
-		$(obj)/bin2header license_gzip > $(LICENSE_H)
-
 # Let clean descend into subdirs
 subdir- += env
 
 ifneq ($(CROSS_BUILD_TOOLS),)
-HOSTCC = $(CC)
+override HOSTCC = $(CC)
 
 quiet_cmd_crosstools_strip = STRIP   $^
       cmd_crosstools_strip = $(STRIP) $^; touch $@

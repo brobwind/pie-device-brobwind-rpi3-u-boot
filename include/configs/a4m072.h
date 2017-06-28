@@ -32,7 +32,6 @@
  * Serial console configuration
  */
 #define CONFIG_PSC_CONSOLE	1	/* console is on PSC1 */
-#define CONFIG_BAUDRATE		9600	/* ... at 9600 bps */
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200, 230400 }
 /* define to enable silent console */
 #define CONFIG_SYS_DEVICE_NULLDEV	1	/* include nulldev device */
@@ -59,10 +58,6 @@
 #define CONFIG_SYS_XLB_PIPELINING	1
 
 #undef CONFIG_EEPRO100
-
-/* Partitions */
-#define CONFIG_MAC_PARTITION
-#define CONFIG_DOS_PARTITION
 
 /* USB */
 #define CONFIG_USB_OHCI_NEW

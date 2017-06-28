@@ -126,6 +126,18 @@ config CMD_BDI
 	help
 	  Print board info
 
+config CMD_CONFIG
+	bool "config"
+	select BUILD_BIN2C
+	default SANDBOX
+	help
+	  Print ".config" contents.
+
+	  If this option is enabled, the ".config" file contents are embedded
+	  in the U-Boot image and can be printed on the console by the "config"
+	  command.  This provides information of which options are enabled on
+	  the running U-Boot.
+
 config CMD_CONSOLE
 	bool "coninfo"
 	default y
@@ -142,6 +154,7 @@ config CMD_CPU
 
 config CMD_LICENSE
 	bool "license"
+	select BUILD_BIN2C
 	help
 	  Print GPL license text
 
@@ -325,6 +338,20 @@ config CMD_CRC32
 	help
 	  Compute CRC32.
 
+config CMD_MD5SUM
+	bool "md5sum"
+	default n
+	select MD5
+	help
+	  Compute MD5 checksum.
+
+config MD5SUM_VERFIY
+	bool "md5sum -v"
+	default n
+	depends on CMD_MD5SUM
+	help
+	  Add -v option to verify data against an MD5 checksum.
+
 config LOOPW
 	bool "loopw"
 	help
@@ -345,6 +372,16 @@ config CMD_MEMINFO
 	bool "meminfo"
 	help
 	  Display memory information.
+
+config CMD_UNZIP
+	bool "unzip"
+	help
+	  Uncompress a zip-compressed memory region.
+
+config CMD_ZIP
+	bool "zip"
+	help
+	  Compress a memory region with zlib deflate method.
 
 endmenu
 
@@ -424,6 +461,14 @@ config CMD_FLASH
 	    erase - FLASH memory
 	    protect - enable or disable FLASH write protection
 
+config CMD_GPT
+	bool "GPT (GUID Partition Table) command"
+	select PARTITION_UUIDS
+	select EFI_PARTITION
+	help
+	  Enable the 'gpt' command to ready and write GPT style partition
+	  tables.
+
 config CMD_ARMFLASH
 	#depends on FLASH_CFI_DRIVER
 	bool "armflash"
@@ -437,8 +482,35 @@ config CMD_MMC
 
 config CMD_NAND
 	bool "nand"
+	default y if NAND_SUNXI
 	help
 	  NAND support.
+
+if CMD_NAND
+config CMD_NAND_TRIMFFS
+	bool "nand write.trimffs"
+	default y if ARCH_SUNXI
+	help
+	  Allows one to skip empty pages when flashing something on a NAND.
+
+config CMD_NAND_LOCK_UNLOCK
+	bool "nand lock/unlock"
+	help
+	  NAND locking support.
+
+config CMD_NAND_TORTURE
+	bool "nand torture"
+	help
+	  NAND torture support.
+
+endif # CMD_NAND
+
+config CMD_PART
+	bool "part"
+	select PARTITION_UUIDS
+	help
+	  Read and display information about the partition table on
+	  various media.
 
 config CMD_SF
 	bool "sf"
@@ -600,20 +672,6 @@ endmenu
 
 menu "Misc commands"
 
-config CMD_AMBAPP
-	bool "ambapp"
-	depends on LEON3
-	default y
-	help
-	  Lists AMBA Plug-n-Play information.
-
-config SYS_AMBAPP_PRINT_ON_STARTUP
-	bool "Show AMBA PnP info on startup"
-	depends on CMD_AMBAPP
-	default n
-	help
-	  Show AMBA Plug-n-Play information on startup.
-
 config CMD_BKOPS_ENABLE
 	bool "mmc bkops enable"
 	depends on CMD_MMC
@@ -638,6 +696,15 @@ config CMD_CACHE
 	bool "icache or dcache"
 	help
 	  Enable the "icache" and "dcache" commands
+
+config CMD_LED
+	bool "led"
+	default y if LED
+	help
+	  Enable the 'led' command which allows for control of LEDs supported
+	  by the board. The LEDs can be listed with 'led list' and controlled
+	  with led on/off/togle/blink. Any LED drivers can be controlled with
+	  this command, e.g. led_gpio.
 
 config CMD_TIME
 	bool "time"
@@ -793,12 +860,38 @@ config CMD_FS_GENERIC
 	help
 	  Enables filesystem commands (e.g. load, ls) that work for multiple
 	  fs types.
+
+config CMD_FS_UUID
+	bool "fsuuid command"
+	help
+	  Enables fsuuid command for filesystem UUID.
+
+config CMD_MTDPARTS
+	depends on ARCH_SUNXI
+	bool "MTD partition support"
+	help
+	  MTD partition support
+
+config MTDIDS_DEFAULT
+	string "Default MTD IDs"
+	depends on CMD_MTDPARTS
+	help
+	  Defines a default MTD ID
+
+config MTDPARTS_DEFAULT
+	string "Default MTD partition scheme"
+	depends on CMD_MTDPARTS
+	help
+	  Defines a default MTD partitioning scheme in the Linux MTD command
+	  line partitions format
+
 endmenu
 
 config CMD_UBI
 	tristate "Enable UBI - Unsorted block images commands"
 	select CRC32
 	select MTD_UBI
+	default y if NAND_SUNXI
 	help
 	  UBI is a software layer above MTD layer which admits use of LVM-like
 	  logical volumes on top of MTD devices, hides some complexities of
@@ -806,5 +899,15 @@ config CMD_UBI
 	  capabilities. Please, consult the MTD web site for more details
 	  (www.linux-mtd.infradead.org). Activate this option if you want
 	  to use U-Boot UBI commands.
+
+config CMD_UBIFS
+	tristate "Enable UBIFS - Unsorted block images filesystem commands"
+	depends on CMD_UBI
+	select CRC32
+	select RBTREE if ARCH_SUNXI
+	select LZO if ARCH_SUNXI
+	default y if NAND_SUNXI
+	help
+	  UBIFS is a file system for flash devices which works on top of UBI.
 
 endmenu

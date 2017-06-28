@@ -11,14 +11,11 @@
 #include "rockchip-common.h"
 
 #define CONFIG_SKIP_LOWLEVEL_INIT_ONLY
-#define CONFIG_SYS_NO_FLASH
 #define CONFIG_NR_DRAM_BANKS		1
 #define CONFIG_ENV_SIZE			0x2000
 #define CONFIG_SYS_MAXARGS		16
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_MALLOC_LEN		(32 << 20)
 #define CONFIG_SYS_CBSIZE		1024
-#define CONFIG_SYS_THUMB_BUILD
 
 #define CONFIG_SYS_TIMER_RATE		(24 * 1000 * 1000)
 #define	CONFIG_SYS_TIMER_BASE		0xff810020 /* TIMER7 */
@@ -40,13 +37,9 @@
 #define CONFIG_SPL_TEXT_BASE		0xff704004
 
 /* MMC/SD IP block */
-#define CONFIG_GENERIC_MMC
-#define CONFIG_DWMMC
 #define CONFIG_BOUNCE_BUFFER
 
 #define CONFIG_FAT_WRITE
-#define CONFIG_PARTITION_UUIDS
-#define CONFIG_CMD_PART
 
 /* RAW SD card / eMMC locations. */
 #define CONFIG_SYS_SPI_U_BOOT_OFFS	(128 << 10)
@@ -88,6 +81,13 @@
 #define CONFIG_G_DNL_VENDOR_NUM		0x2207
 #define CONFIG_G_DNL_PRODUCT_NUM	0x320a
 
+/* usb host support */
+#ifdef CONFIG_CMD_USB
+#define CONFIG_USB_DWC2
+#define CONFIG_USB_HOST_ETHER
+#define CONFIG_USB_ETHER_SMSC95XX
+#define CONFIG_USB_ETHER_ASIX
+#endif
 #define ENV_MEM_LAYOUT_SETTINGS \
 	"scriptaddr=0x00000000\0" \
 	"pxefile_addr_r=0x00100000\0" \
@@ -108,7 +108,6 @@
 	BOOTENV
 #endif
 
-#define CONFIG_BOARD_LATE_INIT
 #define CONFIG_PREBOOT
 
 #endif

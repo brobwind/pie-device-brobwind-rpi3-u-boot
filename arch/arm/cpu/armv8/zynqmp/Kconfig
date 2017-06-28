@@ -13,7 +13,7 @@ config SPL_LIBGENERIC_SUPPORT
 	default y
 
 config SPL_MMC_SUPPORT
-	default y
+	default y if MMC_SDHCI_ZYNQ
 
 config SPL_SERIAL_SUPPORT
 	default y
@@ -28,6 +28,7 @@ config SYS_BOARD
 	default "zynqmp"
 
 config SYS_VENDOR
+	string "Vendor name"
 	default "xilinx"
 
 config SYS_SOC

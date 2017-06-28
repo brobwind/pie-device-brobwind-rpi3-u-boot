@@ -7,13 +7,31 @@
 #ifndef __LS1043A_COMMON_H
 #define __LS1043A_COMMON_H
 
+/* SPL build */
+#ifdef CONFIG_SPL_BUILD
+#define SPL_NO_FMAN
+#define SPL_NO_DSPI
+#define SPL_NO_PCIE
+#define SPL_NO_ENV
+#define SPL_NO_MISC
+#define SPL_NO_USB
+#define SPL_NO_SATA
+#define SPL_NO_QE
+#define SPL_NO_EEPROM
+#endif
+#if (defined(CONFIG_SPL_BUILD) && defined(CONFIG_NAND_BOOT))
+#define SPL_NO_MMC
+#endif
+#if (defined(CONFIG_SPL_BUILD) && defined(CONFIG_SD_BOOT))
+#define SPL_NO_IFC
+#endif
+
 #define CONFIG_REMAKE_ELF
 #define CONFIG_FSL_LAYERSCAPE
-#define CONFIG_LS1043A
 #define CONFIG_MP
-#define CONFIG_SYS_FSL_CLK
 #define CONFIG_GICV2
 
+#include <asm/arch/stream_id_lsch2.h>
 #include <asm/arch/config.h>
 
 /* Link Definitions */
@@ -22,7 +40,6 @@
 #define CONFIG_SUPPORT_RAW_INITRD
 
 #define CONFIG_SKIP_LOWLEVEL_INIT
-#define CONFIG_BOARD_EARLY_INIT_F	1
 
 #define CONFIG_VERY_BIG_RAM
 #define CONFIG_SYS_DDR_SDRAM_BASE	0x80000000
@@ -42,9 +59,8 @@
 #define CONFIG_CONS_INDEX		1
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	1
-#define CONFIG_SYS_NS16550_CLK		(get_bus_freq(0))
+#define CONFIG_SYS_NS16550_CLK          (get_serial_clock())
 
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
 /* SD boot SPL */
@@ -54,7 +70,7 @@
 #define CONFIG_SPL_TARGET		"u-boot-with-spl.bin"
 
 #define CONFIG_SPL_TEXT_BASE		0x10000000
-#define CONFIG_SPL_MAX_SIZE		0x1d000
+#define CONFIG_SPL_MAX_SIZE		0x17000
 #define CONFIG_SPL_STACK		0x1001e000
 #define CONFIG_SPL_PAD_TO		0x1d000
 
@@ -63,7 +79,19 @@
 #define CONFIG_SYS_SPL_MALLOC_SIZE	0x100000
 #define CONFIG_SPL_BSS_START_ADDR	0x80100000
 #define CONFIG_SPL_BSS_MAX_SIZE		0x80000
-#define CONFIG_SYS_MONITOR_LEN		0xa0000
+
+#ifdef CONFIG_SECURE_BOOT
+#define CONFIG_U_BOOT_HDR_SIZE				(16 << 10)
+/*
+ * HDR would be appended at end of image and copied to DDR along
+ * with U-Boot image. Here u-boot max. size is 512K. So if binary
+ * size increases then increase this size in case of secure boot as
+ * it uses raw u-boot image instead of fit image.
+ */
+#define CONFIG_SYS_MONITOR_LEN		(0x100000 + CONFIG_U_BOOT_HDR_SIZE)
+#else
+#define CONFIG_SYS_MONITOR_LEN		0x100000
+#endif /* ifdef CONFIG_SECURE_BOOT */
 #endif
 
 /* NAND SPL */
@@ -81,10 +109,27 @@
 #define CONFIG_SPL_BSS_START_ADDR	0x80100000
 #define CONFIG_SYS_SPL_MALLOC_SIZE	0x100000
 #define CONFIG_SPL_BSS_MAX_SIZE		0x80000
-#define CONFIG_SYS_MONITOR_LEN		0xa0000
+
+#ifdef CONFIG_SECURE_BOOT
+#define CONFIG_U_BOOT_HDR_SIZE				(16 << 10)
+#endif /* ifdef CONFIG_SECURE_BOOT */
+
+#ifdef CONFIG_U_BOOT_HDR_SIZE
+/*
+ * HDR would be appended at end of image and copied to DDR along
+ * with U-Boot image. Here u-boot max. size is 512K. So if binary
+ * size increases then increase this size in case of secure boot as
+ * it uses raw u-boot image instead of fit image.
+ */
+#define CONFIG_SYS_MONITOR_LEN		(0x100000 + CONFIG_U_BOOT_HDR_SIZE)
+#else
+#define CONFIG_SYS_MONITOR_LEN		0x100000
+#endif /* ifdef CONFIG_U_BOOT_HDR_SIZE */
+
 #endif
 
 /* IFC */
+#ifndef SPL_NO_IFC
 #if !defined(CONFIG_QSPI_BOOT) && !defined(CONFIG_SD_BOOT_QSPI)
 #define CONFIG_FSL_IFC
 /*
@@ -97,12 +142,13 @@
 #define CONFIG_SYS_FLASH_BASE_PHYS		CONFIG_SYS_FLASH_BASE
 #define CONFIG_SYS_FLASH_BASE_PHYS_EARLY	0x00000000
 
-#ifndef CONFIG_SYS_NO_FLASH
+#ifdef CONFIG_MTD_NOR_FLASH
 #define CONFIG_FLASH_CFI_DRIVER
 #define CONFIG_SYS_FLASH_CFI
 #define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
 #define CONFIG_SYS_FLASH_QUIET_TEST
 #define CONFIG_FLASH_SHOW_PROGRESS	45	/* count down from 45/5: 9..1 */
+#endif
 #endif
 #endif
 
@@ -115,46 +161,33 @@
 #define CONFIG_SYS_I2C_MXC_I2C4
 
 /* PCIe */
+#ifndef SPL_NO_PCIE
 #define CONFIG_PCIE1		/* PCIE controller 1 */
 #define CONFIG_PCIE2		/* PCIE controller 2 */
 #define CONFIG_PCIE3		/* PCIE controller 3 */
-#define CONFIG_PCIE_LAYERSCAPE	/* Use common FSL Layerscape PCIe code */
-#define FSL_PCIE_COMPAT "fsl,ls1043a-pcie"
-
-#define CONFIG_SYS_PCI_64BIT
-
-#define CONFIG_SYS_PCIE_CFG0_PHYS_OFF	0x00000000
-#define CONFIG_SYS_PCIE_CFG0_SIZE	0x00001000	/* 4k */
-#define CONFIG_SYS_PCIE_CFG1_PHYS_OFF	0x00001000
-#define CONFIG_SYS_PCIE_CFG1_SIZE	0x00001000	/* 4k */
-
-#define CONFIG_SYS_PCIE_IO_BUS		0x00000000
-#define CONFIG_SYS_PCIE_IO_PHYS_OFF	0x00010000
-#define CONFIG_SYS_PCIE_IO_SIZE		0x00010000	/* 64k */
-
-#define CONFIG_SYS_PCIE_MEM_BUS		0x40000000
-#define CONFIG_SYS_PCIE_MEM_PHYS_OFF	0x40000000
-#define CONFIG_SYS_PCIE_MEM_SIZE	0x40000000	/* 1G */
 
 #ifdef CONFIG_PCI
 #define CONFIG_NET_MULTI
-#define CONFIG_E1000
 #define CONFIG_PCI_SCAN_SHOW
 #define CONFIG_CMD_PCI
 #endif
+#endif
 
 /* Command line configuration */
+#ifndef SPL_NO_ENV
 #define CONFIG_CMD_ENV
+#endif
 
 /*  MMC  */
+#ifndef SPL_NO_MMC
 #ifdef CONFIG_MMC
 #define CONFIG_FSL_ESDHC
 #define CONFIG_SYS_FSL_MMC_HAS_CAPBLT_VS33
-#define CONFIG_GENERIC_MMC
-#define CONFIG_DOS_PARTITION
+#endif
 #endif
 
 /*  DSPI  */
+#ifndef SPL_NO_DSPI
 #define CONFIG_FSL_DSPI
 #ifdef CONFIG_FSL_DSPI
 #define CONFIG_DM_SPI_FLASH
@@ -166,10 +199,10 @@
 #define CONFIG_SF_DEFAULT_CS		0
 #endif
 #endif
-
-#define CONFIG_FSL_CAAM			/* Enable SEC/CAAM */
+#endif
 
 /* FMan ucode */
+#ifndef SPL_NO_FMAN
 #define CONFIG_SYS_DPAA_FMAN
 #ifdef CONFIG_SYS_DPAA_FMAN
 #define CONFIG_SYS_FM_MURAM_SIZE	0x60000
@@ -201,25 +234,27 @@
 #define CONFIG_SYS_QE_FMAN_FW_LENGTH	0x10000
 #define CONFIG_SYS_FDT_PAD		(0x3000 + CONFIG_SYS_QE_FMAN_FW_LENGTH)
 #endif
+#endif
 
 /* Miscellaneous configurable options */
 #define CONFIG_SYS_LOAD_ADDR	(CONFIG_SYS_DDR_SDRAM_BASE + 0x10000000)
-#define CONFIG_ARCH_EARLY_INIT_R
-#define CONFIG_BOARD_LATE_INIT
 
 #define CONFIG_HWCONFIG
 #define HWCONFIG_BUFFER_SIZE		128
 
+#ifndef SPL_NO_MISC
 #if defined(CONFIG_QSPI_BOOT) || defined(CONFIG_SD_BOOT_QSPI)
 #define MTDPARTS_DEFAULT "mtdparts=spi0.0:1m(uboot)," \
 			"5m(kernel),1m(dtb),9m(file_system)"
 #else
-#define MTDPARTS_DEFAULT "mtdparts=60000000.nor:1m(nor_bank0_rcw)," \
-			"1m(nor_bank0_uboot),1m(nor_bank0_uboot_env)," \
-			"1m(nor_bank0_fman_uconde),40m(nor_bank0_fit)," \
-			"1m(nor_bank4_rcw),1m(nor_bank4_uboot)," \
-			"1m(nor_bank4_uboot_env),1m(nor_bank4_fman_ucode)," \
-			"40m(nor_bank4_fit);7e800000.flash:" \
+#define MTDPARTS_DEFAULT "mtdparts=60000000.nor:" \
+			"2m@0x100000(nor_bank0_uboot),"\
+			"40m@0x1100000(nor_bank0_fit)," \
+			"7m(nor_bank0_user)," \
+			"2m@0x4100000(nor_bank4_uboot)," \
+			"40m@0x5100000(nor_bank4_fit),"\
+			"-(nor_bank4_user);" \
+			"7e800000.flash:" \
 			"1m(nand_uboot),1m(nand_uboot_env)," \
 			"20m(nand_fit);spi0.0:1m(uboot)," \
 			"5m(kernel),1m(dtb),9m(file_system)"
@@ -248,6 +283,7 @@
 #define CONFIG_BOOTCOMMAND		"cp.b $kernel_start $kernel_load "     \
 					"$kernel_size && bootm $kernel_load"
 #endif
+#endif
 
 /* Monitor Command Prompt */
 #define CONFIG_SYS_CBSIZE		512	/* Console I/O Buffer Size */
@@ -255,7 +291,11 @@
 					sizeof(CONFIG_SYS_PROMPT) + 16)
 #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE /* Boot args buffer */
 #define CONFIG_SYS_LONGHELP
+
+#ifndef SPL_NO_MISC
 #define CONFIG_CMDLINE_EDITING		1
+#endif
+
 #define CONFIG_AUTO_COMPLETE
 #define CONFIG_SYS_MAXARGS		64	/* max command args */
 

@@ -14,7 +14,6 @@
 
 #define CONFIG_SYS_MONITOR_LEN		(1 << 20)
 
-#define CONFIG_BOARD_EARLY_INIT_F
 #define CONFIG_MISC_INIT_R
 
 #define CONFIG_SCSI_DEV_LIST	\
@@ -22,8 +21,6 @@
 
 #define VIDEO_IO_OFFSET			0
 #define CONFIG_X86EMU_RAW_IO
-
-#define CONFIG_ARCH_EARLY_INIT_R
 
 #define CONFIG_STD_DEVICES_SETTINGS	"stdin=serial,usbkbd\0" \
 					"stdout=serial,vidconsole\0" \
