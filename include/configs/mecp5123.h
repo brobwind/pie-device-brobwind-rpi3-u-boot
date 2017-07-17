@@ -35,7 +35,6 @@
 
 #define CONFIG_SYS_MPC512X_CLKIN	33333333	/* in Hz */
 
-#define CONFIG_BOARD_EARLY_INIT_F		/* call board_early_init_f() */
 #define CONFIG_MISC_INIT_R
 
 #define CONFIG_SYS_IMMR		        0x80000000
@@ -216,7 +215,6 @@
 #if CONFIG_PSC_CONSOLE != 3
 #error CONFIG_PSC_CONSOLE must be 3
 #endif
-#define CONFIG_BAUDRATE		9600	/* ... at 9600 bps */
 #define CONFIG_SYS_BAUDRATE_TABLE  \
 	{300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 115200}
 
@@ -295,7 +293,6 @@
 #undef CONFIG_CMD_FUSE
 #undef CONFIG_CMD_IDE
 #define CONFIG_CMD_JFFS2
-#define CONFIG_DOS_PARTITION
 
 /*
  * Watchdog timeout = CONFIG_SYS_WATCHDOG_VALUE * 65536 / IPS clock.

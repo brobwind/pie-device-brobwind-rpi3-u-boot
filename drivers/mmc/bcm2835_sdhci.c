@@ -71,7 +71,8 @@ static inline void bcm2835_sdhci_raw_writel(struct sdhci_host *host, u32 val,
 	 * too)
 	 */
 	if (reg != SDHCI_BUFFER) {
-		while (timer_get_us() - bcm_host->last_write < bcm_host->twoticks_delay)
+		while (timer_get_us() - bcm_host->last_write <
+		       bcm_host->twoticks_delay)
 			;
 	}
 
@@ -184,10 +185,11 @@ int bcm2835_sdhci_init(u32 regbase, u32 emmc_freq)
 	host->ioaddr = (void *)(unsigned long)regbase;
 	host->quirks = SDHCI_QUIRK_BROKEN_VOLTAGE | SDHCI_QUIRK_BROKEN_R1B |
 		SDHCI_QUIRK_WAIT_SEND_CMD | SDHCI_QUIRK_NO_HISPD_BIT;
+	host->max_clk = emmc_freq;
 	host->voltages = MMC_VDD_32_33 | MMC_VDD_33_34 | MMC_VDD_165_195;
 	host->ops = &bcm2835_ops;
 
-	add_sdhci(host, emmc_freq, MIN_FREQ);
+	add_sdhci(host, 0, MIN_FREQ);
 
 	return 0;
 }

@@ -23,7 +23,6 @@
 /*
  * Commands configuration
  */
-#define CONFIG_SYS_NO_FLASH		/* Declare no flash (NOR/SPI) */
 #define CONFIG_CMD_ENV
 
 /* I2C */
@@ -81,8 +80,6 @@
 #endif
 
 /* why is this only defined in mv-common.h if CONFIG_DM is undefined? */
-#define CONFIG_DOS_PARTITION
-#define CONFIG_ISO_PARTITION
 #define CONFIG_SUPPORT_VFAT
 #define CONFIG_SYS_MVFS
 

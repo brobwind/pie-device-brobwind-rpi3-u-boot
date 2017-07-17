@@ -12,7 +12,6 @@
 
 #define CONFIG_TI81XX
 #define CONFIG_TI816X
-#define CONFIG_SYS_NO_FLASH
 #define CONFIG_OMAP
 
 #define CONFIG_ARCH_CPU_INIT
@@ -52,9 +51,6 @@
 
 #define CONFIG_CMD_ASKEN
 #define CONFIG_OMAP_GPIO
-#define CONFIG_GENERIC_MMC
-#define CONFIG_OMAP_HSMMC
-#define CONFIG_DOS_PARTITION
 
 #define CONFIG_FS_FAT
 
@@ -101,8 +97,6 @@
 #define CONFIG_SYS_NS16550_CLK      (48000000)
 #define CONFIG_SYS_NS16550_COM1     0x48024000  /* Base EVM has UART2 */
 
-#define CONFIG_BAUDRATE     115200
-
 /* allow overwriting serial config and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 
@@ -142,8 +136,5 @@
 #ifndef CONFIG_SPL_BUILD
 #define CONFIG_SKIP_LOWLEVEL_INIT
 #endif
-
-/* Unsupported features */
-#undef CONFIG_USE_IRQ
 
 #endif

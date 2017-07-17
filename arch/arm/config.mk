@@ -6,7 +6,7 @@
 #
 
 ifndef CONFIG_STANDALONE_LOAD_ADDR
-ifneq ($(CONFIG_ARCH_OMAP2),)
+ifneq ($(CONFIG_ARCH_OMAP2PLUS),)
 CONFIG_STANDALONE_LOAD_ADDR = 0x80300000
 else
 CONFIG_STANDALONE_LOAD_ADDR = 0xc100000
@@ -31,7 +31,7 @@ PLATFORM_RELFLAGS	+= $(LLVM_RELFLAGS)
 PLATFORM_CPPFLAGS += -D__ARM__
 
 # Choose between ARM/Thumb instruction sets
-ifeq ($(CONFIG_SYS_THUMB_BUILD),y)
+ifeq ($(CONFIG_$(SPL_)SYS_THUMB_BUILD),y)
 AFLAGS_IMPLICIT_IT	:= $(call as-option,-Wa$(comma)-mimplicit-it=always)
 PF_CPPFLAGS_ARM		:= $(AFLAGS_IMPLICIT_IT) \
 			$(call cc-option, -mthumb -mthumb-interwork,\
@@ -44,9 +44,8 @@ PF_CPPFLAGS_ARM := $(call cc-option,-marm,) \
 endif
 
 # Only test once
-ifneq ($(CONFIG_SPL_BUILD),y)
-ifeq ($(CONFIG_SYS_THUMB_BUILD),y)
-archprepare: checkthumb
+ifeq ($(CONFIG_$(SPL_)SYS_THUMB_BUILD),y)
+archprepare: checkthumb checkgcc6
 
 checkthumb:
 	@if test "$(call cc-name)" = "gcc" -a \
@@ -56,8 +55,17 @@ checkthumb:
 		echo '*** Your board is configured for THUMB mode.'; \
 		false; \
 	fi
+else
+archprepare: checkgcc6
 endif
-endif
+
+checkgcc6:
+	@if test "$(call cc-name)" = "gcc" -a \
+			"$(call cc-version)" -lt "0600"; then \
+		echo -n '*** Your GCC is older than 6.0 and will not be '; \
+		echo 'supported starting in v2018.01.'; \
+	fi
+
 
 # Try if EABI is supported, else fall back to old API,
 # i. e. for example:
@@ -99,7 +107,7 @@ LDFLAGS_u-boot += -pie
 #
 # http://sourceware.org/bugzilla/show_bug.cgi?id=12532
 #
-ifeq ($(CONFIG_SYS_THUMB_BUILD),y)
+ifeq ($(CONFIG_$(SPL_)SYS_THUMB_BUILD),y)
 ifeq ($(GAS_BUG_12532),)
 export GAS_BUG_12532:=$(shell if [ $(call binutils-version) -lt 0222 ] ; \
 	then echo y; else echo n; fi)
@@ -122,7 +130,7 @@ endif
 # limit ourselves to the sections we want in the .bin.
 ifdef CONFIG_ARM64
 OBJCOPYFLAGS += -j .text -j .secure_text -j .secure_data -j .rodata -j .data \
-		-j .u_boot_list -j .rela.dyn
+		-j .u_boot_list -j .rela.dyn -j .got -j .got.plt
 else
 OBJCOPYFLAGS += -j .text -j .secure_text -j .secure_data -j .rodata -j .hash \
 		-j .data -j .got -j .got.plt -j .u_boot_list -j .rel.dyn

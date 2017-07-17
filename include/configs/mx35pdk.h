@@ -23,9 +23,6 @@
 /* Set TEXT at the beginning of the NOR flash */
 #define CONFIG_SYS_TEXT_BASE	0xA0000000
 
-#define CONFIG_BOARD_EARLY_INIT_F
-#define CONFIG_BOARD_LATE_INIT
-
 #define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs */
 #define CONFIG_REVISION_TAG
 #define CONFIG_SETUP_MEMORY_TAGS
@@ -72,7 +69,6 @@
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 #define CONFIG_CONS_INDEX	1
-#define CONFIG_BAUDRATE		115200
 
 /*
  * Command definition
@@ -85,9 +81,6 @@
 
 #define CONFIG_NET_RETRY_COUNT	100
 #define CONFIG_CMD_DATE
-
-#define CONFIG_DOS_PARTITION
-#define CONFIG_EFI_PARTITION
 
 
 #define CONFIG_LOADADDR		0x80800000	/* loadaddr env var */
@@ -219,7 +212,6 @@
 #define CONFIG_MXC_USB_PORTSC	(MXC_EHCI_UTMI_16BIT | MXC_EHCI_MODE_UTMI)
 
 /* mmc driver */
-#define CONFIG_GENERIC_MMC
 #define CONFIG_FSL_ESDHC
 #define CONFIG_SYS_FSL_ESDHC_ADDR	0
 #define CONFIG_SYS_FSL_ESDHC_NUM	1

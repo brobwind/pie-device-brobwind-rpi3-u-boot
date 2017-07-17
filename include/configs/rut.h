@@ -15,7 +15,6 @@
 #define __CONFIG_RUT_H
 
 #define CONFIG_SIEMENS_RUT
-#define MACH_TYPE_RUT			4316
 #define CONFIG_SIEMENS_MACH_TYPE	MACH_TYPE_RUT
 
 #include "siemens-am33x-common.h"
@@ -130,7 +129,6 @@
 #define CONFIG_OMAP3_SPI
 
 #define BOARD_LCD_RESET		115	/* Bank 3 pin 19 */
-#define CONFIG_ARCH_EARLY_INIT_R
 #define CONFIG_FORMIKE
 #define DISPL_PLL_SPREAD_SPECTRUM
 #endif

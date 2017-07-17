@@ -13,16 +13,13 @@
 #define CONFIG_GICV3
 #define CONFIG_FSL_TZPC_BP147
 
-#include <asm/arch/ls2080a_stream_id.h>
+#include <asm/arch/stream_id_lsch3.h>
 #include <asm/arch/config.h>
 
 /* Link Definitions */
 #define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_FSL_OCRAM_BASE + 0xfff0)
 
 /* We need architecture specific misc initializations */
-#define CONFIG_ARCH_MISC_INIT
-
-#define CONFIG_FSL_CAAM			/* Enable SEC/CAAM */
 
 /* Link Definitions */
 #ifndef CONFIG_QSPI_BOOT
@@ -33,14 +30,9 @@
 #endif
 #endif
 
-#ifdef CONFIG_EMU
-#define CONFIG_SYS_NO_FLASH
-#endif
-
 #define CONFIG_SUPPORT_RAW_INITRD
 
 #define CONFIG_SKIP_LOWLEVEL_INIT
-#define CONFIG_BOARD_EARLY_INIT_F	1
 
 #ifndef CONFIG_SPL
 #define CONFIG_FSL_DDR_INTERACTIVE	/* Interactive debugging */
@@ -97,9 +89,8 @@
 #define CONFIG_CONS_INDEX       1
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE     1
-#define CONFIG_SYS_NS16550_CLK          (get_bus_freq(0)/2)
+#define CONFIG_SYS_NS16550_CLK          (get_serial_clock())
 
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
 
 /* IFC */
@@ -149,7 +140,6 @@ unsigned long long get_qixis_addr(void);
 #define CONFIG_SYS_NAND_BASE_PHYS		0x30000000
 
 /* MC firmware */
-#define CONFIG_FSL_MC_ENET
 /* TODO Actual DPL max length needs to be confirmed with the MC FW team */
 #define CONFIG_SYS_LS_MC_DPC_MAX_LENGTH	    0x20000
 #define CONFIG_SYS_LS_MC_DRAM_DPC_OFFSET    0x00F00000
@@ -167,40 +157,13 @@ unsigned long long get_qixis_addr(void);
  */
 #ifdef CONFIG_FSL_MC_ENET
 #define CONFIG_SYS_LS_MC_DRAM_BLOCK_MIN_SIZE		(512UL * 1024 * 1024)
-#define CONFIG_SYS_MC_RSV_MEM_ALIGN			(512UL * 1024 * 1024)
 #endif
-
-/* PCIe */
-#define CONFIG_PCIE1		/* PCIE controller 1 */
-#define CONFIG_PCIE2		/* PCIE controller 2 */
-#define CONFIG_PCIE3		/* PCIE controller 3 */
-#define CONFIG_PCIE4		/* PCIE controller 4 */
-#define CONFIG_PCIE_LAYERSCAPE	/* Use common FSL Layerscape PCIe code */
-#ifdef CONFIG_LS2080A
-#define FSL_PCIE_COMPAT "fsl,ls2080a-pcie"
-#endif
-
-#define CONFIG_SYS_PCI_64BIT
-
-#define CONFIG_SYS_PCIE_CFG0_PHYS_OFF	0x00000000
-#define CONFIG_SYS_PCIE_CFG0_SIZE	0x00001000	/* 4k */
-#define CONFIG_SYS_PCIE_CFG1_PHYS_OFF	0x00001000
-#define CONFIG_SYS_PCIE_CFG1_SIZE	0x00001000	/* 4k */
-
-#define CONFIG_SYS_PCIE_IO_BUS		0x00000000
-#define CONFIG_SYS_PCIE_IO_PHYS_OFF	0x00010000
-#define CONFIG_SYS_PCIE_IO_SIZE		0x00010000	/* 64k */
-
-#define CONFIG_SYS_PCIE_MEM_BUS		0x40000000
-#define CONFIG_SYS_PCIE_MEM_PHYS_OFF	0x40000000
-#define CONFIG_SYS_PCIE_MEM_SIZE	0x40000000	/* 1G */
 
 /* Command line configuration */
 #define CONFIG_CMD_ENV
 
 /* Miscellaneous configurable options */
 #define CONFIG_SYS_LOAD_ADDR	(CONFIG_SYS_DDR_SDRAM_BASE + 0x10000000)
-#define CONFIG_ARCH_EARLY_INIT_R
 
 /* Physical Memory Map */
 /* fixme: these need to be checked against the board */

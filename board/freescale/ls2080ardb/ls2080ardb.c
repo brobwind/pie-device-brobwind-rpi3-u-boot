@@ -17,7 +17,9 @@
 #include <environment.h>
 #include <efi_loader.h>
 #include <i2c.h>
+#include <asm/arch/mmu.h>
 #include <asm/arch/soc.h>
+#include <asm/arch/ppa.h>
 #include <fsl_sec.h>
 
 #include "../common/qixis.h"
@@ -180,9 +182,16 @@ int board_init(void)
 
 	QIXIS_WRITE(rst_ctl, QIXIS_RST_CTL_RESET_EN);
 
+#ifdef CONFIG_FSL_LS_PPA
+	ppa_init();
+#endif
+
 #ifdef CONFIG_FSL_MC_ENET
 	/* invert AQR405 IRQ pins polarity */
 	out_le32(irq_ccsr + IRQCR_OFFSET / 4, AQR405_IRQ_MASK);
+#endif
+#ifdef CONFIG_FSL_CAAM
+	sec_init();
 #endif
 
 	return 0;
@@ -202,14 +211,6 @@ int misc_init_r(void)
 	if (adjust_vdd(0))
 		printf("Warning: Adjusting core voltage failed.\n");
 
-#if defined(CONFIG_EFI_LOADER) && !defined(CONFIG_SPL_BUILD)
-	if (soc_has_dp_ddr() && gd->bd->bi_dram[2].size) {
-		efi_add_memory_map(gd->bd->bi_dram[2].start,
-				   gd->bd->bi_dram[2].size >> EFI_PAGE_SHIFT,
-				   EFI_RESERVED_MEMORY_TYPE, false);
-	}
-#endif
-
 	return 0;
 }
 
@@ -227,19 +228,9 @@ void detail_board_ddr_info(void)
 #endif
 }
 
-int dram_init(void)
-{
-	gd->ram_size = initdram(0);
-
-	return 0;
-}
-
 #if defined(CONFIG_ARCH_MISC_INIT)
 int arch_misc_init(void)
 {
-#ifdef CONFIG_FSL_CAAM
-	sec_init();
-#endif
 	return 0;
 }
 #endif
@@ -285,6 +276,16 @@ int ft_board_setup(void *blob, bd_t *bd)
 	size[0] = gd->bd->bi_dram[0].size;
 	base[1] = gd->bd->bi_dram[1].start;
 	size[1] = gd->bd->bi_dram[1].size;
+
+#ifdef CONFIG_RESV_RAM
+	/* reduce size if reserved memory is within this bank */
+	if (gd->arch.resv_ram >= base[0] &&
+	    gd->arch.resv_ram < base[0] + size[0])
+		size[0] = gd->arch.resv_ram - base[0];
+	else if (gd->arch.resv_ram >= base[1] &&
+		 gd->arch.resv_ram < base[1] + size[1])
+		size[1] = gd->arch.resv_ram - base[1];
+#endif
 
 	fdt_fixup_memory_banks(blob, base, size, 2);
 

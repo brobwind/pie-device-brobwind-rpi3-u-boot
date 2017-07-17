@@ -22,7 +22,6 @@
 
 #define CONFIG_MCFUART
 #define CONFIG_SYS_UART_PORT		(0)
-#define CONFIG_BAUDRATE		115200
 
 #undef CONFIG_WATCHDOG
 
@@ -119,8 +118,6 @@
 #endif
 
 /* ATA configuration */
-#define CONFIG_ISO_PARTITION
-#define CONFIG_DOS_PARTITION
 #define CONFIG_IDE_RESET	1
 #define CONFIG_IDE_PREINIT	1
 #define CONFIG_ATAPI

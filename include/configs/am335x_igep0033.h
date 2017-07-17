@@ -18,7 +18,6 @@
 #include <configs/ti_am335x_common.h>
 
 /* Mach type */
-#define MACH_TYPE_IGEP0033		4521	/* Until the next sync */
 #define CONFIG_MACH_TYPE		MACH_TYPE_IGEP0033
 
 /* Clock defines */
@@ -93,7 +92,6 @@
 /* NS16550 Configuration */
 #define CONFIG_SYS_NS16550_COM1		0x44e09000	/* UART0 */
 #define CONFIG_CONS_INDEX		1
-#define CONFIG_BAUDRATE			115200
 
 /* Ethernet support */
 #define CONFIG_PHYLIB
@@ -118,9 +116,6 @@
 #define MTDPARTS_DEFAULT		"mtdparts=omap2-nand.0:512k(spl),"\
 					"1m(uboot),256k(environment),"\
 					"-(filesystem)"
-
-/* Unsupported features */
-#undef CONFIG_USE_IRQ
 
 /* SPL */
 #define CONFIG_SPL_LDSCRIPT		"arch/arm/mach-omap2/am33xx/u-boot-spl.lds"

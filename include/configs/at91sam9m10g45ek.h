@@ -27,7 +27,6 @@
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_INITRD_TAG
 #define CONFIG_SKIP_LOWLEVEL_INIT
-#define CONFIG_BOARD_EARLY_INIT_F
 
 /* general purpose I/O */
 #define CONFIG_ATMEL_LEGACY		/* required until (g)pio is fixed */
@@ -69,8 +68,6 @@
  * Command line configuration.
  */
 
-/* No NOR flash */
-#define CONFIG_SYS_NO_FLASH
 #define CONFIG_CMD_NAND
 
 /* SDRAM */
@@ -99,12 +96,7 @@
 /* MMC */
 
 #ifdef CONFIG_CMD_MMC
-#define CONFIG_GENERIC_MMC
 #define CONFIG_GENERIC_ATMEL_MCI
-#endif
-
-#if defined(CONFIG_CMD_USB) || defined(CONFIG_CMD_MMC)
-#define CONFIG_DOS_PARTITION
 #endif
 
 /* Ethernet */
@@ -162,8 +154,6 @@
 				"fatload mmc 0:1 0x72000000 zImage; " \
 				"bootz 0x72000000 - 0x71000000"
 #endif
-
-#define CONFIG_BAUDRATE			115200
 
 #define CONFIG_SYS_CBSIZE		256
 #define CONFIG_SYS_MAXARGS		16

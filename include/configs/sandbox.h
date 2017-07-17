@@ -25,12 +25,6 @@
 #define CONFIG_SYS_TIMER_RATE		1000000
 #endif
 
-/*
- * Number of bits in a C 'long' on this architecture. Set this to 32 when
- * building on a 32-bit machine.
- */
-#define CONFIG_SANDBOX_BITS_PER_LONG	64
-
 #define CONFIG_LMB
 #define CONFIG_ANDROID_BOOT_IMAGE
 
@@ -43,18 +37,7 @@
 #define CONFIG_EXT4_WRITE
 #define CONFIG_CMD_CBFS
 #define CONFIG_CMD_CRAMFS
-#define CONFIG_CMD_PART
-#define CONFIG_DOS_PARTITION
 #define CONFIG_HOST_MAX_DEVICES 4
-#define CONFIG_CMD_MD5SUM
-
-#define CONFIG_CMD_GPT
-#define CONFIG_PARTITION_UUIDS
-#define CONFIG_AMIGA_PARTITION
-#define CONFIG_DOS_PARTITION
-#define CONFIG_EFI_PARTITION
-#define CONFIG_ISO_PARTITION
-#define CONFIG_MAC_PARTITION
 
 /*
  * Size of malloc() pool, before and after relocation
@@ -71,7 +54,6 @@
 
 /* turn on command-line edit/c/auto */
 #define CONFIG_CMDLINE_EDITING
-#define CONFIG_COMMAND_HISTORY
 #define CONFIG_AUTO_COMPLETE
 
 #define CONFIG_ENV_SIZE		8192
@@ -97,11 +79,8 @@
 #define CONFIG_SYS_MONITOR_BASE	0
 #define CONFIG_NR_DRAM_BANKS		1
 
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{4800, 9600, 19200, 38400, 57600,\
 					115200}
-
-#define CONFIG_SYS_NO_FLASH
 
 /* include default commands */
 #include <config_distro_defaults.h>
@@ -136,8 +115,6 @@
 #define CONFIG_CMD_ENV_CALLBACK
 
 #define CONFIG_BOOTARGS ""
-
-#define CONFIG_BOARD_LATE_INIT
 
 #ifndef SANDBOX_NO_SDL
 #define CONFIG_SANDBOX_SDL
@@ -215,6 +192,6 @@
 #define CONFIG_SYS_SYSTEMACE_WIDTH	16
 #define CONFIG_SYS_SYSTEMACE_BASE	0
 
-#define CONFIG_GENERIC_MMC
+#define CONFIG_MISC_INIT_F
 
 #endif

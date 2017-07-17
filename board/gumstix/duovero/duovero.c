@@ -47,7 +47,7 @@ int board_init(void)
 {
 	gpmc_init();
 
-	gd->bd->bi_arch_number = MACH_TYPE_OMAP4_DUOVERO;
+	gd->bd->bi_arch_number = MACH_TYPE_DUOVERO;
 	gd->bd->bi_boot_params = CONFIG_SYS_SDRAM_BASE + 0x100;
 
 	return 0;
@@ -110,16 +110,18 @@ void set_muxconf_regs(void)
 		   sizeof(struct pad_conf_entry));
 }
 
-#if !defined(CONFIG_SPL_BUILD) && defined(CONFIG_GENERIC_MMC)
+#if defined(CONFIG_GENERIC_MMC)
 int board_mmc_init(bd_t *bis)
 {
 	return omap_mmc_init(0, 0, 0, -1, -1);
 }
 
+#if !defined(CONFIG_SPL_BUILD)
 void board_mmc_power_init(void)
 {
 	twl6030_power_mmc_init(0);
 }
+#endif
 #endif
 
 #if defined(CONFIG_CMD_NET)

@@ -5,10 +5,14 @@
 # SPDX-License-Identifier:	GPL-2.0+
 #
 
+ifndef CONFIG_X86_64
 obj-y += bios.o
 obj-y += bios_asm.o
 obj-y += bios_interrupts.o
+endif
+ifndef CONFIG_SPL_BUILD
 obj-$(CONFIG_CMD_BOOTM) += bootm.o
+endif
 obj-y	+= cmd_boot.o
 obj-$(CONFIG_SEABIOS) += coreboot_table.o
 obj-$(CONFIG_EFI) += efi/
@@ -27,7 +31,9 @@ obj-y	+= pinctrl_ich6.o
 obj-y	+= pirq_routing.o
 obj-y	+= relocate.o
 obj-y += physmem.o
+obj-$(CONFIG_INTEL_MID) += pmu.o
 obj-$(CONFIG_X86_RAMTEST) += ramtest.o
+obj-$(CONFIG_INTEL_MID) += scu.o
 obj-y	+= sections.o
 obj-y += sfi.o
 obj-y	+= string.o
@@ -35,8 +41,11 @@ ifndef CONFIG_QEMU
 obj-$(CONFIG_GENERATE_ACPI_TABLE) += acpi_table.o
 endif
 obj-y	+= tables.o
+ifndef CONFIG_SPL_BUILD
 obj-$(CONFIG_CMD_ZBOOT)	+= zimage.o
+endif
 obj-$(CONFIG_HAVE_FSP) += fsp/
+obj-$(CONFIG_SPL_BUILD) += spl.o
 
 extra-$(CONFIG_USE_PRIVATE_LIBGCC) += lib.a
 
@@ -45,7 +54,9 @@ OBJCOPYFLAGS := --prefix-symbols=__normal_
 $(obj)/lib.a: $(NORMAL_LIBGCC) FORCE
 	$(call if_changed,objcopy)
 
+ifeq ($(CONFIG_$(SPL_)X86_64),)
 obj-$(CONFIG_EFI_APP) += crt0_ia32_efi.o reloc_ia32_efi.o
+endif
 
 ifneq ($(CONFIG_EFI_STUB),)
 
@@ -65,5 +76,7 @@ extra-$(CONFIG_EFI_STUB_64BIT) += crt0_x86_64_efi.o reloc_x86_64_efi.o
 endif
 
 ifneq ($(CONFIG_EFI_STUB)$(CONFIG_CMD_BOOTEFI_HELLO_COMPILE),)
+ifeq ($(CONFIG_$(SPL_)X86_64),)
 extra-y += $(EFI_CRT0) $(EFI_RELOC)
+endif
 endif

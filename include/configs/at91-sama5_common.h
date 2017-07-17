@@ -24,12 +24,12 @@
 #define CONFIG_SKIP_LOWLEVEL_INIT
 #endif
 
-#define CONFIG_BOARD_EARLY_INIT_F
-
 #define CONFIG_ENV_VARS_UBOOT_CONFIG
 
 /* general purpose I/O */
+#ifndef CONFIG_DM_GPIO
 #define CONFIG_AT91_GPIO
+#endif
 
 
 /*
@@ -100,8 +100,6 @@
 #endif
 
 #endif
-
-#define CONFIG_BAUDRATE			115200
 
 #define CONFIG_SYS_CBSIZE		256
 #define CONFIG_SYS_MAXARGS		16

@@ -61,7 +61,6 @@
 #define CONFIG_SYS_CLK_FREQ	get_board_sys_clk(0)
 #endif
 
-#define CONFIG_BOARD_EARLY_INIT_F	1	/* Call board_pre_init */
 #define CONFIG_MISC_INIT_R		1
 
 #define CONFIG_SYS_MEMTEST_START	0x00200000	/* memtest region */
@@ -286,7 +285,6 @@
 #define PCI_IDSEL_NUMBER	0x0c	/* slot0->3(IDSEL)=12->15 */
 #endif
 
-#define CONFIG_DOS_PARTITION
 #define CONFIG_SCSI_AHCI
 
 #ifdef CONFIG_SCSI_AHCI
@@ -486,8 +484,6 @@
 #define CONFIG_LOADADDR		0x10000000
 
 #undef	CONFIG_BOOTARGS		/* the boot command will set bootargs */
-
-#define CONFIG_BAUDRATE	115200
 
 #if defined(CONFIG_PCI1)
 #define PCI_ENV \

@@ -56,7 +56,7 @@
 #define SUNXI_USB2_BASE			0x01c1c000
 #endif
 #ifdef CONFIG_SUNXI_GEN_SUN6I
-#if defined(CONFIG_MACH_SUN8I_H3) || defined(CONFIG_MACH_SUN50I)
+#if defined(CONFIG_MACH_SUNXI_H3_H5) || defined(CONFIG_MACH_SUN50I)
 #define SUNXI_USBPHY_BASE		0x01c19000
 #define SUNXI_USB0_BASE			0x01c1a000
 #define SUNXI_USB1_BASE			0x01c1b000
@@ -94,7 +94,7 @@
 #define SUNXI_KEYPAD_BASE		0x01c23000
 #define SUNXI_TZPC_BASE			0x01c23400
 
-#if defined(CONFIG_MACH_SUN8I_A83T) || defined(CONFIG_MACH_SUN8I_H3) || \
+#if defined(CONFIG_MACH_SUN8I_A83T) || defined(CONFIG_MACH_SUNXI_H3_H5) || \
 defined(CONFIG_MACH_SUN50I)
 /* SID address space starts at 0x01c1400, but e-fuse is at offset 0x200 */
 #define SUNXI_SIDC_BASE			0x01c14000
@@ -108,7 +108,7 @@ defined(CONFIG_MACH_SUN50I)
 #define SUNXI_TP_BASE			0x01c25000
 #define SUNXI_PMU_BASE			0x01c25400
 
-#ifdef CONFIG_MACH_SUN7I
+#if defined CONFIG_MACH_SUN7I || defined CONFIG_MACH_SUN8I_R40
 #define SUNXI_CPUCFG_BASE		0x01c25c00
 #endif
 
@@ -167,7 +167,9 @@ defined(CONFIG_MACH_SUN50I)
 #define SUNXI_RTC_BASE			0x01f00000
 #define SUNXI_PRCM_BASE			0x01f01400
 
-#if defined CONFIG_SUNXI_GEN_SUN6I && !defined CONFIG_MACH_SUN8I_A83T
+#if defined CONFIG_SUNXI_GEN_SUN6I && \
+    !defined CONFIG_MACH_SUN8I_A83T && \
+    !defined CONFIG_MACH_SUN8I_R40
 #define SUNXI_CPUCFG_BASE		0x01f01c00
 #endif
 

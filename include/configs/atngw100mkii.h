@@ -16,7 +16,6 @@
 #define CONFIG_AT32AP7000
 #define CONFIG_ATNGW100MKII
 
-#define CONFIG_BOARD_EARLY_INIT_F
 #define CONFIG_BOARD_EARLY_INIT_R
 
 /*
@@ -67,15 +66,11 @@
 #define CONFIG_USART_ID			1
 
 /* User serviceable stuff */
-#define CONFIG_DOS_PARTITION
 
 #define CONFIG_CMDLINE_TAG
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_INITRD_TAG
 
-#define CONFIG_STACKSIZE		(2048)
-
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_BOOTARGS							\
 	"root=mtd:main rootfstype=jffs2"
 #define CONFIG_BOOTCOMMAND						\
@@ -106,7 +101,6 @@
 #define CONFIG_SYS_NR_PIOS		5
 #define CONFIG_SYS_HSDRAMC
 #define CONFIG_GENERIC_ATMEL_MCI
-#define CONFIG_GENERIC_MMC
 #define CONFIG_ATMEL_SPI
 
 #define CONFIG_SYS_DCACHE_LINESZ	32

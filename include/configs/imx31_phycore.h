@@ -44,7 +44,6 @@
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 #define CONFIG_CONS_INDEX	1
-#define CONFIG_BAUDRATE		115200
 
 /***********************************************************
  * Command definition
@@ -118,7 +117,6 @@
 #define CONFIG_NR_DRAM_BANKS		1
 #define PHYS_SDRAM_1			0x80000000
 #define PHYS_SDRAM_1_SIZE		(128 * 1024 * 1024)
-#define CONFIG_BOARD_EARLY_INIT_F
 #define CONFIG_SYS_TEXT_BASE		0xA0000000
 
 #define CONFIG_SYS_SDRAM_BASE		PHYS_SDRAM_1
@@ -168,9 +166,7 @@
 #define CONFIG_JFFS2_DEV	"nor0"
 
 /* EET platform additions */
-#ifdef CONFIG_IMX31_PHYCORE_EET
-#define CONFIG_BOARD_LATE_INIT
-
+#ifdef CONFIG_TARGET_IMX31_PHYCORE_EET
 #define CONFIG_MXC_GPIO
 
 #define CONFIG_HARD_SPI

@@ -46,7 +46,7 @@ static const struct omap_gpio_platdata omap34xx_gpio[] = {
 	{ 5, OMAP34XX_GPIO6_BASE },
 };
 
-U_BOOT_DEVICES(am33xx_gpios) = {
+U_BOOT_DEVICES(omap34xx_gpios) = {
 	{ "gpio_omap", &omap34xx_gpio[0] },
 	{ "gpio_omap", &omap34xx_gpio[1] },
 	{ "gpio_omap", &omap34xx_gpio[2] },
@@ -269,38 +269,34 @@ void abort(void)
  *****************************************************************************/
 static int do_switch_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 {
+	int hw, strength = 1;
+
 	if (argc < 2 || argc > 3)
 		goto usage;
 
 	if (strncmp(argv[1], "hw", 2) == 0) {
-		if (argc == 2) {
-			omap_nand_switch_ecc(1, 1);
-		} else {
-			if (strncmp(argv[2], "hamming", 7) == 0)
-				omap_nand_switch_ecc(1, 1);
-			else if (strncmp(argv[2], "bch8", 4) == 0)
-				omap_nand_switch_ecc(1, 8);
+		hw = 1;
+		if (argc == 3) {
+			if (strncmp(argv[2], "bch8", 4) == 0)
+				strength = 8;
 			else if (strncmp(argv[2], "bch16", 5) == 0)
-				omap_nand_switch_ecc(1, 16);
-			else
+				strength = 16;
+			else if (strncmp(argv[2], "hamming", 7) != 0)
 				goto usage;
 		}
 	} else if (strncmp(argv[1], "sw", 2) == 0) {
-		if (argc == 2) {
-			omap_nand_switch_ecc(0, 1);
-		} else {
-			if (strncmp(argv[2], "hamming", 7) == 0)
-				omap_nand_switch_ecc(0, 1);
-			else if (strncmp(argv[2], "bch8", 4) == 0)
-				omap_nand_switch_ecc(0, 8);
-			else
+		hw = 0;
+		if (argc == 3) {
+			if (strncmp(argv[2], "bch8", 4) == 0)
+				strength = 8;
+			else if (strncmp(argv[2], "hamming", 7) != 0)
 				goto usage;
 		}
 	} else {
 		goto usage;
 	}
 
-	return 0;
+	return -omap_nand_switch_ecc(hw, strength);
 
 usage:
 	printf ("Usage: nandecc %s\n", cmdtp->usage);
@@ -366,6 +362,16 @@ void __weak omap3_set_aux_cr_secure(u32 acr)
 	emu_romcode_params.param1 = acr;
 	omap3_emu_romcode_call(OMAP3_EMU_HAL_API_WRITE_ACR,
 			       (u32 *)&emu_romcode_params);
+}
+
+void v7_arch_cp15_set_l2aux_ctrl(u32 l2auxctrl, u32 cpu_midr,
+				 u32 cpu_rev_comb, u32 cpu_variant,
+				 u32 cpu_rev)
+{
+	if (get_device_type() == GP_DEVICE)
+		omap_smc1(OMAP3_GP_ROMCODE_API_WRITE_L2ACR, l2auxctrl);
+
+	/* L2 Cache Auxiliary Control Register is not banked */
 }
 
 void v7_arch_cp15_set_acr(u32 acr, u32 cpu_midr, u32 cpu_rev_comb,

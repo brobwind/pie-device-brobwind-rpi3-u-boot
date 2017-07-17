@@ -33,7 +33,6 @@
 #define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs	*/
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_INITRD_TAG
-#define CONFIG_BOARD_LATE_INIT
 
 /*
  * Compressions
@@ -55,7 +54,6 @@
 #define CONFIG_MXC_UART
 #define CONFIG_MXC_UART_BASE	UART2_BASE
 #define CONFIG_CONS_INDEX	1	/* use UART2 for console */
-#define CONFIG_BAUDRATE		115200	/* Default baud rate */
 
 /*
  * Ethernet
@@ -91,7 +89,6 @@
 #define CONFIG_MXC_USB_PORTSC	MXC_EHCI_MODE_SERIAL
 #define CONFIG_MXC_USB_FLAGS	(MXC_EHCI_INTERNAL_PHY | MXC_EHCI_IPPUE_DOWN)
 #define CONFIG_EHCI_IS_TDI
-#define CONFIG_DOS_PARTITION
 #define CONFIG_SUPPORT_VFAT
 #endif /* CONFIG_CMD_USB */
 

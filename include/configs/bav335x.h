@@ -23,15 +23,11 @@
 #ifndef CONFIG_SPL_BUILD
 # define CONFIG_TIMESTAMP
 # define CONFIG_LZO
-# ifdef CONFIG_ENABLE_VBOOT
-# endif
 #endif
 
 #define CONFIG_SYS_BOOTM_LEN		(16 << 20)
 
-#define MACH_TYPE_TIAM335EVM		3589	/* Until the next sync */
-#define CONFIG_MACH_TYPE		MACH_TYPE_TIAM335EVM
-#define CONFIG_BOARD_LATE_INIT
+#define CONFIG_MACH_TYPE		MACH_TYPE_AM335XEVM
 
 /* Clock Defines */
 #define V_OSCK				24000000  /* Clock output from T2 */
@@ -42,10 +38,6 @@
 
 /* Always 128 KiB env size */
 #define CONFIG_ENV_SIZE			(128 << 10)
-
-/* Enhance our eMMC support / experience. */
-#define CONFIG_CMD_GPT
-#define CONFIG_EFI_PARTITION
 
 #ifdef CONFIG_NAND
 #define NANDARGS \
@@ -337,7 +329,6 @@ DEFAULT_LINUX_BOOT_ENV \
 #define CONFIG_SYS_NS16550_COM4		0x481a6000	/* UART3 */
 #define CONFIG_SYS_NS16550_COM5		0x481a8000	/* UART4 */
 #define CONFIG_SYS_NS16550_COM6		0x481aa000	/* UART5 */
-#define CONFIG_BAUDRATE			115200
 
 #define CONFIG_CMD_EEPROM
 #define CONFIG_ENV_EEPROM_IS_ON_I2C
@@ -431,7 +422,6 @@ DEFAULT_LINUX_BOOT_ENV \
  * and DFU.
  */
 #define CONFIG_USB_MUSB_DSPS
-#define CONFIG_ARCH_MISC_INIT
 #define CONFIG_USB_MUSB_PIO_ONLY
 #define CONFIG_USB_MUSB_DISABLE_BULK_COMBINE_SPLIT
 #define CONFIG_AM335X_USB0
@@ -457,8 +447,6 @@ DEFAULT_LINUX_BOOT_ENV \
 #if defined(CONFIG_SPL_BUILD) && defined(CONFIG_SPL_USBETH_SUPPORT)
 /* disable host part of MUSB in SPL */
 /* disable EFI partitions and partition UUID support */
-#undef CONFIG_PARTITION_UUIDS
-#undef CONFIG_EFI_PARTITION
 #endif
 
 /* USB Device Firmware Update support */
@@ -558,7 +546,6 @@ DEFAULT_LINUX_BOOT_ENV \
  * 0x4C0000 - 0xFFFFFF : Userland (11 MiB + 256 KiB)
  */
 #if defined(CONFIG_NOR)
-#undef CONFIG_SYS_NO_FLASH
 #define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
 #define CONFIG_SYS_FLASH_PROTECTION
 #define CONFIG_SYS_FLASH_CFI

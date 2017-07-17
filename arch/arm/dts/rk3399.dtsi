@@ -24,6 +24,9 @@
 		serial2 = &uart2;
 		serial3 = &uart3;
 		serial4 = &uart4;
+		mmc0 = &sdhci;
+		mmc1 = &sdmmc;
+		i2c0 = &i2c0;
 	};
 
 	cpus {
@@ -183,11 +186,13 @@
 	};
 
 	sdhci: sdhci@fe330000 {
+		u-boot,dm-pre-reloc;
 		compatible = "rockchip,rk3399-sdhci-5.1", "arasan,sdhci-5.1";
 		reg = <0x0 0xfe330000 0x0 0x10000>;
 		interrupts = <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>;
 		assigned-clocks = <&cru SCLK_EMMC>;
 		assigned-clock-rates = <200000000>;
+		max-frequency = <200000000>;
 		clocks = <&cru SCLK_EMMC>, <&cru ACLK_EMMC>;
 		clock-names = "clk_xin", "clk_ahb";
 		phys = <&emmc_phy>;
@@ -235,7 +240,6 @@
 		compatible = "rockchip,rk3399-xhci";
 		reg = <0x0 0xfe800000 0x0 0x100000>;
 		status = "disabled";
-		rockchip,vbus-gpio = <&gpio1 3 GPIO_ACTIVE_HIGH>;
 		snps,dis-enblslpm-quirk;
 		snps,phyif-utmi-bits = <16>;
 		snps,dis-u2-freeclk-exists-quirk;
@@ -257,7 +261,6 @@
 		compatible = "rockchip,rk3399-xhci";
 		reg = <0x0 0xfe900000 0x0 0x100000>;
 		status = "disabled";
-		rockchip,vbus-gpio = <&gpio1 4 GPIO_ACTIVE_HIGH>;
 		snps,dis-enblslpm-quirk;
 		snps,phyif-utmi-bits = <16>;
 		snps,dis-u2-freeclk-exists-quirk;
@@ -415,6 +418,7 @@
 	};
 
 	pmugrf: syscon@ff320000 {
+		u-boot,dm-pre-reloc;
 		compatible = "rockchip,rk3399-pmugrf", "syscon", "simple-mfd";
 		reg = <0x0 0xff320000 0x0 0x1000>;
 		#address-cells = <1>;
@@ -424,6 +428,12 @@
 			compatible = "rockchip,rk3399-pmu-io-voltage-domain";
 			status = "disabled";
 		};
+	};
+
+	pmusgrf: syscon@ff330000 {
+		u-boot,dm-pre-reloc;
+		compatible = "rockchip,rk3399-pmusgrf", "syscon";
+		reg = <0x0 0xff330000 0x0 0xe3d4>;
 	};
 
 	spi3: spi@ff350000 {
@@ -496,7 +506,40 @@
 		status = "disabled";
 	};
 
+	cic: syscon@ff620000 {
+		u-boot,dm-pre-reloc;
+		compatible = "rockchip,rk3399-cic", "syscon";
+		reg = <0x0 0xff620000 0x0 0x100>;
+	};
+
+	dfi: dfi@ff630000 {
+		reg = <0x00 0xff630000 0x00 0x4000>;
+		compatible = "rockchip,rk3399-dfi";
+		rockchip,pmu = <&pmugrf>;
+		clocks = <&cru PCLK_DDR_MON>;
+		clock-names = "pclk_ddr_mon";
+		status = "disabled";
+	};
+
+	dmc: dmc {
+		u-boot,dm-pre-reloc;
+		compatible = "rockchip,rk3399-dmc";
+		devfreq-events = <&dfi>;
+		interrupts = <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH 0>;
+		clocks = <&cru SCLK_DDRCLK>;
+		clock-names = "dmc_clk";
+		reg = <0x0 0xffa80000 0x0 0x0800
+		       0x0 0xffa80800 0x0 0x1800
+		       0x0 0xffa82000 0x0 0x2000
+		       0x0 0xffa84000 0x0 0x1000
+		       0x0 0xffa88000 0x0 0x0800
+		       0x0 0xffa88800 0x0 0x1800
+		       0x0 0xffa8a000 0x0 0x2000
+		       0x0 0xffa8c000 0x0 0x1000>;
+	};
+
 	pmucru: pmu-clock-controller@ff750000 {
+		u-boot,dm-pre-reloc;
 		compatible = "rockchip,rk3399-pmucru";
 		reg = <0x0 0xff750000 0x0 0x1000>;
 		#clock-cells = <1>;
@@ -506,6 +549,7 @@
 	};
 
 	cru: clock-controller@ff760000 {
+		u-boot,dm-pre-reloc;
 		compatible = "rockchip,rk3399-cru";
 		reg = <0x0 0xff760000 0x0 0x1000>;
 		#clock-cells = <1>;
@@ -529,6 +573,7 @@
 	};
 
 	grf: syscon@ff770000 {
+		u-boot,dm-pre-reloc;
 		compatible = "rockchip,rk3399-grf", "syscon", "simple-mfd";
 		reg = <0x0 0xff770000 0x0 0x10000>;
 		#address-cells = <1>;
@@ -553,6 +598,25 @@
 		clocks = <&cru PCLK_WDT>;
 		interrupts = <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>;
 	};
+
+        gmac: eth@fe300000 {
+                compatible = "rockchip,rk3399-gmac";
+                reg = <0x0 0xfe300000 0x0 0x10000>;
+                rockchip,grf = <&grf>;
+                interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH 0>;
+                interrupt-names = "macirq";
+                clocks = <&cru SCLK_MAC>, <&cru SCLK_MAC_RX>,
+                         <&cru SCLK_MAC_TX>, <&cru SCLK_MACREF>,
+                         <&cru SCLK_MACREF_OUT>, <&cru ACLK_GMAC>,
+                         <&cru PCLK_GMAC>;
+                clock-names = "stmmaceth", "mac_clk_rx",
+                              "mac_clk_tx", "clk_mac_ref",
+                              "clk_mac_refout", "aclk_mac",
+                              "pclk_mac";
+                resets = <&cru SRST_A_GMAC>;
+                reset-names = "stmmaceth";
+                status = "disabled";
+        };
 
 	spdif: spdif@ff870000 {
 		compatible = "rockchip,rk3399-spdif";
@@ -605,7 +669,23 @@
 		status = "disabled";
 	};
 
+	i2c0: i2c@ff3c0000 {
+		compatible = "rockchip,rk3399-i2c";
+		reg = <0x0 0xff3c0000 0x0 0x1000>;
+		assigned-clocks = <&pmucru SCLK_I2C0_PMU>;
+		assigned-clock-rates = <200000000>;
+		clocks = <&pmucru SCLK_I2C0_PMU>, <&pmucru PCLK_I2C0_PMU>;
+		clock-names = "i2c", "pclk";
+		interrupts = <GIC_SPI 57 IRQ_TYPE_LEVEL_HIGH 0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&i2c0_xfer>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		status = "disabled";
+	};
+
 	pinctrl: pinctrl {
+		u-boot,dm-pre-reloc;
 		compatible = "rockchip,rk3399-pinctrl";
 		rockchip,grf = <&grf>;
 		rockchip,pmu = <&pmugrf>;
@@ -815,6 +895,42 @@
 					<4 5 RK_FUNC_1 &pcfg_pull_none>,
 					<4 6 RK_FUNC_1 &pcfg_pull_none>,
 					<4 7 RK_FUNC_1 &pcfg_pull_none>;
+			};
+		};
+
+		gmac {
+			rgmii_pins: rgmii-pins {
+				rockchip,pins =
+					/* mac_txclk */
+					<3 17 RK_FUNC_1 &pcfg_pull_none_13ma>,
+					/* mac_rxclk */
+					<3 14 RK_FUNC_1 &pcfg_pull_none>,
+					/* mac_mdio */
+					<3 13 RK_FUNC_1 &pcfg_pull_none>,
+					/* mac_txen */
+					<3 12 RK_FUNC_1 &pcfg_pull_none_13ma>,
+					/* mac_clk */
+					<3 11 RK_FUNC_1 &pcfg_pull_none>,
+					/* mac_rxdv */
+					<3 9 RK_FUNC_1 &pcfg_pull_none>,
+					/* mac_mdc */
+					<3 8 RK_FUNC_1 &pcfg_pull_none>,
+					/* mac_rxd1 */
+					<3 7 RK_FUNC_1 &pcfg_pull_none>,
+					/* mac_rxd0 */
+					<3 6 RK_FUNC_1 &pcfg_pull_none>,
+					/* mac_txd1 */
+					<3 5 RK_FUNC_1 &pcfg_pull_none_13ma>,
+					/* mac_txd0 */
+					<3 4 RK_FUNC_1 &pcfg_pull_none_13ma>,
+					/* mac_rxd3 */
+					<3 3 RK_FUNC_1 &pcfg_pull_none>,
+					/* mac_rxd2 */
+					<3 2 RK_FUNC_1 &pcfg_pull_none>,
+					/* mac_txd3 */
+					<3 1 RK_FUNC_1 &pcfg_pull_none_13ma>,
+					/* mac_txd2 */
+					<3 0 RK_FUNC_1 &pcfg_pull_none_13ma>;
 			};
 		};
 

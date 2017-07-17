@@ -54,7 +54,6 @@
 #define CONFIG_4xx_DCACHE		/* enable dcache		*/
 #endif
 
-#define CONFIG_BOARD_EARLY_INIT_F 1	/* Call board_early_init_f	*/
 #define CONFIG_MISC_INIT_R	1	/* Call misc_init_r		*/
 
 /*
@@ -219,9 +218,6 @@
 #endif /* CONFIG_440EPX */
 
 /* Partitions */
-#define CONFIG_MAC_PARTITION
-#define CONFIG_DOS_PARTITION
-#define CONFIG_ISO_PARTITION
 
 /*
  * Commands additional to the ones defined in amcc-common.h

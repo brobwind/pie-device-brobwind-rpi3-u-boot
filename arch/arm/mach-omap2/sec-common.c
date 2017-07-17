@@ -21,7 +21,11 @@
 #include <spl.h>
 
 /* Index for signature verify ROM API */
+#ifdef CONFIG_AM33XX
+#define API_HAL_KM_VERIFYCERTIFICATESIGNATURE_INDEX	(0x0000000C)
+#else
 #define API_HAL_KM_VERIFYCERTIFICATESIGNATURE_INDEX	(0x0000000E)
+#endif
 
 static uint32_t secure_rom_call_args[5] __aligned(ARCH_DMA_MINALIGN);
 
@@ -35,8 +39,10 @@ u32 secure_rom_call(u32 service, u32 proc_id, u32 flag, ...)
 
 	num_args = va_arg(ap, u32);
 
-	if (num_args > 4)
+	if (num_args > 4) {
+		va_end(ap);
 		return 1;
+	}
 
 	/* Copy args to aligned args structure */
 	for (i = 0; i < num_args; i++)
@@ -116,6 +122,12 @@ int secure_boot_verify_image(void **image, size_t *size)
 	result = secure_rom_call(
 		API_HAL_KM_VERIFYCERTIFICATESIGNATURE_INDEX, 0, 0,
 		4, cert_addr, cert_size, sig_addr, 0xFFFFFFFF);
+
+	/* Perform cache writeback on output buffer */
+	flush_dcache_range(
+		(u32)*image,
+		(u32)*image + roundup(*size, ARCH_DMA_MINALIGN));
+
 auth_exit:
 	if (result != 0) {
 		printf("Authentication failed!\n");

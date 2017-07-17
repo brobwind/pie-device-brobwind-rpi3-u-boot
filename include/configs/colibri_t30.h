@@ -13,8 +13,6 @@
 
 #include "tegra30-common.h"
 
-#define CONFIG_ARCH_MISC_INIT
-
 /* High-level configuration options */
 #define CONFIG_DISPLAY_BOARDINFO_LATE	/* Calls show_board_info() */
 
@@ -26,10 +24,6 @@
 
 /* I2C */
 #define CONFIG_SYS_I2C_TEGRA
-
-/* SD/MMC support */
-#define CONFIG_GENERIC_MMC
-#define CONFIG_TEGRA_MMC
 
 /* Environment in eMMC, before config block at the end of 1st "boot sector" */
 #define CONFIG_ENV_IS_IN_MMC

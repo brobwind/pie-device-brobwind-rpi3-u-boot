@@ -9,6 +9,10 @@
 #include <asm/io.h>
 #include <asm/arch/clock.h>
 #include <asm/arch/fsl_serdes.h>
+#ifdef CONFIG_FSL_LS_PPA
+#include <asm/arch/ppa.h>
+#endif
+#include <asm/arch/mmu.h>
 #include <asm/arch/soc.h>
 #include <hwconfig.h>
 #include <ahci.h>
@@ -18,6 +22,7 @@
 #include <environment.h>
 #include <fsl_mmdc.h>
 #include <netdev.h>
+#include <fsl_sec.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -77,6 +82,10 @@ int dram_init(void)
 	mmdc_init(&mparam);
 
 	gd->ram_size = CONFIG_SYS_SDRAM_SIZE;
+#if !defined(CONFIG_SPL) || defined(CONFIG_SPL_BUILD)
+	/* This will break-before-make MMU for DDR */
+	update_early_mmu_table();
+#endif
 
 	return 0;
 }
@@ -110,6 +119,51 @@ int board_init(void)
 	gd->env_addr = (ulong)&default_environment[0];
 #endif
 
+#ifdef CONFIG_FSL_CAAM
+	sec_init();
+#endif
+
+#ifdef CONFIG_FSL_LS_PPA
+	ppa_init();
+#endif
+	return 0;
+}
+
+int esdhc_status_fixup(void *blob, const char *compat)
+{
+	char esdhc0_path[] = "/soc/esdhc@1560000";
+	char esdhc1_path[] = "/soc/esdhc@1580000";
+	u8 io = 0;
+	u8 mux_sdhc2;
+
+	do_fixup_by_path(blob, esdhc0_path, "status", "okay",
+			 sizeof("okay"), 1);
+
+	i2c_set_bus_num(0);
+
+	/*
+	 * The I2C IO-expander for mux select is used to control the muxing
+	 * of various onboard interfaces.
+	 *
+	 * IO1[3:2] indicates SDHC2 interface demultiplexer select lines.
+	 *	00 - SDIO wifi
+	 *	01 - GPIO (to Arduino)
+	 *	10 - eMMC Memory
+	 *	11 - SPI
+	 */
+	if (i2c_read(I2C_MUX_IO1_ADDR, 0, 1, &io, 1) < 0) {
+		printf("Error reading i2c boot information!\n");
+		return 0; /* Don't want to hang() on this error */
+	}
+
+	mux_sdhc2 = (io & 0x0c) >> 2;
+	/* Enable SDHC2 only when use SDIO wifi and eMMC */
+	if (mux_sdhc2 == 2 || mux_sdhc2 == 0)
+		do_fixup_by_path(blob, esdhc1_path, "status", "okay",
+				 sizeof("okay"), 1);
+	else
+		do_fixup_by_path(blob, esdhc1_path, "status", "disabled",
+				 sizeof("disabled"), 1);
 	return 0;
 }
 

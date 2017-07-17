@@ -28,8 +28,6 @@
 #define CONFIG_PCI_INDIRECT_BRIDGE 1
 #define CONFIG_FSL_ELBC		1
 
-#define CONFIG_BOARD_EARLY_INIT_F	1
-
 /*
  * On-board devices
  *
@@ -460,8 +458,6 @@
 
 #define CONFIG_HOSTNAME		ve8313
 #define CONFIG_UBOOTPATH	ve8313/u-boot.bin
-
-#define CONFIG_BAUDRATE		115200
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"netdev=" __stringify(CONFIG_NETDEV) "\0"			\

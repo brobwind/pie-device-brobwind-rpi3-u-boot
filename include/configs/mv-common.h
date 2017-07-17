@@ -53,7 +53,6 @@
  */
 
 #define CONFIG_CONS_INDEX	1	/*Console on UART0 */
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, \
 					  115200,230400, 460800, 921600 }
 /* auto boot */
@@ -84,8 +83,6 @@
 #define CONFIG_AUTO_COMPLETE
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_ARCH_CPU_INIT	/* call arch_cpu_init() */
-#define CONFIG_ARCH_MISC_INIT	/* call arch_misc_init() */
-#define CONFIG_BOARD_EARLY_INIT_F /* call board_init_f for early inits */
 #define CONFIG_SYS_LOAD_ADDR	0x00800000	/* default load adr- 8M */
 #define CONFIG_SYS_MEMTEST_START 0x00800000	/* 8M */
 #define CONFIG_SYS_MEMTEST_END	0x00ffffff	/*(_16M -1) */
@@ -125,8 +122,6 @@
  */
 #if defined(CONFIG_CMD_USB) && !defined(CONFIG_DM)
 #define CONFIG_USB_EHCI		/* Enable EHCI USB support */
-#define CONFIG_DOS_PARTITION
-#define CONFIG_ISO_PARTITION
 #define CONFIG_SUPPORT_VFAT
 #endif /* CONFIG_CMD_USB */
 

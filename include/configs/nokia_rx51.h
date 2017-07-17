@@ -27,10 +27,6 @@
 #define CONFIG_OMAP3430			/* which is in a 3430 */
 #define CONFIG_OMAP3_RX51		/* working with RX51 */
 #define CONFIG_SYS_L2CACHE_OFF		/* pretend there is no L2 CACHE */
-/* Common ARM Erratas */
-#define CONFIG_ARM_ERRATA_454179
-#define CONFIG_ARM_ERRATA_430973
-#define CONFIG_ARM_ERRATA_621766
 
 #define CONFIG_MACH_TYPE		MACH_TYPE_NOKIA_RX51
 
@@ -52,7 +48,6 @@
 #define V_OSCK			26000000	/* Clock output from T2 */
 #define V_SCLK			(V_OSCK >> 1)
 
-#undef CONFIG_USE_IRQ				/* no support for IRQs */
 #define CONFIG_MISC_INIT_R
 #define CONFIG_SKIP_LOWLEVEL_INIT		/* X-Loader set everything up */
 
@@ -91,11 +86,7 @@
 
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
-#define CONFIG_BAUDRATE			115200
 #define CONFIG_SYS_BAUDRATE_TABLE { 4800, 9600, 19200, 38400, 57600, 115200 }
-#define CONFIG_GENERIC_MMC
-#define CONFIG_OMAP_HSMMC
-#define CONFIG_DOS_PARTITION
 
 /* USB */
 #define CONFIG_USB_MUSB_UDC
@@ -109,8 +100,6 @@
 #define CONFIG_USBD_PRODUCTID		0x01c8
 #define CONFIG_USBD_MANUFACTURER	"Nokia"
 #define CONFIG_USBD_PRODUCT_NAME	"N900"
-
-#define CONFIG_SYS_NO_FLASH
 
 /* commands to include */
 
@@ -389,13 +378,6 @@ int rx51_kp_getc(struct stdio_dev *sdev);
  */
 #define CONFIG_SYS_TIMERBASE		(OMAP34XX_GPT2)
 #define CONFIG_SYS_PTV			2	/* Divisor: 2^(PTV+1) => 8 */
-
-/*
- * Stack sizes
- *
- * The stack sizes are set up in start.S using the settings below
- */
-#define CONFIG_STACKSIZE		(128 << 10) /* regular stack 128 KiB */
 
 /*
  * Physical Memory Map

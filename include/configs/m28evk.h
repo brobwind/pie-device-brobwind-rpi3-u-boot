@@ -9,14 +9,11 @@
 
 /* System configurations */
 #define CONFIG_MX28				/* i.MX28 SoC */
-#define MACH_TYPE_M28EVK	3613
 #define CONFIG_MACH_TYPE	MACH_TYPE_M28EVK
 
 #define CONFIG_TIMESTAMP		/* Print image info with timestamp */
 
 /* U-Boot Commands */
-#define CONFIG_SYS_NO_FLASH
-#define CONFIG_DOS_PARTITION
 #define CONFIG_FAT_WRITE
 
 #define CONFIG_CMD_BMP

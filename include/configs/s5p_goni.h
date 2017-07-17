@@ -44,20 +44,15 @@
  * select serial console configuration
  */
 #define CONFIG_SERIAL2			1	/* use SERIAL2 */
-#define CONFIG_BAUDRATE			115200
 
 /* MMC */
-#define CONFIG_GENERIC_MMC
 #define SDHCI_MAX_HOSTS		4
 
 /* PWM */
 #define CONFIG_PWM			1
 
-#define CONFIG_SYS_NO_FLASH		1
-
 #define CONFIG_CMD_REGINFO
 #define CONFIG_CMD_ONENAND
-#define CONFIG_CMD_GPT
 
 /* USB Composite download gadget - g_dnl */
 #define CONFIG_SYS_DFU_DATA_BUF_SIZE SZ_32M
@@ -214,15 +209,11 @@
 #define CONFIG_SAMSUNG_ONENAND		1
 #define CONFIG_SYS_ONENAND_BASE		0xB0000000
 
-#define CONFIG_DOS_PARTITION		1
-
 /* write support for filesystems */
 #define CONFIG_FAT_WRITE
 #define CONFIG_EXT4_WRITE
 
 /* GPT */
-#define CONFIG_EFI_PARTITION
-#define CONFIG_PARTITION_UUIDS
 
 #define CONFIG_SYS_INIT_SP_ADDR	(CONFIG_SYS_LOAD_ADDR - 0x1000000)
 

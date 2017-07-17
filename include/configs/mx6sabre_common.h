@@ -16,9 +16,6 @@
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN		(10 * SZ_1M)
 
-#define CONFIG_BOARD_EARLY_INIT_F
-#define CONFIG_BOARD_LATE_INIT
-
 #define CONFIG_MXC_UART
 
 /* MMC Configs */
@@ -182,8 +179,6 @@
 #define CONFIG_SYS_MEMTEST_START       0x10000000
 #define CONFIG_SYS_MEMTEST_END         0x10010000
 #define CONFIG_SYS_MEMTEST_SCRATCH     0x10800000
-
-#define CONFIG_STACKSIZE               (128 * 1024)
 
 /* Physical Memory Map */
 #define CONFIG_NR_DRAM_BANKS           1

@@ -98,7 +98,7 @@ struct ti_common_eeprom {
 };
 
 #define TI_EEPROM_DATA ((struct ti_common_eeprom *)\
-				OMAP_SRAM_SCRATCH_BOARD_EEPROM_START)
+				TI_SRAM_SCRATCH_BOARD_EEPROM_START)
 
 /**
  * ti_i2c_eeprom_am_get() - Consolidated eeprom data collection for AM* TI EVMs
@@ -192,5 +192,17 @@ u64 board_ti_get_emif2_size(void);
  * If name is NULL, default_name is used.
  */
 void set_board_info_env(char *name);
+
+/**
+ * board_ti_set_ethaddr- Sets the ethaddr environment from EEPROM
+ * @index: The first eth<index>addr environment variable to set
+ *
+ * EEPROM should be already read before calling this function.
+ * The EEPROM contains 2 MAC addresses which define the MAC address
+ * range (i.e. first and last MAC address).
+ * This function sets the ethaddr environment variable for all
+ * the available MAC addresses starting from eth<index>addr.
+ */
+void board_ti_set_ethaddr(int index);
 
 #endif	/* __BOARD_DETECT_H */

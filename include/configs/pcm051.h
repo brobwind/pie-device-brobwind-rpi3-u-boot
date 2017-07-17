@@ -22,7 +22,6 @@
 #include <configs/ti_am335x_common.h>
 
 #define CONFIG_ENV_SIZE			(128 << 10)	/* 128 KiB */
-#define MACH_TYPE_PCM051		4144	/* Until the next sync */
 #define CONFIG_MACH_TYPE		MACH_TYPE_PCM051
 
 /* set to negative value for no autoboot */
@@ -132,7 +131,6 @@
  * USB configuration
  */
 #define CONFIG_USB_MUSB_DSPS
-#define CONFIG_ARCH_MISC_INIT
 #define CONFIG_USB_MUSB_PIO_ONLY
 #define CONFIG_AM335X_USB0
 #define CONFIG_AM335X_USB0_MODE	MUSB_PERIPHERAL

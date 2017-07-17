@@ -18,7 +18,6 @@
 
 #define CONFIG_TI81XX
 #define CONFIG_TI814X
-#define CONFIG_SYS_NO_FLASH
 #define CONFIG_OMAP
 
 #include <asm/arch/omap.h>
@@ -26,7 +25,6 @@
 #define CONFIG_ENV_SIZE			(128 << 10)	/* 128 KiB */
 #define CONFIG_SYS_MALLOC_LEN		(1024 << 10)
 #define CONFIG_SYS_LONGHELP		/* undef to save memory */
-#define CONFIG_SYS_NO_FLASH
 #define CONFIG_MACH_TYPE		MACH_TYPE_TI8148EVM
 
 #define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs  */
@@ -113,9 +111,6 @@
 #define CONFIG_SYS_LOAD_ADDR		0x81000000	/* Default */
 
 #define CONFIG_OMAP_GPIO
-#define CONFIG_GENERIC_MMC
-#define CONFIG_OMAP_HSMMC
-#define CONFIG_DOS_PARTITION
 
 /**
  * Physical Memory Map
@@ -139,8 +134,6 @@
 #define CONFIG_SYS_NS16550_REG_SIZE	(-4)
 #define CONFIG_SYS_NS16550_CLK		(48000000)
 #define CONFIG_SYS_NS16550_COM1		0x48020000	/* Base EVM has UART0 */
-
-#define CONFIG_BAUDRATE			115200
 
 /* CPU */
 #define CONFIG_ARCH_CPU_INIT
@@ -185,9 +178,6 @@
 #ifndef CONFIG_SPL_BUILD
 #define CONFIG_SKIP_LOWLEVEL_INIT
 #endif
-
-/* Unsupported features */
-#undef CONFIG_USE_IRQ
 
 /* Ethernet */
 #define CONFIG_DRIVER_TI_CPSW

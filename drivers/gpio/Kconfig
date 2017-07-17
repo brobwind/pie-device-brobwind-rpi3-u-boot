@@ -28,6 +28,19 @@ config DWAPB_GPIO
 	help
 	  Support for the Designware APB GPIO driver.
 
+config AT91_GPIO
+	bool "AT91 PIO GPIO driver"
+	depends on DM_GPIO
+	default n
+	help
+	  Say yes here to select AT91 PIO GPIO driver. AT91 PIO
+	  controller manages up to 32 fully programmable input/output
+	  lines. Each I/O line may be dedicated as a general-purpose
+	  I/O or be assigned to a function of an embedded peripheral.
+	  The assignment to a function of an embedded peripheral is
+	  the responsibility of AT91 Pinctrl driver. This driver is
+	  responsible for the general-purpose I/O.
+
 config ATMEL_PIO4
 	bool "ATMEL PIO4 driver"
 	depends on DM_GPIO
@@ -47,6 +60,13 @@ config INTEL_BROADWELL_GPIO
 	  GPIO feature set. The difference is large enough to merit a separate
 	  driver from the common Intel ICH6 driver. It supports a total of
 	  95 GPIOs which can be configured from the device tree.
+
+config IMX_RGPIO2P
+	bool "i.MX7ULP RGPIO2P driver"
+	depends on DM
+	default n
+	help
+	  This driver supports i.MX7ULP Rapid GPIO2P controller.
 
 config LPC32XX_GPIO
 	bool "LPC32XX GPIO driver"

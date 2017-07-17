@@ -1,7 +1,7 @@
 /*
- * Copyright (C) 2013, 2014 Markus Niebel <Markus.Niebel@tq-group.com>
+ * Copyright (C) 2013, 2014, 2017 Markus Niebel <Markus.Niebel@tq-group.com>
  *
- * Configuration settings for the TQ Systems TQMa6<Q,S> module.
+ * Configuration settings for the TQ Systems TQMa6<Q,D,DL,S> module.
  *
  * SPDX-License-Identifier:	GPL-2.0+
  */
@@ -18,22 +18,21 @@
 /* #endif */
 
 /* place code in last 4 MiB of RAM */
-#if defined(CONFIG_MX6DL) || defined(CONFIG_MX6S)
+#if defined(CONFIG_TQMA6S)
 #define CONFIG_SYS_TEXT_BASE		0x2fc00000
-#elif defined(CONFIG_MX6Q) || defined(CONFIG_MX6D)
+#elif defined(CONFIG_TQMA6Q) || defined(CONFIG_TQMA6DL)
 #define CONFIG_SYS_TEXT_BASE		0x4fc00000
 #endif
 
 #include "mx6_common.h"
 
-#if defined(CONFIG_MX6DL) || defined(CONFIG_MX6S)
+#if defined(CONFIG_TQMA6S)
 #define PHYS_SDRAM_SIZE			(512u * SZ_1M)
-#elif defined(CONFIG_MX6Q) || defined(CONFIG_MX6D)
-#define PHYS_SDRAM_SIZE			(1024u * SZ_1M)
+#elif defined(CONFIG_TQMA6DL)
+#define PHYS_SDRAM_SIZE			(SZ_1G)
+#elif defined(CONFIG_TQMA6Q)
+#define PHYS_SDRAM_SIZE			(SZ_1G)
 #endif
-
-#define CONFIG_BOARD_EARLY_INIT_F
-#define CONFIG_BOARD_LATE_INIT
 
 #define CONFIG_MXC_UART
 
@@ -96,10 +95,6 @@
 #define CONFIG_MII
 
 #define CONFIG_ARP_TIMEOUT		200UL
-/* Network config - Allow larger/faster download for TFTP/NFS */
-#define CONFIG_IP_DEFRAG
-#define CONFIG_TFTP_BLOCKSIZE	4096
-#define CONFIG_NFS_READ_SIZE	4096
 
 /* Command definition */
 #define CONFIG_CMD_BMODE
@@ -140,8 +135,8 @@
 	"update_uboot=if tftp ${uboot}; then "                                 \
 		"if itest ${filesize} > 0; then "                              \
 			"mmc dev ${mmcdev}; mmc rescan; "                      \
-			"setexpr blkc ${filesize} / 0x200; "                   \
-			"setexpr blkc ${blkc} + 1; "                           \
+			"setexpr blkc ${filesize} + 0x1ff; "                   \
+			"setexpr blkc ${blkc} / 0x200; "                       \
 			"if itest ${blkc} <= ${uboot_size}; then "             \
 				"mmc write ${loadaddr} ${uboot_start} "        \
 					"${blkc}; "                            \
@@ -152,8 +147,8 @@
 		"if tftp ${kernel}; then "                                     \
 			"if itest ${filesize} > 0; then "                      \
 				"mmc dev ${mmcdev}; mmc rescan; "              \
-				"setexpr blkc ${filesize} / 0x200; "           \
-				"setexpr blkc ${blkc} + 1; "                   \
+				"setexpr blkc ${filesize} + 0x1ff; "           \
+				"setexpr blkc ${blkc} / 0x200; "               \
 				"if itest ${blkc} <= ${kernel_size}; then "    \
 					"mmc write ${loadaddr} "               \
 						"${kernel_start} ${blkc}; "    \
@@ -164,8 +159,8 @@
 	"update_fdt=if tftp ${fdt_file}; then "                                \
 		"if itest ${filesize} > 0; then "                              \
 			"mmc dev ${mmcdev}; mmc rescan; "                      \
-			"setexpr blkc ${filesize} / 0x200; "                   \
-			"setexpr blkc ${blkc} + 1; "                           \
+			"setexpr blkc ${filesize} + 0x1ff; "                   \
+			"setexpr blkc ${blkc} / 0x200; "                       \
 			"if itest ${blkc} <= ${fdt_size}; then "               \
 				"mmc write ${loadaddr} ${fdt_start} ${blkc}; " \
 			"fi; "                                                 \
@@ -269,7 +264,7 @@
 			__stringify(TQMA6_SPI_FLASH_SECTOR_SIZE)"; "           \
 		"setexpr offset ${fdt_start} * "                               \
 			__stringify(TQMA6_SPI_FLASH_SECTOR_SIZE)"; "           \
-		"sf read ${${fdt_addr}} ${offset} ${size}; "                   \
+		"sf read ${fdt_addr} ${offset} ${size}; "                      \
 		"setenv size ; setenv offset\0"                                \
 
 #define CONFIG_BOOTCOMMAND                                                     \
@@ -284,6 +279,9 @@
 /* 128 MiB offset as in ARM related docu for linux suggested */
 #define TQMA6_FDT_ADDRESS		0x18000000
 
+/* set to a resonable value, changeable by user */
+#define TQMA6_CMA_SIZE                 160M
+
 #define CONFIG_EXTRA_ENV_SETTINGS                                              \
 	"board=tqma6\0"                                                        \
 	"uimage=uImage\0"                                                      \
@@ -295,17 +293,21 @@
 	"uboot=u-boot.imx\0"                                                   \
 	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0"                               \
 	"fdt_addr="__stringify(TQMA6_FDT_ADDRESS)"\0"                          \
-	"console=" CONSOLE_DEV "\0"                                     \
+	"console=" CONSOLE_DEV "\0"                                            \
+	"cma_size="__stringify(TQMA6_CMA_SIZE)"\0"                             \
 	"fdt_high=0xffffffff\0"                                                \
 	"initrd_high=0xffffffff\0"                                             \
+	"rootfsmode=ro\0"                                                      \
+	"addcma=setenv bootargs ${bootargs} cma=${cma_size}\0"                 \
 	"addtty=setenv bootargs ${bootargs} console=${console},${baudrate}\0"  \
 	"addfb=setenv bootargs ${bootargs} "                                   \
 		"imx-fbdev.legacyfb_depth=32 consoleblank=0\0"                 \
 	"mmcpart=2\0"                                                          \
 	"mmcblkdev=0\0"                                                        \
-	"mmcargs=run addmmc addtty addfb\0"                                    \
+	"mmcargs=run addmmc addtty addfb addcma\0"                             \
 	"addmmc=setenv bootargs ${bootargs} "                                  \
-		"root=/dev/mmcblk${mmcblkdev}p${mmcpart} rw rootwait\0"        \
+		"root=/dev/mmcblk${mmcblkdev}p${mmcpart} ${rootfsmode} "       \
+		"rootwait\0"                                                   \
 	"mmcboot=echo Booting from mmc ...; "                                  \
 		"setenv bootargs; "                                            \
 		"run mmcargs; "                                                \
@@ -320,7 +322,7 @@
 	"netdev=eth0\0"                                                        \
 	"rootpath=/srv/nfs/tqma6\0"                                            \
 	"ipmode=static\0"                                                      \
-	"netargs=run addnfs addip addtty addfb\0"                              \
+	"netargs=run addnfs addip addtty addfb addcma\0"                       \
 	"addnfs=setenv bootargs ${bootargs} "                                  \
 		"root=/dev/nfs rw "                                            \
 		"nfsroot=${serverip}:${rootpath},v3,tcp;\0"                    \
@@ -346,8 +348,6 @@
 		"echo ... failed\0"                                            \
 	"panicboot=echo No boot device !!! reset\0"                            \
 	TQMA6_EXTRA_BOOTDEV_ENV_SETTINGS                                      \
-
-#define CONFIG_STACKSIZE		(128u * SZ_1K)
 
 /* Physical Memory Map */
 #define CONFIG_NR_DRAM_BANKS		1

@@ -28,7 +28,6 @@
 /* High Level Configuration Options */
 #define CONFIG_MP		1	/* support multiple processors */
 
-#define CONFIG_FSL_ELBC		1	/* Has Enhanced localbus controller */
 #define CONFIG_PCIE1		1	/* PCIE controller 1 (slot 1) */
 #define CONFIG_PCIE2		1	/* PCIE controller 2 (slot 2) */
 #define CONFIG_PCIE3		1	/* PCIE controller 3 (ULI bridge) */
@@ -471,7 +470,6 @@
 #endif
 
 #define CONFIG_PCI_SCAN_SHOW		/* show pci devices on startup */
-#define CONFIG_DOS_PARTITION
 #define CONFIG_SCSI_AHCI
 
 #ifdef CONFIG_SCSI_AHCI
@@ -625,8 +623,6 @@
 #define CONFIG_LOADADDR		1000000
 
 #undef  CONFIG_BOOTARGS		/* the boot command will set bootargs */
-
-#define CONFIG_BAUDRATE	115200
 
 #define	CONFIG_EXTRA_ENV_SETTINGS				\
 "hwconfig=fsl_ddr:ctlr_intlv=bank,bank_intlv=cs0_cs1,ecc=off\0"		\

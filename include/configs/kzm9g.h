@@ -18,14 +18,11 @@
 #include <asm/arch/rmobile.h>
 
 #define CONFIG_ARCH_CPU_INIT
-#define CONFIG_BOARD_EARLY_INIT_F
 
 #define CONFIG_CMDLINE_TAG
 #define CONFIG_SETUP_MEMORY_TAGS
 #define CONFIG_INITRD_TAG
-#define CONFIG_DOS_PARTITION
 
-#define CONFIG_BAUDRATE		115200
 #define CONFIG_BOOTARGS		"root=/dev/null console=ttySC4,115200"
 
 #undef  CONFIG_SHOW_BOOT_PROGRESS

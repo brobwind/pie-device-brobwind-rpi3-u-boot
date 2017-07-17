@@ -14,6 +14,8 @@ source "drivers/cpu/Kconfig"
 
 source "drivers/crypto/Kconfig"
 
+source "drivers/ddr/Kconfig"
+
 source "drivers/demo/Kconfig"
 
 source "drivers/ddr/fsl/Kconfig"
@@ -21,6 +23,8 @@ source "drivers/ddr/fsl/Kconfig"
 source "drivers/dfu/Kconfig"
 
 source "drivers/dma/Kconfig"
+
+source "drivers/firmware/Kconfig"
 
 source "drivers/fpga/Kconfig"
 

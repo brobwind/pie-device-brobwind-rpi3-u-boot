@@ -6,6 +6,7 @@
  */
 
 #include <common.h>
+#include <clk.h>
 #include <dm.h>
 #include <asm/io.h>
 #include <serial.h>
@@ -76,10 +77,48 @@ static int stm32_serial_probe(struct udevice *dev)
 {
 	struct stm32x7_serial_platdata *plat = dev->platdata;
 	struct stm32_usart *const usart = plat->base;
+
+#ifdef CONFIG_CLK
+	int ret;
+	struct clk clk;
+
+	ret = clk_get_by_index(dev, 0, &clk);
+	if (ret < 0)
+		return ret;
+
+	ret = clk_enable(&clk);
+	if (ret) {
+		dev_err(dev, "failed to enable clock\n");
+		return ret;
+	}
+#endif
+
 	setbits_le32(&usart->cr1, USART_CR1_RE | USART_CR1_TE | USART_CR1_UE);
 
 	return 0;
 }
+
+#if CONFIG_IS_ENABLED(OF_CONTROL)
+static const struct udevice_id stm32_serial_id[] = {
+	{.compatible = "st,stm32-usart"},
+	{.compatible = "st,stm32-uart"},
+	{}
+};
+
+static int stm32_serial_ofdata_to_platdata(struct udevice *dev)
+{
+	struct stm32x7_serial_platdata *plat = dev_get_platdata(dev);
+	fdt_addr_t addr;
+
+	addr = dev_get_addr(dev);
+	if (addr == FDT_ADDR_T_NONE)
+		return -EINVAL;
+
+	plat->base = (struct stm32_usart *)addr;
+
+	return 0;
+}
+#endif
 
 static const struct dm_serial_ops stm32_serial_ops = {
 	.putc = stm32_serial_putc,
@@ -91,6 +130,9 @@ static const struct dm_serial_ops stm32_serial_ops = {
 U_BOOT_DRIVER(serial_stm32) = {
 	.name = "serial_stm32x7",
 	.id = UCLASS_SERIAL,
+	.of_match = of_match_ptr(stm32_serial_id),
+	.ofdata_to_platdata = of_match_ptr(stm32_serial_ofdata_to_platdata),
+	.platdata_auto_alloc_size = sizeof(struct stm32x7_serial_platdata),
 	.ops = &stm32_serial_ops,
 	.probe = stm32_serial_probe,
 	.flags = DM_FLAG_PRE_RELOC,
