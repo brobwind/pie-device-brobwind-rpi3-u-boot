@@ -250,7 +250,7 @@
 
 /* SPL */
 
-#define CONFIG_SPL_LDSCRIPT		"arch/arm/mach-omap2/am33xx/u-boot-spl.lds"
+#define CONFIG_SPL_LDSCRIPT		"arch/arm/mach-omap2/u-boot-spl.lds"
 
 #ifndef CONFIG_SPL_USBETH_SUPPORT
 #define CONFIG_FASTBOOT_FLASH_MMC_DEV   1
@@ -262,6 +262,7 @@
  */
 #ifdef CONFIG_SPL_BUILD
 #undef CONFIG_DM_MMC
+#undef CONFIG_DM_MMC_OPS
 #undef CONFIG_TIMER
 #endif
 

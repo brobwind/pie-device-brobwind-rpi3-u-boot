@@ -69,7 +69,6 @@
 					CONFIG_SYS_NAND_BASE2}
 
 #define CONFIG_SYS_NAND_ONFI_DETECTION
-#define CONFIG_SYS_MPUCLK	300
 #define DDR_PLL_FREQ	303
 #undef CONFIG_SPL_AM33XX_ENABLE_RTC32K_OSC
 
@@ -87,8 +86,6 @@
 	"led3=87,0,1\0" \
 	"led4=60,0,1\0" \
 	"led5=63,0,1\0"
-
-#undef CONFIG_CMD_FAT
 
 /* Physical Memory Map */
 #define CONFIG_MAX_RAM_BANK_SIZE       (1024 << 20)    /* 1GB */
@@ -116,9 +113,6 @@
 #if defined(CONFIG_SPL_CMT)
 #define CONFIG_SYS_DCACHE_OFF
 #endif
-
-/* Watchdog */
-#define CONFIG_OMAP_WATCHDOG
 
 /* Define own nand partitions */
 #define CONFIG_ENV_OFFSET_REDUND	0xB80000

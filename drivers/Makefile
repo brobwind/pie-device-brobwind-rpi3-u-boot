@@ -5,6 +5,7 @@
 obj-$(CONFIG_$(SPL_TPL_)DM)	+= core/
 obj-$(CONFIG_$(SPL_)CLK)	+= clk/
 obj-$(CONFIG_$(SPL_)LED)	+= led/
+obj-$(CONFIG_$(SPL_)PHY)	+= phy/
 obj-$(CONFIG_$(SPL_)PINCTRL)	+= pinctrl/
 obj-$(CONFIG_$(SPL_)RAM)	+= ram/
 
@@ -73,8 +74,8 @@ obj-$(CONFIG_CPU) += cpu/
 obj-y += crypto/
 obj-y += firmware/
 obj-$(CONFIG_FPGA) += fpga/
-obj-y += hwmon/
 obj-y += misc/
+obj-$(CONFIG_MMC) += mmc/
 obj-y += pcmcia/
 obj-y += dfu/
 obj-$(CONFIG_X86) += pch/
@@ -85,7 +86,6 @@ obj-y += spmi/
 obj-y += sysreset/
 obj-y += timer/
 obj-y += tpm/
-obj-y += twserial/
 obj-y += video/
 obj-y += watchdog/
 obj-$(CONFIG_QE) += qe/

@@ -12,6 +12,7 @@
 #include <fdt_support.h>
 #include <fdtdec.h>
 #include <asm/sections.h>
+#include <dm/of_extra.h>
 #include <linux/ctype.h>
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -940,38 +941,6 @@ int fdtdec_decode_region(const void *blob, int node, const char *prop_name,
 	return 0;
 }
 
-/**
- * Read a flash entry from the fdt
- *
- * @param blob		FDT blob
- * @param node		Offset of node to read
- * @param name		Name of node being read
- * @param entry		Place to put offset and size of this node
- * @return 0 if ok, -ve on error
- */
-int fdtdec_read_fmap_entry(const void *blob, int node, const char *name,
-			   struct fmap_entry *entry)
-{
-	const char *prop;
-	u32 reg[2];
-
-	if (fdtdec_get_int_array(blob, node, "reg", reg, 2)) {
-		debug("Node '%s' has bad/missing 'reg' property\n", name);
-		return -FDT_ERR_NOTFOUND;
-	}
-	entry->offset = reg[0];
-	entry->length = reg[1];
-	entry->used = fdtdec_get_int(blob, node, "used", entry->length);
-	prop = fdt_getprop(blob, node, "compress", NULL);
-	entry->compress_algo = prop && !strcmp(prop, "lzo") ?
-		FMAP_COMPRESS_LZO : FMAP_COMPRESS_NONE;
-	prop = fdt_getprop(blob, node, "hash", &entry->hash_size);
-	entry->hash_algo = prop ? FMAP_HASH_SHA256 : FMAP_HASH_NONE;
-	entry->hash = (uint8_t *)prop;
-
-	return 0;
-}
-
 u64 fdtdec_get_number(const fdt32_t *ptr, unsigned int cells)
 {
 	u64 number = 0;
@@ -1200,7 +1169,8 @@ int fdtdec_setup_memory_size(void)
 	}
 
 	gd->ram_size = (phys_size_t)(res.end - res.start + 1);
-	debug("%s: Initial DRAM size %llx\n", __func__, (u64)gd->ram_size);
+	debug("%s: Initial DRAM size %llx\n", __func__,
+	      (unsigned long long)gd->ram_size);
 
 	return 0;
 }

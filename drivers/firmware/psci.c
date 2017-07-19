@@ -8,7 +8,7 @@
  */
 
 #include <common.h>
-#include <dm/device.h>
+#include <dm.h>
 #include <dm/lists.h>
 #include <libfdt.h>
 #include <linux/arm-smccc.h>
@@ -40,8 +40,8 @@ static unsigned long __invoke_psci_fn_smc(unsigned long function_id,
 static int psci_bind(struct udevice *dev)
 {
 	/* No SYSTEM_RESET support for PSCI 0.1 */
-	if (of_device_is_compatible(dev, "arm,psci-0.2") ||
-	    of_device_is_compatible(dev, "arm,psci-1.0")) {
+	if (device_is_compatible(dev, "arm,psci-0.2") ||
+	    device_is_compatible(dev, "arm,psci-1.0")) {
 		int ret;
 
 		/* bind psci-sysreset optionally */
@@ -59,8 +59,8 @@ static int psci_probe(struct udevice *dev)
 	DECLARE_GLOBAL_DATA_PTR;
 	const char *method;
 
-	method = fdt_stringlist_get(gd->fdt_blob, dev->of_offset, "method", 0,
-				    NULL);
+	method = fdt_stringlist_get(gd->fdt_blob, dev_of_offset(dev), "method",
+				    0, NULL);
 	if (!method) {
 		printf("missing \"method\" property\n");
 		return -ENXIO;

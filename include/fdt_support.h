@@ -207,7 +207,7 @@ int fdt_add_edid(void *blob, const char *compat, unsigned char *buf);
 
 int fdt_verify_alias_address(void *fdt, int anode, const char *alias,
 			      u64 addr);
-u64 fdt_get_base_address(void *fdt, int node);
+u64 fdt_get_base_address(const void *fdt, int node);
 int fdt_read_range(void *fdt, int node, int n, uint64_t *child_addr,
 		   uint64_t *addr, uint64_t *len);
 
@@ -248,7 +248,7 @@ static inline int fdt_status_fail_by_alias(void *fdt, const char *alias)
 }
 
 /* Helper to read a big number; size is in cells (not bytes) */
-static inline u64 of_read_number(const fdt32_t *cell, int size)
+static inline u64 fdt_read_number(const fdt32_t *cell, int size)
 {
 	u64 r = 0;
 	while (size--)
@@ -256,7 +256,7 @@ static inline u64 of_read_number(const fdt32_t *cell, int size)
 	return r;
 }
 
-void of_bus_default_count_cells(const void *blob, int parentoffset,
+void fdt_support_default_count_cells(const void *blob, int parentoffset,
 					int *addrc, int *sizec);
 int ft_verify_fdt(void *fdt);
 int arch_fixup_memory_node(void *blob);

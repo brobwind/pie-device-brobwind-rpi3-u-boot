@@ -8,13 +8,15 @@
 #ifndef _U_BOOT_I386_H_
 #define _U_BOOT_I386_H_	1
 
+struct global_data;
+
 extern char gdt_rom[];
 
 /* cpu/.../cpu.c */
 int arch_cpu_init(void);
 int x86_cpu_init_f(void);
 int cpu_init_f(void);
-void setup_gdt(gd_t *id, u64 *gdt_addr);
+void setup_gdt(struct global_data *id, u64 *gdt_addr);
 /*
  * Setup FSP execution environment GDT to use the one we used in
  * arch/x86/cpu/start16.S and reload the segment registers.
@@ -53,6 +55,19 @@ u32 isa_map_rom(u32 bus_addr, int size);
 
 /* arch/x86/lib/... */
 int video_bios_init(void);
+
+/* arch/x86/lib/fsp/... */
+
+/**
+ * fsp_save_s3_stack() - save stack address to CMOS for next S3 boot
+ *
+ * At the end of pre-relocation phase, save the new stack address
+ * to CMOS and use it as the stack on next S3 boot for fsp_init()
+ * continuation function.
+ *
+ * @return:	0 if OK, -ve on error
+ */
+int fsp_save_s3_stack(void);
 
 void	board_init_f_r_trampoline(ulong) __attribute__ ((noreturn));
 void	board_init_f_r(void) __attribute__ ((noreturn));

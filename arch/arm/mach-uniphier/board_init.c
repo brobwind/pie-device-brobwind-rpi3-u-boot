@@ -21,7 +21,7 @@ static void uniphier_setup_xirq(void)
 {
 	const void *fdt = gd->fdt_blob;
 	int soc_node, aidet_node;
-	const u32 *val;
+	const fdt32_t *val;
 	unsigned long aidet_base;
 	u32 tmp;
 
@@ -175,6 +175,7 @@ static const struct uniphier_initdata uniphier_initdata[] = {
 		.nand_2cs = false,
 		.sbc_init = uniphier_pxs2_sbc_init,
 		.pll_init = uniphier_pxs3_pll_init,
+		.clk_init = uniphier_pxs3_clk_init,
 	},
 #endif
 };

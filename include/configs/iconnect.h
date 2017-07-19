@@ -25,14 +25,12 @@
  * Compression configuration
  */
 #define CONFIG_BZIP2
-#define CONFIG_LZMA
 #define CONFIG_LZO
 
 /*
  * Commands configuration
  */
 #define CONFIG_SYS_MVFS
-#define CONFIG_CMD_ENV
 #define CONFIG_CMD_NAND
 
 /*
@@ -88,7 +86,6 @@
 /*
  * File system
  */
-#define CONFIG_CMD_JFFS2
 #define CONFIG_CMD_UBIFS
 #define CONFIG_RBTREE
 #define CONFIG_MTD_DEVICE

@@ -28,8 +28,6 @@
 #define CONFIG_BOUNCE_BUFFER
 
 #define CONFIG_SUPPORT_VFAT
-#define CONFIG_FS_FAT
-#define CONFIG_FAT_WRITE
 #define CONFIG_FS_EXT4
 
 /* RAW SD card / eMMC locations. */
@@ -61,4 +59,10 @@
 
 #endif
 
+/* rockchip ohci host driver */
+#define CONFIG_USB_OHCI_NEW
+#define CONFIG_SYS_USB_OHCI_MAX_ROOT_PORTS	1
+
+/* xhci host */
+#define CONFIG_SYS_USB_XHCI_MAX_ROOT_PORTS	2
 #endif

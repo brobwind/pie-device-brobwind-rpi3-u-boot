@@ -16,10 +16,6 @@
 #ifndef __CONFIG_TI814X_EVM_H
 #define __CONFIG_TI814X_EVM_H
 
-#define CONFIG_TI81XX
-#define CONFIG_TI814X
-#define CONFIG_OMAP
-
 #include <asm/arch/omap.h>
 
 #define CONFIG_ENV_SIZE			(128 << 10)	/* 128 KiB */
@@ -110,8 +106,6 @@
 
 #define CONFIG_SYS_LOAD_ADDR		0x81000000	/* Default */
 
-#define CONFIG_OMAP_GPIO
-
 /**
  * Physical Memory Map
  */
@@ -158,8 +152,6 @@
 #define CONFIG_SYS_SPI_U_BOOT_OFFS	0x20000
 #define CONFIG_SYS_SPI_U_BOOT_SIZE	0x40000
 #define CONFIG_SPL_LDSCRIPT		"arch/arm/mach-omap2/u-boot-spl.lds"
-
-#define CONFIG_SPL_BOARD_INIT
 
 /*
  * 1MB into the SDRAM to allow for SPL's bss at the beginning of SDRAM

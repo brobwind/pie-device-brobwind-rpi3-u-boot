@@ -425,15 +425,7 @@ config VIDEO_FSL_DCU_MAX_FB_SIZE_MB
 	 Set maximum framebuffer size to be used for Freescale Display
 	 Controller Unit (DCU4).
 
-config VIDEO_ROCKCHIP
-	bool "Enable Rockchip video support"
-	depends on DM_VIDEO
-	help
-	   Rockchip SoCs provide video output capabilities for High-Definition
-	   Multimedia Interface (HDMI), Low-voltage Differential Signalling
-	   (LVDS), embedded DisplayPort (eDP) and Display Serial Interface
-	   (DSI). This driver supports the on-chip video output device, and
-	   targets the Rockchip RK3288.
+source "drivers/video/rockchip/Kconfig"
 
 config VIDEO_SANDBOX_SDL
 	bool "Enable sandbox video console using SDL"
@@ -626,5 +618,14 @@ config LCD
 	  You will also need to select an LCD driver using an additional
 	  CONFIG option. See the README for details. Drives which have been
 	  converted to driver model will instead used CONFIG_DM_VIDEO.
+
+config VIDEO_DW_HDMI
+	bool
+	help
+	  Enables the common driver code for the Designware HDMI TX
+	  block found in SoCs from various vendors.
+	  As this does not provide any functionality by itself (but
+	  rather requires a SoC-specific glue driver to call it), it
+	  can not be enabled from the configuration menu.
 
 endmenu

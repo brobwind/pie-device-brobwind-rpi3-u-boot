@@ -6,10 +6,10 @@
  */
 
 #include <common.h>
+#include <dm.h>
 #include <linux/io.h>
 #include <linux/err.h>
 #include <linux/sizes.h>
-#include <dm/device.h>
 #include <dm/pinctrl.h>
 
 #include "pinctrl-uniphier.h"
@@ -299,7 +299,7 @@ int uniphier_pinctrl_probe(struct udevice *dev,
 	struct uniphier_pinctrl_priv *priv = dev_get_priv(dev);
 	fdt_addr_t addr;
 
-	addr = dev_get_addr(dev->parent);
+	addr = devfdt_get_addr(dev->parent);
 	if (addr == FDT_ADDR_T_NONE)
 		return -EINVAL;
 

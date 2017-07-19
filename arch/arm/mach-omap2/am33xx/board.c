@@ -10,6 +10,7 @@
 
 #include <common.h>
 #include <dm.h>
+#include <debug_uart.h>
 #include <errno.h>
 #include <ns16550.h>
 #include <spl.h>
@@ -25,6 +26,7 @@
 #include <asm/io.h>
 #include <asm/emif.h>
 #include <asm/gpio.h>
+#include <asm/omap_common.h>
 #include <i2c.h>
 #include <miiphy.h>
 #include <cpsw.h>
@@ -37,6 +39,27 @@
 #include <asm/davinci_rtc.h>
 
 DECLARE_GLOBAL_DATA_PTR;
+
+int dram_init(void)
+{
+#ifndef CONFIG_SKIP_LOWLEVEL_INIT
+	sdram_init();
+#endif
+
+	/* dram_init must store complete ramsize in gd->ram_size */
+	gd->ram_size = get_ram_size(
+			(void *)CONFIG_SYS_SDRAM_BASE,
+			CONFIG_MAX_RAM_BANK_SIZE);
+	return 0;
+}
+
+int dram_init_banksize(void)
+{
+	gd->bd->bi_dram[0].start = CONFIG_SYS_SDRAM_BASE;
+	gd->bd->bi_dram[0].size = gd->ram_size;
+
+	return 0;
+}
 
 #if !CONFIG_IS_ENABLED(OF_CONTROL)
 static const struct ns16550_platdata am33xx_serial[] = {
@@ -242,8 +265,6 @@ int board_early_init_f(void)
  */
 __weak void am33xx_spl_board_init(void)
 {
-	do_setup_dpll(&dpll_core_regs, &dpll_core_opp100);
-	do_setup_dpll(&dpll_mpu_regs, &dpll_mpu_opp100);
 }
 
 #if defined(CONFIG_SPL_AM33XX_ENABLE_RTC32K_OSC)
@@ -312,6 +333,9 @@ void early_system_init(void)
 	set_uart_mux_conf();
 	setup_early_clocks();
 	uart_soft_reset();
+#ifdef CONFIG_DEBUG_UART_OMAP
+	debug_uart_init();
+#endif
 #ifdef CONFIG_TI_I2C_BOARD_DETECT
 	do_board_detect();
 #endif
@@ -324,9 +348,14 @@ void early_system_init(void)
 #ifdef CONFIG_SPL_BUILD
 void board_init_f(ulong dummy)
 {
+	hw_data_init();
 	early_system_init();
 	board_early_init_f();
 	sdram_init();
+	/* dram_init must store complete ramsize in gd->ram_size */
+	gd->ram_size = get_ram_size(
+			(void *)CONFIG_SYS_SDRAM_BASE,
+			CONFIG_MAX_RAM_BANK_SIZE);
 }
 #endif
 
@@ -334,6 +363,7 @@ void board_init_f(ulong dummy)
 
 int arch_cpu_init_dm(void)
 {
+	hw_data_init();
 #ifndef CONFIG_SKIP_LOWLEVEL_INIT
 	early_system_init();
 #endif

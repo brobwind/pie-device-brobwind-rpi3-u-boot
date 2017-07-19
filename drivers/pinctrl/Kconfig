@@ -69,6 +69,7 @@ config SPL_PINCTRL
 config SPL_PINCTRL_FULL
 	bool "Support full pin controllers in SPL"
 	depends on SPL_PINCTRL && SPL_OF_CONTROL
+	default n if TARGET_STM32F746_DISCO
 	default y
 	help
 	  This option is an SPL-variant of the PINCTRL_FULL option.
@@ -197,6 +198,16 @@ config PINCTRL_ROCKCHIP_RK3328
 	  the GPIO definitions and pin control functions for each available
 	  multiplex function.
 
+config PINCTRL_ROCKCHIP_RK3368
+	bool "Rockchip RK3368 pin control driver"
+	depends on DM
+	help
+	  Support pin multiplexing control on Rockchip rk3368 SoCs.
+
+	  The driver is controlled by a device tree node which contains both
+	  the GPIO definitions and pin control functions for each available
+	  multiplex function.
+
 config PINCTRL_ROCKCHIP_RK3399
 	bool "Rockchip rk3399 pin control driver"
 	depends on DM
@@ -206,6 +217,16 @@ config PINCTRL_ROCKCHIP_RK3399
 	  The driver is controlled by a device tree node which contains both
 	  the GPIO definitions and pin control functions for each available
 	  multiplex function.
+
+config PINCTRL_ROCKCHIP_RV1108
+	bool "Rockchip rv1108 pin control driver"
+	depends on DM
+	help
+	  Support pin multiplexing control on Rockchip rv1108 SoC.
+
+	  The driver is controlled by a device tree node which contains
+	  both the GPIO definitions and pin control functions for each
+	  available multiplex function.
 
 config PINCTRL_SANDBOX
 	bool "Sandbox pinctrl driver"
@@ -247,6 +268,15 @@ config PINCTRL_STM32
 	  The driver is controlled by a device tree node which contains both
 	  the GPIO definitions and pin control functions for each available
 	  multiplex function.
+
+config ASPEED_AST2500_PINCTRL
+  bool "Aspeed AST2500 pin control driver"
+  depends on DM && PINCTRL_GENERIC && ASPEED_AST2500
+  default y
+  help
+    Support pin multiplexing control on Aspeed ast2500 SoC. The driver uses
+	Generic Pinctrl framework and is compatible with the Linux driver,
+	i.e. it uses the same device tree configuration.
 
 endif
 

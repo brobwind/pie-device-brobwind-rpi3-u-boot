@@ -150,7 +150,6 @@
 #define CONFIG_AUTO_COMPLETE
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_SYS_LONGHELP
-#define CONFIG_CRC32_VERIFY
 #define CONFIG_MX_CYCLIC
 
 /*
@@ -214,5 +213,7 @@
 #define CONFIG_SYS_SDRAM_BASE		0xc0000000
 
 #define CONFIG_SYS_INIT_SP_ADDR		0x80010000
+
+#include <asm/arch/hardware.h>
 
 #endif /* __CONFIG_H */

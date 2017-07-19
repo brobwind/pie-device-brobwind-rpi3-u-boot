@@ -5,10 +5,6 @@
  * SPDX-License-Identifier:	GPL-2.0+
  */
 
-/* This code should work for both the S3C2400 and the S3C2410
- * as they seem to have the same I2C controller inside.
- * The different address mapping is handled by the s3c24xx.h files below.
- */
 #include <common.h>
 #include <errno.h>
 #include <dm.h>
@@ -314,7 +310,7 @@ static int s3c_i2c_ofdata_to_platdata(struct udevice *dev)
 
 	node = dev_of_offset(dev);
 
-	i2c_bus->regs = (struct s3c24x0_i2c *)dev_get_addr(dev);
+	i2c_bus->regs = (struct s3c24x0_i2c *)devfdt_get_addr(dev);
 
 	i2c_bus->id = pinmux_decode_periph_id(blob, node);
 

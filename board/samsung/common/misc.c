@@ -18,6 +18,19 @@
 #include <asm/gpio.h>
 #include <linux/input.h>
 #include <dm.h>
+/*
+ * Use #ifdef to work around conflicting headers while we wait for this to be
+ * converted to driver model.
+ */
+#ifdef CONFIG_DM_PMIC_MAX77686
+#include <power/max77686_pmic.h>
+#endif
+#ifdef CONFIG_DM_PMIC_MAX8998
+#include <power/max8998_pmic.h>
+#endif
+#ifdef CONFIG_PMIC_MAX8997
+#include <power/max8997_pmic.h>
+#endif
 #include <power/pmic.h>
 #include <mmc.h>
 
@@ -208,7 +221,7 @@ mode_cmd[BOOT_MODE_EXIT + 1] = {
 
 static void display_board_info(void)
 {
-#ifdef CONFIG_GENERIC_MMC
+#ifdef CONFIG_MMC
 	struct mmc *mmc = find_mmc_device(0);
 #endif
 	vidinfo_t *vid = &panel_info;
@@ -226,7 +239,7 @@ static void display_board_info(void)
 	lcd_printf("\tDRAM banks: %u\n", CONFIG_NR_DRAM_BANKS);
 	lcd_printf("\tDRAM size: %u MB\n", gd->ram_size / SZ_1M);
 
-#ifdef CONFIG_GENERIC_MMC
+#ifdef CONFIG_MMC
 	if (mmc) {
 		if (!mmc->capacity)
 			mmc_init(mmc);

@@ -9,7 +9,7 @@
 #include <clk.h>
 #include <fdtdec.h>
 #include <mmc.h>
-#include <dm/device.h>
+#include <dm.h>
 #include <linux/compat.h>
 #include <linux/io.h>
 #include <linux/sizes.h>
@@ -673,7 +673,7 @@ static int uniphier_sd_probe(struct udevice *dev)
 	struct clk clk;
 	int ret;
 
-	base = dev_get_addr(dev);
+	base = devfdt_get_addr(dev);
 	if (base == FDT_ADDR_T_NONE)
 		return -EINVAL;
 

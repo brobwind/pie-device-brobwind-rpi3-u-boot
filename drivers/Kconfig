@@ -30,8 +30,6 @@ source "drivers/fpga/Kconfig"
 
 source "drivers/gpio/Kconfig"
 
-source "drivers/hwmon/Kconfig"
-
 source "drivers/i2c/Kconfig"
 
 source "drivers/input/Kconfig"
@@ -53,6 +51,8 @@ source "drivers/net/Kconfig"
 source "drivers/pci/Kconfig"
 
 source "drivers/pcmcia/Kconfig"
+
+source "drivers/phy/Kconfig"
 
 source "drivers/phy/marvell/Kconfig"
 

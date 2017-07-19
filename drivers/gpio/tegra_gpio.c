@@ -236,7 +236,7 @@ static int tegra_gpio_get_function(struct udevice *dev, unsigned offset)
 }
 
 static int tegra_gpio_xlate(struct udevice *dev, struct gpio_desc *desc,
-			    struct fdtdec_phandle_args *args)
+			    struct ofnode_phandle_args *args)
 {
 	int gpio, port, ret;
 
@@ -341,7 +341,7 @@ static int gpio_tegra_bind(struct udevice *parent)
 			 &len))
 		return -EINVAL;
 	bank_count = len / 3 / sizeof(u32);
-	ctlr = (struct gpio_ctlr *)dev_get_addr(parent);
+	ctlr = (struct gpio_ctlr *)devfdt_get_addr(parent);
 	}
 #endif
 	for (bank = 0; bank < bank_count; bank++) {

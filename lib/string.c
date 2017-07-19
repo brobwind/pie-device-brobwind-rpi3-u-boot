@@ -230,6 +230,14 @@ char * strchr(const char * s, int c)
 }
 #endif
 
+const char *strchrnul(const char *s, int c)
+{
+	for (; *s != (char)c; ++s)
+		if (*s == '\0')
+			break;
+	return s;
+}
+
 #ifndef __HAVE_ARCH_STRRCHR
 /**
  * strrchr - Find the last occurrence of a character in a string
@@ -275,6 +283,30 @@ size_t strnlen(const char * s, size_t count)
 	for (sc = s; count-- && *sc != '\0'; ++sc)
 		/* nothing */;
 	return sc - s;
+}
+#endif
+
+#ifndef __HAVE_ARCH_STRCSPN
+/**
+ * strcspn - Calculate the length of the initial substring of @s which does
+ * not contain letters in @reject
+ * @s: The string to be searched
+ * @reject: The string to avoid
+ */
+size_t strcspn(const char *s, const char *reject)
+{
+	const char *p;
+	const char *r;
+	size_t count = 0;
+
+	for (p = s; *p != '\0'; ++p) {
+		for (r = reject; *r != '\0'; ++r) {
+			if (*p == *r)
+				return count;
+		}
+		++count;
+	}
+	return count;
 }
 #endif
 
@@ -511,16 +543,9 @@ void * memmove(void * dest,const void *src,size_t count)
 {
 	char *tmp, *s;
 
-	if (src == dest)
-		return dest;
-
 	if (dest <= src) {
-		tmp = (char *) dest;
-		s = (char *) src;
-		while (count--)
-			*tmp++ = *s++;
-		}
-	else {
+		memcpy(dest, src, count);
+	} else {
 		tmp = (char *) dest + count;
 		s = (char *) src + count;
 		while (count--)

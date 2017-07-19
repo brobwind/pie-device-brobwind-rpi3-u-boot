@@ -206,7 +206,6 @@ CROSS_COMPILE = {
     'arc': 'arc-linux-',
     'aarch64': 'aarch64-linux-',
     'arm': 'arm-unknown-linux-gnueabi-',
-    'avr32': 'avr32-linux-',
     'm68k': 'm68k-linux-',
     'microblaze': 'microblaze-linux-',
     'mips': 'mips-linux-',
@@ -435,6 +434,20 @@ def extend_matched_lines(lines, matched, pre_patterns, post_patterns, extend_pre
     matched += extended_matched
     matched.sort()
 
+def confirm(options, prompt):
+    if not options.yes:
+        while True:
+            choice = raw_input('{} [y/n]: '.format(prompt))
+            choice = choice.lower()
+            print choice
+            if choice == 'y' or choice == 'n':
+                break
+
+        if choice == 'n':
+            return False
+
+    return True
+
 def cleanup_one_header(header_path, patterns, options):
     """Clean regex-matched lines away from a file.
 
@@ -502,15 +515,8 @@ def cleanup_headers(configs, options):
       configs: A list of CONFIGs to remove.
       options: option flags.
     """
-    if not options.yes:
-        while True:
-            choice = raw_input('Clean up headers? [y/n]: ').lower()
-            print choice
-            if choice == 'y' or choice == 'n':
-                break
-
-        if choice == 'n':
-            return
+    if not confirm(options, 'Clean up headers?'):
+        return
 
     patterns = []
     for config in configs:
@@ -582,16 +588,8 @@ def cleanup_extra_options(configs, options):
       configs: A list of CONFIGs to remove.
       options: option flags.
     """
-    if not options.yes:
-        while True:
-            choice = (raw_input('Clean up CONFIG_SYS_EXTRA_OPTIONS? [y/n]: ').
-                      lower())
-            print choice
-            if choice == 'y' or choice == 'n':
-                break
-
-        if choice == 'n':
-            return
+    if not confirm(options, 'Clean up CONFIG_SYS_EXTRA_OPTIONS?'):
+        return
 
     configs = [ config[len('CONFIG_'):] for config in configs ]
 
@@ -600,6 +598,65 @@ def cleanup_extra_options(configs, options):
     for defconfig in defconfigs:
         cleanup_one_extra_option(os.path.join('configs', defconfig), configs,
                                  options)
+
+def cleanup_whitelist(configs, options):
+    """Delete config whitelist entries
+
+    Arguments:
+      configs: A list of CONFIGs to remove.
+      options: option flags.
+    """
+    if not confirm(options, 'Clean up whitelist entries?'):
+        return
+
+    with open(os.path.join('scripts', 'config_whitelist.txt')) as f:
+        lines = f.readlines()
+
+    lines = [x for x in lines if x.strip() not in configs]
+
+    with open(os.path.join('scripts', 'config_whitelist.txt'), 'w') as f:
+        f.write(''.join(lines))
+
+def find_matching(patterns, line):
+    for pat in patterns:
+        if pat.search(line):
+            return True
+    return False
+
+def cleanup_readme(configs, options):
+    """Delete config description in README
+
+    Arguments:
+      configs: A list of CONFIGs to remove.
+      options: option flags.
+    """
+    if not confirm(options, 'Clean up README?'):
+        return
+
+    patterns = []
+    for config in configs:
+        patterns.append(re.compile(r'^\s+%s' % config))
+
+    with open('README') as f:
+        lines = f.readlines()
+
+    found = False
+    newlines = []
+    for line in lines:
+        if not found:
+            found = find_matching(patterns, line)
+            if found:
+                continue
+
+        if found and re.search(r'^\s+CONFIG', line):
+            found = False
+
+        if not found:
+            newlines.append(line)
+
+    with open('README', 'w') as f:
+        f.write(''.join(newlines))
+
 
 ### classes ###
 class Progress:
@@ -1297,6 +1354,8 @@ def main():
     if configs:
         cleanup_headers(configs, options)
         cleanup_extra_options(configs, options)
+        cleanup_whitelist(configs, options)
+        cleanup_readme(configs, options)
 
     if options.commit:
         subprocess.call(['git', 'add', '-u'])

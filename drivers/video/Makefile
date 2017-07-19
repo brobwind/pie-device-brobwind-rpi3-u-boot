@@ -29,7 +29,6 @@ obj-$(CONFIG_CFB_CONSOLE) += cfb_console.o
 obj-$(CONFIG_FSL_DIU_FB) += fsl_diu_fb.o videomodes.o
 obj-$(CONFIG_VIDEO_FSL_DCU_FB) += fsl_dcu_fb.o videomodes.o
 obj-$(CONFIG_L5F31188) += l5f31188.o
-obj-$(CONFIG_MPC8XX_LCD) += mpc8xx_lcd.o
 obj-$(CONFIG_PXA_LCD) += pxa_lcd.o
 obj-$(CONFIG_SCF0403_LCD) += scf0403_lcd.o
 obj-$(CONFIG_S6E8AX0) += s6e8ax0.o
@@ -57,6 +56,7 @@ obj-$(CONFIG_VIDEO_VESA) += vesa.o
 obj-$(CONFIG_FORMIKE) += formike.o
 obj-$(CONFIG_LG4573) += lg4573.o
 obj-$(CONFIG_AM335X_LCD) += am335x-fb.o
+obj-$(CONFIG_VIDEO_DW_HDMI) += dw_hdmi.o
 
 obj-${CONFIG_VIDEO_TEGRA124} += tegra124/
 obj-${CONFIG_EXYNOS_FB} += exynos/

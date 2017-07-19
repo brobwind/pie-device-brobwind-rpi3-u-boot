@@ -426,7 +426,9 @@ static void atmel_hlcdc_init(struct udevice *dev)
 	writel(~0UL, &regs->lcdc_baseidr);
 
 	/* Setup the DMA descriptor, this descriptor will loop to itself */
-	desc = (struct lcd_dma_desc *)(uc_plat->base - 16);
+	desc = memalign(CONFIG_SYS_CACHELINE_SIZE, sizeof(*desc));
+	if (!desc)
+		return;
 
 	desc->address = (u32)uc_plat->base;
 
@@ -436,7 +438,9 @@ static void atmel_hlcdc_init(struct udevice *dev)
 	desc->next = (u32)desc;
 
 	/* Flush the DMA descriptor if we enabled dcache */
-	flush_dcache_range((u32)desc, (u32)desc + sizeof(*desc));
+	flush_dcache_range((u32)desc,
+			   ALIGN(((u32)desc + sizeof(*desc)),
+			   CONFIG_SYS_CACHELINE_SIZE));
 
 	writel(desc->address, &regs->lcdc_baseaddr);
 	writel(desc->control, &regs->lcdc_basectrl);
@@ -497,15 +501,15 @@ static int atmel_hlcdc_ofdata_to_platdata(struct udevice *dev)
 {
 	struct atmel_hlcdc_priv *priv = dev_get_priv(dev);
 	const void *blob = gd->fdt_blob;
-	int node = dev->of_offset;
+	int node = dev_of_offset(dev);
 
-	priv->regs = (struct atmel_hlcd_regs *)dev_get_addr(dev);
+	priv->regs = (struct atmel_hlcd_regs *)devfdt_get_addr(dev);
 	if (!priv->regs) {
 		debug("%s: No display controller address\n", __func__);
 		return -EINVAL;
 	}
 
-	if (fdtdec_decode_display_timing(blob, dev->of_offset,
+	if (fdtdec_decode_display_timing(blob, dev_of_offset(dev),
 					 0, &priv->timing)) {
 		debug("%s: Failed to decode display timing\n", __func__);
 		return -EINVAL;

@@ -32,6 +32,10 @@
 # define CONFIG_MACH_TYPE_COMPAT_REV	1
 #endif
 
+#ifdef CONFIG_ARM64
+#define CONFIG_BUILD_TARGET "u-boot.itb"
+#endif
+
 /* Serial & console */
 #define CONFIG_SYS_NS16550_SERIAL
 /* ns16550 reg in the low bits of cpu reg */
@@ -176,8 +180,6 @@
 
 #define CONFIG_SYS_MONITOR_LEN		(768 << 10)	/* 768 KiB */
 
-#define CONFIG_FAT_WRITE	/* enable write access */
-
 #define CONFIG_SPL_FRAMEWORK
 
 #ifndef CONFIG_ARM64		/* AArch64 FEL support is not ready yet */
@@ -185,12 +187,17 @@
 #endif
 
 #ifdef CONFIG_SUNXI_HIGH_SRAM
-#define CONFIG_SPL_TEXT_BASE		0x10040		/* sram start+header */
-#define CONFIG_SPL_MAX_SIZE		0x7fc0		/* 32 KiB */
-#define LOW_LEVEL_SRAM_STACK		0x00018000
+#define CONFIG_SPL_TEXT_BASE		0x10060		/* sram start+header */
+#define CONFIG_SPL_MAX_SIZE		0x7fa0		/* 32 KiB */
+#ifdef CONFIG_ARM64
+/* end of SRAM A2 for now, as SRAM A1 is pretty tight for an ARM64 build */
+#define LOW_LEVEL_SRAM_STACK		0x00054000
 #else
-#define CONFIG_SPL_TEXT_BASE		0x40		/* sram start+header */
-#define CONFIG_SPL_MAX_SIZE		0x5fc0		/* 24KB on sun4i/sun7i */
+#define LOW_LEVEL_SRAM_STACK		0x00018000
+#endif /* !CONFIG_ARM64 */
+#else
+#define CONFIG_SPL_TEXT_BASE		0x60		/* sram start+header */
+#define CONFIG_SPL_MAX_SIZE		0x5fa0		/* 24KB on sun4i/sun7i */
 #define LOW_LEVEL_SRAM_STACK		0x00008000	/* End of sram */
 #endif
 
@@ -211,10 +218,12 @@
 #if defined CONFIG_I2C0_ENABLE || defined CONFIG_I2C1_ENABLE || \
     defined CONFIG_I2C2_ENABLE || defined CONFIG_I2C3_ENABLE || \
     defined CONFIG_I2C4_ENABLE || defined CONFIG_R_I2C_ENABLE
-#define CONFIG_SYS_I2C
 #define CONFIG_SYS_I2C_MVTWSI
+#ifndef CONFIG_DM_I2C
+#define CONFIG_SYS_I2C
 #define CONFIG_SYS_I2C_SPEED		400000
 #define CONFIG_SYS_I2C_SLAVE		0x7f
+#endif
 #endif
 
 #if defined CONFIG_VIDEO_LCD_PANEL_I2C && !(defined CONFIG_SPL_BUILD)
@@ -473,6 +482,11 @@ extern int soft_i2c_gpio_scl;
 #define CONSOLE_STDOUT_SETTINGS \
 	"stdout=serial,vga\0" \
 	"stderr=serial,vga\0"
+#elif CONFIG_DM_VIDEO
+#define CONFIG_SYS_WHITE_ON_BLACK
+#define CONSOLE_STDOUT_SETTINGS \
+	"stdout=serial,vidconsole\0" \
+	"stderr=serial,vidconsole\0"
 #else
 #define CONSOLE_STDOUT_SETTINGS \
 	"stdout=serial\0" \

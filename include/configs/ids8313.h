@@ -165,7 +165,6 @@
 #define CONFIG_TSEC2
 #define CONFIG_TSEC_ENET
 #define CONFIG_HARD_SPI
-#define CONFIG_HARD_I2C
 
 /*
  * NOR FLASH setup
@@ -414,7 +413,6 @@
  */
 #define CONFIG_CMD_NAND
 #define CONFIG_CMDLINE_EDITING
-#define CONFIG_CMD_JFFS2
 #define CONFIG_BOOTP_SUBNETMASK
 #define CONFIG_BOOTP_GATEWAY
 #define CONFIG_BOOTP_HOSTNAME
@@ -445,7 +443,6 @@
 #define CONFIG_UBOOTPATH		"ids8313/u-boot.bin"
 #define CONFIG_FDTFILE			"ids8313/ids8313.dtb"
 #define CONFIG_LOADADDR		0x400000
-#define CONFIG_CMD_ENV_FLAGS
 #define CONFIG_ENV_FLAGS_LIST_STATIC "ethaddr:mo,eth1addr:mo"
 
 /* Initial Memory map for Linux*/
@@ -542,8 +539,5 @@
 #define CONFIG_SYS_BOOTCOUNT_ADDR	0x9
 
 #define CONFIG_IMAGE_FORMAT_LEGACY
-#define CONFIG_CMD_HASH
-#define CONFIG_SHA1
-#define CONFIG_SHA256
 
 #endif	/* __CONFIG_H */

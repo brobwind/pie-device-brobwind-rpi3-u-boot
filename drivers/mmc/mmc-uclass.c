@@ -97,7 +97,7 @@ struct mmc *find_mmc_device(int dev_num)
 	struct udevice *dev, *mmc_dev;
 	int ret;
 
-	ret = blk_get_device(IF_TYPE_MMC, dev_num, &dev);
+	ret = blk_find_device(IF_TYPE_MMC, dev_num, &dev);
 
 	if (ret) {
 #if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_LIBCOMMON_SUPPORT)
@@ -108,7 +108,9 @@ struct mmc *find_mmc_device(int dev_num)
 
 	mmc_dev = dev_get_parent(dev);
 
-	return mmc_get_mmc_dev(mmc_dev);
+	struct mmc *mmc = mmc_get_mmc_dev(mmc_dev);
+
+	return mmc;
 }
 
 int get_mmc_num(void)
@@ -196,9 +198,14 @@ int mmc_bind(struct udevice *dev, struct mmc *mmc, const struct mmc_config *cfg)
 	struct udevice *bdev;
 	int ret, devnum = -1;
 
+#ifdef CONFIG_DM_MMC_OPS
+	if (!mmc_get_ops(dev))
+		return -ENOSYS;
+#endif
 #ifndef CONFIG_SPL_BUILD
 	/* Use the fixed index with aliase node's index */
-	fdtdec_get_alias_seq(gd->fdt_blob, "mmc", dev->of_offset, &devnum);
+	ret = dev_read_alias_seq(dev, &devnum);
+	debug("%s: alias ret=%d, devnum=%d\n", __func__, ret, devnum);
 #endif
 
 	ret = blk_create_devicef(dev, "mmc_blk", "blk", IF_TYPE_MMC,
@@ -256,13 +263,18 @@ static int mmc_select_hwpart(struct udevice *bdev, int hwpart)
 
 static int mmc_blk_probe(struct udevice *dev)
 {
-	struct blk_desc *block_dev = dev_get_uclass_platdata(dev);
-	int dev_num = block_dev->devnum;
-	struct mmc *mmc = find_mmc_device(dev_num);
+	struct udevice *mmc_dev = dev_get_parent(dev);
+	struct mmc_uclass_priv *upriv = dev_get_uclass_priv(mmc_dev);
+	struct mmc *mmc = upriv->mmc;
+	int ret;
 
-	if (!mmc)
-		return -ENODEV;
-	return mmc_init(mmc);
+	ret = mmc_init(mmc);
+	if (ret) {
+		debug("%s: mmc_init() failed (err=%d)\n", __func__, ret);
+		return ret;
+	}
+
+	return 0;
 }
 
 static const struct blk_ops mmc_blk_ops = {

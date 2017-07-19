@@ -8,12 +8,8 @@
 #define __FSL_SECURE_BOOT_H
 
 #ifdef CONFIG_CHAIN_OF_TRUST
-#define CONFIG_CMD_ESBC_VALIDATE
 #define CONFIG_FSL_SEC_MON
-#define CONFIG_SHA_HW_ACCEL
-#define CONFIG_SHA_PROG_HW_ACCEL
 
-#define CONFIG_SPL_BOARD_INIT
 #ifdef CONFIG_SPL_BUILD
 /*
  * Define the key hash for U-Boot here if public/private key pair used to
@@ -30,7 +26,6 @@
 #define CONFIG_KEY_REVOCATION
 
 #ifndef CONFIG_SPL_BUILD
-#define CONFIG_CMD_HASH
 #ifndef CONFIG_SYS_RAMBOOT
 /* The key used for verification of next level images
  * is picked up from an Extension Table which has

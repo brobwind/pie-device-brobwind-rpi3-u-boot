@@ -25,7 +25,7 @@ struct sunxi_ccm_reg {
 	u32 pll6_cfg;		/* 0x28 pll6 control */
 	u32 reserved5;
 	u32 pll7_cfg;		/* 0x30 pll7 control */
-	u32 reserved6;
+	u32 sata_pll_cfg;	/* 0x34 SATA pll control (R40 only) */
 	u32 pll8_cfg;		/* 0x38 pll8 control */
 	u32 reserved7;
 	u32 mipi_pll_cfg;	/* 0x40 MIPI pll control */
@@ -58,7 +58,8 @@ struct sunxi_ccm_reg {
 	u32 i2s1_clk_cfg;	/* 0xb4 I2S1 clock control */
 	u32 reserved10[2];
 	u32 spdif_clk_cfg;	/* 0xc0 SPDIF clock control */
-	u32 reserved11[2];
+	u32 reserved11;
+	u32 sata_clk_cfg;	/* 0xc8 SATA clock control (R40 only) */
 	u32 usb_clk_cfg;	/* 0xcc USB clock control */
 	u32 gmac_clk_cfg;	/* 0xd0 GMAC clock control */
 	u32 reserved12[7];
@@ -83,7 +84,8 @@ struct sunxi_ccm_reg {
 	u32 lcd0_ch0_clk_cfg;	/* 0x118 LCD0 CH0 module clock */
 	u32 lcd1_ch0_clk_cfg;	/* 0x11c LCD1 CH0 module clock */
 #endif
-	u32 reserved14[3];
+	u32 tve_clk_cfg;	/* 0x120 H3/H5 TVE module clock */
+	u32 reserved14[2];
 	u32 lcd0_ch1_clk_cfg;	/* 0x12c LCD0 CH1 module clock */
 	u32 lcd1_ch1_clk_cfg;	/* 0x130 LCD1 CH1 module clock */
 	u32 csi0_clk_cfg;	/* 0x134 CSI0 module clock */
@@ -224,6 +226,8 @@ struct sunxi_ccm_reg {
 #define CCM_PLL6_CTRL_K_MASK		(0x3 << CCM_PLL6_CTRL_K_SHIFT)
 #define CCM_PLL6_CTRL_LOCK		(1 << 28)
 
+#define CCM_SATA_PLL_DEFAULT		0x90005811 /* 100 MHz */
+
 #define CCM_MIPI_PLL_CTRL_M_SHIFT	0
 #define CCM_MIPI_PLL_CTRL_M_MASK	(0xf << CCM_MIPI_PLL_CTRL_M_SHIFT)
 #define CCM_MIPI_PLL_CTRL_M(n)		((((n) - 1) & 0xf) << 0)
@@ -280,7 +284,12 @@ struct sunxi_ccm_reg {
 #define AHB_GATE_OFFSET_USB_EHCI1	27
 #define AHB_GATE_OFFSET_USB_EHCI0	26
 #endif
+#ifndef CONFIG_MACH_SUN8I_R40
 #define AHB_GATE_OFFSET_USB0		24
+#else
+#define AHB_GATE_OFFSET_USB0		25
+#define AHB_GATE_OFFSET_SATA		24
+#endif
 #define AHB_GATE_OFFSET_MCTL		14
 #define AHB_GATE_OFFSET_GMAC		17
 #define AHB_GATE_OFFSET_NAND0		13
@@ -299,6 +308,7 @@ struct sunxi_ccm_reg {
 #define AHB_GATE_OFFSET_DE_BE0		12
 #define AHB_GATE_OFFSET_DE		12
 #define AHB_GATE_OFFSET_HDMI		11
+#define AHB_GATE_OFFSET_TVE		9
 #ifndef CONFIG_SUNXI_DE2
 #define AHB_GATE_OFFSET_LCD1		5
 #define AHB_GATE_OFFSET_LCD0		4
@@ -314,6 +324,9 @@ struct sunxi_ccm_reg {
 #define CCM_MMC_CTRL_OSCM24		(0x0 << 24)
 #define CCM_MMC_CTRL_PLL6		(0x1 << 24)
 #define CCM_MMC_CTRL_ENABLE		(0x1 << 31)
+
+#define CCM_SATA_CTRL_ENABLE		(0x1 << 31)
+#define CCM_SATA_CTRL_USE_EXTCLK	(0x1 << 24)
 
 #define CCM_USB_CTRL_PHY0_RST (0x1 << 0)
 #define CCM_USB_CTRL_PHY1_RST (0x1 << 1)
@@ -404,6 +417,9 @@ struct sunxi_ccm_reg {
 
 #define CCM_HDMI_SLOW_CTRL_DDC_GATE	(1 << 31)
 
+#define CCM_TVE_CTRL_GATE		(0x1 << 31)
+#define CCM_TVE_CTRL_M(n)		((((n) - 1) & 0xf) << 0)
+
 #if defined(CONFIG_MACH_SUN50I)
 #define MBUS_CLK_DEFAULT		0x81000002 /* PLL6x2 / 3 */
 #elif defined(CONFIG_MACH_SUN8I)
@@ -417,6 +433,9 @@ struct sunxi_ccm_reg {
 #define CCM_PLL11_PATTERN		0xf5860000
 
 /* ahb_reset0 offsets */
+#ifdef CONFIG_MACH_SUN8I_R40
+#define AHB_RESET_OFFSET_SATA		24
+#endif
 #define AHB_RESET_OFFSET_GMAC		17
 #define AHB_RESET_OFFSET_MCTL		14
 #define AHB_RESET_OFFSET_MMC3		11
@@ -434,6 +453,7 @@ struct sunxi_ccm_reg {
 #define AHB_RESET_OFFSET_DE		12
 #define AHB_RESET_OFFSET_HDMI		11
 #define AHB_RESET_OFFSET_HDMI2		10
+#define AHB_RESET_OFFSET_TVE		9
 #ifndef CONFIG_SUNXI_DE2
 #define AHB_RESET_OFFSET_LCD1		5
 #define AHB_RESET_OFFSET_LCD0		4

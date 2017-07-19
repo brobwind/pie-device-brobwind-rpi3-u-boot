@@ -121,7 +121,6 @@
  * Common USB/EHCI configuration
  */
 #if defined(CONFIG_CMD_USB) && !defined(CONFIG_DM)
-#define CONFIG_USB_EHCI		/* Enable EHCI USB support */
 #define CONFIG_SUPPORT_VFAT
 #endif /* CONFIG_CMD_USB */
 
@@ -129,7 +128,6 @@
  * File system
  */
 #ifdef CONFIG_SYS_MVFS
-#define CONFIG_CMD_JFFS2
 #define CONFIG_CMD_UBIFS
 #define CONFIG_RBTREE
 #define CONFIG_MTD_DEVICE               /* needed for mtdparts commands */
