@@ -35,8 +35,6 @@
 #define CONFIG_FAT_WRITE
 #define CONFIG_FS_EXT4
 #define CONFIG_EXT4_WRITE
-#define CONFIG_CMD_CBFS
-#define CONFIG_CMD_CRAMFS
 #define CONFIG_HOST_MAX_DEVICES 4
 
 /*
@@ -122,7 +120,6 @@
 
 /* LCD and keyboard require SDL support */
 #ifdef CONFIG_SANDBOX_SDL
-#define CONFIG_CMD_BMP
 #define LCD_BPP			LCD_COLOR16
 #define CONFIG_LCD_BMP_RLE8
 #define CONFIG_VIDEO_BMP_RLE8
@@ -165,7 +162,6 @@
 #define CONFIG_LZMA
 
 #define CONFIG_CMD_LZMADEC
-#define CONFIG_CMD_DATE
 
 #ifndef CONFIG_SPL_BUILD
 #define CONFIG_CMD_IDE
