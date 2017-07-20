@@ -23,7 +23,6 @@
 /*
  * Commands configuration
  */
-#define CONFIG_CMD_ENV
 #define CONFIG_CMD_NAND
 /*
  * mv-common.h should be defined after CMD configs since it used them
@@ -80,7 +79,6 @@
 /*
  * File system
  */
-#define CONFIG_CMD_JFFS2
 #define CONFIG_CMD_UBIFS
 #define CONFIG_RBTREE
 #define CONFIG_MTD_DEVICE               /* needed for mtdparts commands */

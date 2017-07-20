@@ -6,7 +6,7 @@
  */
 
 #include <common.h>
-#include <dm/device.h>
+#include <dm.h>
 #include <linux/bitops.h>
 #include <linux/io.h>
 #include <linux/sizes.h>
@@ -95,7 +95,7 @@ static int uniphier_gpio_probe(struct udevice *dev)
 	fdt_addr_t addr;
 	unsigned int tmp;
 
-	addr = dev_get_addr(dev);
+	addr = devfdt_get_addr(dev);
 	if (addr == FDT_ADDR_T_NONE)
 		return -EINVAL;
 

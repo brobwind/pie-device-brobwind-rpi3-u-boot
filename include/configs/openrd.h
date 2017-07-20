@@ -26,9 +26,7 @@
  * Commands configuration
  */
 #define CONFIG_SYS_MVFS
-#define CONFIG_CMD_ENV
 #define CONFIG_CMD_NAND
-#define CONFIG_CMD_IDE
 
 /*
  * mv-common.h should be defined after CMD configs since it used them

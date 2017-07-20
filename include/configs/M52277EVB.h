@@ -36,7 +36,6 @@
 #define CONFIG_BOOTP_HOSTNAME
 
 /* Command line configuration */
-#define CONFIG_CMD_JFFS2
 #define CONFIG_CMD_REGINFO
 
 #define CONFIG_HOSTNAME			M52277EVB
@@ -88,7 +87,6 @@
 
 /* USB */
 #ifdef CONFIG_CMD_USB
-#define CONFIG_USB_EHCI
 #define CONFIG_SYS_USB_EHCI_REGS_BASE	0xFC0B0000
 #define CONFIG_SYS_USB_EHCI_CPU_INIT
 #endif

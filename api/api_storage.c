@@ -43,10 +43,13 @@ struct stor_spec {
 
 static struct stor_spec specs[ENUM_MAX] = { { 0, 0, 0, 0, NULL }, };
 
+#ifndef CONFIG_SYS_MMC_MAX_DEVICE
+#define CONFIG_SYS_MMC_MAX_DEVICE	1
+#endif
 
 void dev_stor_init(void)
 {
-#if defined(CONFIG_CMD_IDE)
+#if defined(CONFIG_IDE)
 	specs[ENUM_IDE].max_dev = CONFIG_SYS_IDE_MAXDEVICE;
 	specs[ENUM_IDE].enum_started = 0;
 	specs[ENUM_IDE].enum_ended = 0;

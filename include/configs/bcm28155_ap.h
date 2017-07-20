@@ -103,14 +103,10 @@
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_SYS_LONGHELP
 
-#define CONFIG_CRC32_VERIFY
 #define CONFIG_MX_CYCLIC
 
 /* Initial upstream - boot to cmd prompt only */
 #define CONFIG_BOOTCOMMAND		""
-
-/* Commands */
-#define CONFIG_FAT_WRITE
 
 #define CONFIG_USBID_ADDR		0x34052c46
 

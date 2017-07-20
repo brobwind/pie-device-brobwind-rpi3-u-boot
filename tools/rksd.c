@@ -13,34 +13,25 @@
 #include "mkimage.h"
 #include "rkcommon.h"
 
-static int rksd_verify_header(unsigned char *buf,  int size,
-				 struct image_tool_params *params)
-{
-	return 0;
-}
-
-static void rksd_print_header(const void *buf)
-{
-}
-
 static void rksd_set_header(void *buf,  struct stat *sbuf,  int ifd,
-			       struct image_tool_params *params)
+			    struct image_tool_params *params)
 {
 	unsigned int size;
 	int ret;
 
+	/*
+	 * We need to calculate this using 'RK_SPL_HDR_START' and not using
+	 * 'tparams->header_size', as the additional byte inserted when
+	 * 'is_boot0' is true counts towards the payload (and not towards the
+	 * header).
+	 */
 	size = params->file_size - RK_SPL_HDR_START;
 	ret = rkcommon_set_header(buf, size, params);
 	if (ret) {
 		/* TODO(sjg@chromium.org): This method should return an error */
-		printf("Warning: SPL image is too large (size %#x) and will not boot\n",
-		       size);
+		printf("Warning: SPL image is too large (size %#x) and will "
+		       "not boot\n", size);
 	}
-}
-
-static int rksd_extract_subimage(void *buf,  struct image_tool_params *params)
-{
-	return 0;
 }
 
 static int rksd_check_image_type(uint8_t type)
@@ -51,18 +42,14 @@ static int rksd_check_image_type(uint8_t type)
 		return EXIT_FAILURE;
 }
 
-/* We pad the file out to a fixed size - this method returns that size */
 static int rksd_vrec_header(struct image_tool_params *params,
 			    struct image_type_params *tparams)
 {
-	int pad_size;
-
-	rkcommon_vrec_header(params, tparams);
-
-	pad_size = RK_SPL_HDR_START + rkcommon_get_spl_size(params);
-	debug("pad_size %x\n", pad_size);
-
-	return pad_size - params->file_size - tparams->header_size;
+	/*
+	 * Pad to a 2KB alignment, as required for init_size by the ROM
+	 * (see https://lists.denx.de/pipermail/u-boot/2017-May/293268.html)
+	 */
+	return rkcommon_vrec_header(params, tparams, RK_INIT_SIZE_ALIGN);
 }
 
 /*
@@ -74,10 +61,10 @@ U_BOOT_IMAGE_TYPE(
 	0,
 	NULL,
 	rkcommon_check_params,
-	rksd_verify_header,
-	rksd_print_header,
+	rkcommon_verify_header,
+	rkcommon_print_header,
 	rksd_set_header,
-	rksd_extract_subimage,
+	NULL,
 	rksd_check_image_type,
 	NULL,
 	rksd_vrec_header

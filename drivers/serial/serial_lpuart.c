@@ -416,10 +416,10 @@ static int lpuart_serial_ofdata_to_platdata(struct udevice *dev)
 {
 	struct lpuart_serial_platdata *plat = dev->platdata;
 	const void *blob = gd->fdt_blob;
-	int node = dev->of_offset;
+	int node = dev_of_offset(dev);
 	fdt_addr_t addr;
 
-	addr = dev_get_addr(dev);
+	addr = devfdt_get_addr(dev);
 	if (addr == FDT_ADDR_T_NONE)
 		return -EINVAL;
 

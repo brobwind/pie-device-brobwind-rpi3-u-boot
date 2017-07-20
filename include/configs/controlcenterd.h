@@ -185,7 +185,6 @@
 
 #define CONFIG_PCA9698			/* NXP PCA9698 */
 
-#define CONFIG_CMD_EEPROM
 #define CONFIG_SYS_I2C_EEPROM_ADDR 0x52
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN 2
 
@@ -198,8 +197,6 @@
 #define CONFIG_SF_DEFAULT_SPEED		10000000
 #define CONFIG_SF_DEFAULT_MODE		0
 #endif
-
-#define CONFIG_SHA1
 
 /*
  * MMC
@@ -291,7 +288,6 @@
 /*
  * USB
  */
-#define CONFIG_USB_EHCI
 
 #define CONFIG_HAS_FSL_DR_USB
 #define CONFIG_USB_EHCI_FSL
@@ -345,8 +341,6 @@
 
 #ifndef CONFIG_TRAILBLAZER
 
-#define CONFIG_CMD_ERRATA
-#define CONFIG_CMD_IRQ
 #define CONFIG_CMD_REGINFO
 
 /*

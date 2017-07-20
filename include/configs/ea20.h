@@ -79,7 +79,6 @@
  * Network & Ethernet Configuration
  */
 #ifdef CONFIG_DRIVER_TI_EMAC
-#define CONFIG_EMAC_MDIO_PHY_NUM	0
 #define CONFIG_MII
 #define CONFIG_BOOTP_DNS
 #define CONFIG_BOOTP_DNS2
@@ -116,7 +115,6 @@
 #define CONFIG_AUTO_COMPLETE
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_SYS_LONGHELP
-#define CONFIG_CRC32_VERIFY
 #define CONFIG_MX_CYCLIC
 
 /*
@@ -129,7 +127,6 @@
 /*
  * U-Boot commands
  */
-#define CONFIG_CMD_ENV
 #define CONFIG_CMD_SAVES
 
 #ifdef CONFIG_CMD_BDI
@@ -170,7 +167,6 @@
 	!defined(CONFIG_USE_SPIFLASH)
 #define CONFIG_ENV_IS_NOWHERE
 #define CONFIG_ENV_SIZE		(16 << 10)
-#undef CONFIG_CMD_ENV
 #endif
 
 /* additions for new relocation code, must added to all boards */
@@ -273,5 +269,7 @@
 		"else echo U-Boot not downloaded..exiting;fi\0"	\
 	"ubootupd_nand=echo run load_magic,run load_nand,run upd;\0"	\
 	"bootcmd=run net_testrfs\0"
+
+#include <asm/arch/hardware.h>
 
 #endif /* __CONFIG_H */

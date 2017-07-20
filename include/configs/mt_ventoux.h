@@ -24,7 +24,6 @@
 #define CONFIG_BOOTFILE		"uImage"
 #define CONFIG_AUTO_COMPLETE
 
-#define CONFIG_OMAP3_GPIO_4
 #define CONFIG_HOSTNAME mt_ventoux
 
 /*
@@ -40,7 +39,6 @@
 /*
  * FPGA
  */
-#define CONFIG_CMD_FPGA_LOADMK
 #define CONFIG_FPGA
 #define CONFIG_FPGA_XILINX
 #define CONFIG_FPGA_SPARTAN3

@@ -60,7 +60,6 @@ env:
 
 before_script:
   # install toolchains based on TOOLCHAIN} variable
-  - if [[ "${TOOLCHAIN}" == *avr32* ]]; then ./tools/buildman/buildman --fetch-arch avr32 ; fi
   - if [[ "${TOOLCHAIN}" == *m68k* ]]; then ./tools/buildman/buildman --fetch-arch m68k ; fi
   - if [[ "${TOOLCHAIN}" == *microblaze* ]]; then ./tools/buildman/buildman --fetch-arch microblaze ; fi
   - if [[ "${TOOLCHAIN}" == *mips* ]]; then ./tools/buildman/buildman --fetch-arch mips ; fi
@@ -138,12 +137,9 @@ matrix:
     - env:
         - BUILDMAN="arm946es"
     - env:
-        - BUILDMAN="atmel -x avr32"
+        - BUILDMAN="atmel"
     - env:
-        - BUILDMAN="avr32"
-          TOOLCHAIN="avr32"
-    - env:
-        - BUILDMAN="denx"
+        - BUILDMAN="aries"
     - env:
         - JOB="Freescale ARM32"
           BUILDMAN="freescale -x powerpc,m68k,aarch64"
@@ -174,7 +170,7 @@ matrix:
         - BUILDMAN="sun50i"
     - env:
         - JOB="Catch-all ARM"
-          BUILDMAN="arm -x arm11,arm7,arm9,aarch64,atmel,denx,freescale,kirkwood,mvebu,siemens,tegra,uniphier,mx,samsung,sunxi,am33xx,omap3,omap4,omap5,pxa,rockchip"
+          BUILDMAN="arm -x arm11,arm7,arm9,aarch64,atmel,aries,freescale,kirkwood,mvebu,siemens,tegra,uniphier,mx,samsung,sunxi,am33xx,omap3,omap4,omap5,pxa,rockchip"
     - env:
         - BUILDMAN="sandbox x86"
           TOOLCHAIN="x86_64"
@@ -193,14 +189,6 @@ matrix:
     - env:
         - BUILDMAN="mips"
           TOOLCHAIN="mips"
-    - env:
-        - BUILDMAN="mpc512x"
-    - env:
-        - BUILDMAN="mpc5xx"
-    - env:
-        - BUILDMAN="mpc5xxx"
-    - env:
-        - BUILDMAN="mpc8260"
     - env:
         - BUILDMAN="mpc83xx"
     - env:

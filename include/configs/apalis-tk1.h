@@ -36,7 +36,6 @@
 #define CONFIG_SYS_MMC_ENV_PART		1
 
 /* USB host support */
-#define CONFIG_USB_EHCI
 #define CONFIG_USB_EHCI_TEGRA
 
 /* PCI host support */
@@ -50,9 +49,6 @@
 #define CONFIG_IP_DEFRAG
 #define CONFIG_TFTP_BLOCKSIZE		16352
 #define CONFIG_TFTP_TSIZE
-
-/* Miscellaneous commands */
-#define CONFIG_FAT_WRITE
 
 #undef CONFIG_IPADDR
 #define CONFIG_IPADDR		192.168.10.2

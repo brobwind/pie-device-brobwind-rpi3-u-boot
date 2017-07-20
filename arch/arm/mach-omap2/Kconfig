@@ -2,63 +2,7 @@ if ARCH_OMAP2PLUS
 
 choice
 	prompt "OMAP2+ platform select"
-	default TARGET_BRXRE1
-
-config TARGET_BRXRE1
-	bool "Support BRXRE1"
-	select BOARD_LATE_INIT
-
-config TARGET_BRPPT1
-	bool "Support BRPPT1"
-	select BOARD_LATE_INIT
-
-config TARGET_DRACO
-	bool "Support draco"
-	select BOARD_LATE_INIT
-	select DM
-	select DM_SERIAL
-	select DM_GPIO
-
-config TARGET_THUBAN
-	bool "Support thuban"
-	select BOARD_LATE_INIT
-	select DM
-	select DM_SERIAL
-	select DM_GPIO
-
-config TARGET_RASTABAN
-	bool "Support rastaban"
-	select BOARD_LATE_INIT
-	select DM
-	select DM_SERIAL
-	select DM_GPIO
-
-config TARGET_ETAMIN
-	bool "Support etamin"
-	select BOARD_LATE_INIT
-	select DM
-	select DM_SERIAL
-	select DM_GPIO
-
-config TARGET_PXM2
-	bool "Support pxm2"
-	select BOARD_LATE_INIT
-	select DM
-	select DM_SERIAL
-	select DM_GPIO
-
-config TARGET_RUT
-	bool "Support rut"
-	select BOARD_LATE_INIT
-	select DM
-	select DM_SERIAL
-	select DM_GPIO
-
-config TARGET_TI814X_EVM
-	bool "Support ti814x_evm"
-
-config TARGET_TI816X_EVM
-	bool "Support ti816x_evm"
+	default OMAP34XX
 
 config OMAP34XX
 	bool "OMAP34XX SoC"
@@ -79,6 +23,7 @@ config OMAP34XX
 	imply SPL_POWER_SUPPORT
 	imply SPL_SERIAL_SUPPORT
 	imply SYS_THUMB_BUILD
+	imply TWL4030_POWER
 
 config OMAP44XX
 	bool "OMAP44XX SoC"
@@ -115,6 +60,20 @@ config OMAP54XX
 	imply SPL_POWER_SUPPORT
 	imply SPL_SERIAL_SUPPORT
 
+config TI814X
+	bool "TI814X SoC"
+	help
+	  Support for AM335x SOC from Texas Instruments.
+	  The AM335x high performance SOC features a Cortex-A8
+	  ARM core and more.
+
+config TI816X
+	bool "TI816X SoC"
+	help
+	  Support for AM335x SOC from Texas Instruments.
+	  The AM335x high performance SOC features a Cortex-A8
+	  ARM core and more.
+
 config AM43XX
 	bool "AM43XX SoC"
 	imply SPL_DM
@@ -134,6 +93,7 @@ config AM43XX
 config AM33XX
 	bool "AM33XX SoC"
 	imply SYS_THUMB_BUILD
+	imply USE_TINY_PRINTF
 	help
 	  Support for AM335x SOC from Texas Instruments.
 	  The AM335x high performance SOC features a Cortex-A8
@@ -141,11 +101,13 @@ config AM33XX
 	  protocols, optional 3D graphics and an optional customer
 	  programmable secure boot.
 
-config TARGET_CM_T43
-	bool "Support cm_t43"
-
 endchoice
 
+config SYS_MPUCLK
+	int "MPU CLK speed"
+	default 500
+	help
+	  Defines the MPU clock speed (in MHz).
 
 config TI_SECURE_DEVICE
 	bool "HS Device Type Support"

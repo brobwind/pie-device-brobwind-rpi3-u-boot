@@ -19,6 +19,7 @@
 #include <asm/imx-common/spi.h>
 #include <asm/imx-common/video.h>
 #include <asm/io.h>
+#include <asm/setup.h>
 #include <dm.h>
 #include <dm/platform_data/serial_mxc.h>
 #include <hwconfig.h>
@@ -76,7 +77,7 @@ static iomux_v3_cfg_t const enet_pads[] = {
 	IOMUX_PADS(PAD_ENET_TXD0__GPIO1_IO30 | DIO_PAD_CFG),
 };
 
-/* NAND */
+#ifdef CONFIG_CMD_NAND
 static iomux_v3_cfg_t const nfc_pads[] = {
 	IOMUX_PADS(PAD_NANDF_CLE__NAND_CLE     | MUX_PAD_CTRL(NO_PAD_CTRL)),
 	IOMUX_PADS(PAD_NANDF_ALE__NAND_ALE     | MUX_PAD_CTRL(NO_PAD_CTRL)),
@@ -95,7 +96,6 @@ static iomux_v3_cfg_t const nfc_pads[] = {
 	IOMUX_PADS(PAD_NANDF_D7__NAND_DATA07   | MUX_PAD_CTRL(NO_PAD_CTRL)),
 };
 
-#ifdef CONFIG_CMD_NAND
 static void setup_gpmi_nand(void)
 {
 	struct mxc_ccm_reg *mxc_ccm = (struct mxc_ccm_reg *)CCM_BASE_ADDR;
@@ -1091,6 +1091,12 @@ void ft_board_pci_fixup(void *blob, bd_t *bd)
 }
 #endif /* if defined(CONFIG_CMD_PCI) */
 
+void ft_board_wdog_fixup(void *blob, const char *path)
+{
+	ft_delprop_path(blob, path, "ext-reset-output");
+	ft_delprop_path(blob, path, "fsl,ext-reset-output");
+}
+
 /*
  * called prior to booting kernel or by 'fdt boardsetup' command
  *
@@ -1173,8 +1179,7 @@ int ft_board_setup(void *blob, bd_t *bd)
 
 		/* GW51xx-E adds WDOG1_B external reset */
 		if (rev < 'E')
-			ft_delprop_path(blob, WDOG1_PATH,
-					"fsl,ext-reset-output");
+			ft_board_wdog_fixup(blob, WDOG1_PATH);
 		break;
 
 	case GW52xx:
@@ -1204,23 +1209,19 @@ int ft_board_setup(void *blob, bd_t *bd)
 			    strstr((const char *)info->model, "SP331-B"))
 				gpio_cfg[board_type].usd_vsel = 0;
 
-			/* GW520x-E adds WDOG1_B external reset */
-			if (info->model[4] == '0' && rev < 'E')
-				ft_delprop_path(blob, WDOG1_PATH,
-						"fsl,ext-reset-output");
-
 			/* GW522x-B adds WDOG1_B external reset */
-			if (info->model[4] == '2' && rev < 'B')
-				ft_delprop_path(blob, WDOG1_PATH,
-						"fsl,ext-reset-output");
+			ft_board_wdog_fixup(blob, WDOG1_PATH);
 		}
+
+		/* GW520x-E adds WDOG1_B external reset */
+		else if (info->model[4] == '0' && rev < 'E')
+			ft_board_wdog_fixup(blob, WDOG1_PATH);
 		break;
 
 	case GW53xx:
 		/* GW53xx-E adds WDOG1_B external reset */
 		if (rev < 'E')
-			ft_delprop_path(blob, WDOG1_PATH,
-					"fsl,ext-reset-output");
+			ft_board_wdog_fixup(blob, WDOG1_PATH);
 		break;
 
 	case GW54xx:
@@ -1234,8 +1235,7 @@ int ft_board_setup(void *blob, bd_t *bd)
 
 		/* GW54xx-E adds WDOG2_B external reset */
 		if (rev < 'E')
-			ft_delprop_path(blob, WDOG2_PATH,
-					"fsl,ext-reset-output");
+			ft_board_wdog_fixup(blob, WDOG2_PATH);
 		break;
 
 	case GW551x:
@@ -1284,8 +1284,7 @@ int ft_board_setup(void *blob, bd_t *bd)
 
 		/* GW551x-C adds WDOG1_B external reset */
 		if (rev < 'C')
-			ft_delprop_path(blob, WDOG1_PATH,
-					"fsl,ext-reset-output");
+			ft_board_wdog_fixup(blob, WDOG1_PATH);
 		break;
 	}
 

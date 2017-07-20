@@ -29,9 +29,6 @@
 #define CONFIG_SYS_MEMTEST_START	0
 #define CONFIG_SYS_MEMTEST_END		1000
 
-/* Have release address at the end of 256MB for now */
-#define CPU_RELEASE_ADDR	0xFFFFFF0
-
 #define CONFIG_SYS_INIT_SP_ADDR		CONFIG_SYS_TEXT_BASE
 
 /* Generic Timer Definitions - setup in EL3. Setup by ATF for other cases */
@@ -52,7 +49,6 @@
 	{ 4800, 9600, 19200, 38400, 57600, 115200 }
 
 /* Command line configuration */
-#define CONFIG_CMD_ENV
 #define CONFIG_MP
 
 /* BOOTP options */
@@ -81,10 +77,6 @@
 # define FAT_ENV_DEVICE_AND_PART	"0:auto"
 # define FAT_ENV_FILE			"uboot.env"
 # define FAT_ENV_INTERFACE		"mmc"
-#endif
-
-#if defined(CONFIG_MMC_SDHCI_ZYNQ) || defined(CONFIG_ZYNQMP_USB)
-# define CONFIG_FAT_WRITE
 #endif
 
 #ifdef CONFIG_NAND_ARASAN
@@ -184,7 +176,6 @@
 
 /* EEPROM */
 #ifdef CONFIG_ZYNQMP_EEPROM
-# define CONFIG_CMD_EEPROM
 # define CONFIG_SYS_I2C_EEPROM_ADDR_LEN		2
 # define CONFIG_SYS_I2C_EEPROM_ADDR		0x54
 # define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	4
@@ -271,7 +262,6 @@
 #define CONFIG_SPL_BSS_MAX_SIZE		0x80000
 
 #define CONFIG_SPL_FRAMEWORK
-#define CONFIG_SPL_BOARD_INIT
 
 /* u-boot is like dtb */
 #define CONFIG_SPL_FS_LOAD_ARGS_NAME	"u-boot.bin"
@@ -299,11 +289,13 @@
 # define CONFIG_ENV_MAX_ENTRIES	10
 
 # define CONFIG_SYS_SPL_MALLOC_START	0x20000000
-# define CONFIG_SYS_SPL_MALLOC_SIZE	0x10000000
+# define CONFIG_SYS_SPL_MALLOC_SIZE	0x100000
 
 #ifdef CONFIG_SPL_SYS_MALLOC_SIMPLE
 # error "Disable CONFIG_SPL_SYS_MALLOC_SIMPLE. Full malloc needs to be used"
 #endif
 #endif
+
+#define CONFIG_BOARD_EARLY_INIT_F
 
 #endif /* __XILINX_ZYNQMP_H */

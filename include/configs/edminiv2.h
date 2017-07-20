@@ -25,7 +25,6 @@
 #define CONFIG_SYS_SPL_MALLOC_START	0x00040000
 #define CONFIG_SYS_SPL_MALLOC_SIZE	0x0001ffff
 #define CONFIG_SPL_LDSCRIPT            "$(CPUDIR)/orion5x/u-boot-spl.lds"
-#define CONFIG_SPL_BOARD_INIT
 #define CONFIG_SYS_UBOOT_BASE		0xfff90000
 #define CONFIG_SYS_UBOOT_START		0x00800000
 #define CONFIG_SYS_TEXT_BASE 		0x00800000
@@ -120,7 +119,6 @@
 /*
  * Commands configuration
  */
-#define CONFIG_CMD_IDE
 
 /*
  * Network
@@ -141,7 +139,7 @@
 /*
  * IDE
  */
-#ifdef CONFIG_CMD_IDE
+#ifdef CONFIG_IDE
 #define __io
 #define CONFIG_IDE_PREINIT
 /* ED Mini V has an IDE-compatible SATA connector for port 1 */
@@ -171,8 +169,6 @@
  * Common USB/EHCI configuration
  */
 #ifdef CONFIG_CMD_USB
-#define CONFIG_USB_EHCI		/* Enable EHCI USB support */
-#define CONFIG_USB_EHCI_MARVELL
 #define ORION5X_USB20_HOST_PORT_BASE ORION5X_USB20_PORT0_BASE
 #define CONFIG_SUPPORT_VFAT
 #endif /* CONFIG_CMD_USB */

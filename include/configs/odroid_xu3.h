@@ -41,7 +41,6 @@
 #define CONFIG_DEFAULT_CONSOLE		"console=ttySAC2,115200n8\0"
 
 /* USB */
-#define CONFIG_USB_EHCI
 #define CONFIG_USB_EHCI_EXYNOS
 
 /* DFU */
@@ -62,7 +61,6 @@
 
 /* FIXME: MUST BE REMOVED AFTER TMU IS TURNED ON */
 #undef CONFIG_EXYNOS_TMU
-#undef CONFIG_TMU_CMD_DTT
 
 #define CONFIG_DFU_ALT_SYSTEM               \
 	"uImage fat 0 1;"                   \

@@ -26,8 +26,6 @@
 #define GICD_BASE			0xc4301000
 #define GICC_BASE			0xc4302000
 
-#define CONFIG_CMD_ENV
-
 /* Monitor Command Prompt */
 /* Console I/O Buffer Size */
 #define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE + \
@@ -42,6 +40,7 @@
 	func(MMC, mmc, 0) \
 	func(MMC, mmc, 1) \
 	func(MMC, mmc, 2) \
+	func(PXE, pxe, na) \
 	func(DHCP, dhcp, na)
 
 #include <config_distro_bootcmd.h>

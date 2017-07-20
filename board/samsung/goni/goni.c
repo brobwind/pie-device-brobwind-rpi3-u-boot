@@ -17,6 +17,7 @@
 #include <samsung/misc.h>
 #include <usb.h>
 #include <usb_mass_storage.h>
+#include <asm/mach-types.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -72,7 +73,7 @@ int checkboard(void)
 }
 #endif
 
-#ifdef CONFIG_GENERIC_MMC
+#ifdef CONFIG_MMC
 int board_mmc_init(bd_t *bis)
 {
 	int i, ret, ret_sd = 0;

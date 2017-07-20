@@ -58,8 +58,6 @@
 #define CONFIG_SYS_SCSI_MAX_DEVICE	(CONFIG_SYS_SCSI_MAX_SCSI_ID * \
 						CONFIG_SYS_SCSI_MAX_LUN)
 /* USB UHH support options */
-#define CONFIG_USB_EHCI
-#define CONFIG_USB_EHCI_OMAP
 #define CONFIG_SYS_USB_EHCI_MAX_ROOT_PORTS	3
 #define CONFIG_EHCI_HCD_INIT_AFTER_RESET
 
@@ -69,15 +67,11 @@
 /* Enabled commands */
 
 /* EEPROM */
-#define CONFIG_CMD_EEPROM
 #define CONFIG_ENV_EEPROM_IS_ON_I2C
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN		1
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	4
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS	5
 #define CONFIG_SYS_EEPROM_SIZE			256
-
-#define CONFIG_CMD_EEPROM_LAYOUT
-#define CONFIG_EEPROM_LAYOUT_HELP_STRING "v2, v3"
 
 /* USB Networking options */
 #define CONFIG_USB_HOST_ETHER
@@ -85,9 +79,6 @@
 #define CONFIG_USB_ETHER_RNDIS
 #define CONFIG_USB_ETHER_ASIX
 #define CONFIG_USB_ETHER_MCS7830
-
-/* Max time to hold reset on this board, see doc/README.omap-reset-time */
-#define CONFIG_OMAP_PLATFORM_RESET_TIME_MAX_USEC	16296
 
 /*
  * Miscellaneous configurable options

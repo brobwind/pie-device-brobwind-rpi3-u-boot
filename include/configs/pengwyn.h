@@ -107,7 +107,6 @@
 
 /* I2C Configuration */
 #define	CONFIG_SYS_I2C_SPEED		100000
-#define CONFIG_CMD_EEPROM
 #define CONFIG_ENV_EEPROM_IS_ON_I2C
 #define CONFIG_SYS_I2C_EEPROM_ADDR	0x50
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN	2
@@ -203,6 +202,6 @@
 
 /* CPSW support */
 
-#define CONFIG_SPL_LDSCRIPT		"arch/arm/mach-omap2/am33xx/u-boot-spl.lds"
+#define CONFIG_SPL_LDSCRIPT		"arch/arm/mach-omap2/u-boot-spl.lds"
 
 #endif	/* ! __CONFIG_PENGWYN_H */

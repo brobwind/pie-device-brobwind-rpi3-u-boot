@@ -13,10 +13,6 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-/* High Level Configuration Options */
-
-#define CONFIG_OMAP
-
 #define CONFIG_NR_DRAM_BANKS	2	/* CS1 may or may not be populated */
 
 #define CONFIG_EMIF4	/* The chip has EMIF4 controller */
@@ -48,9 +44,6 @@
 #define CONFIG_SYS_MALLOC_LEN		(16 << 20)
 
 /* Hardware drivers */
-
-/* OMAP GPIO configuration */
-#define CONFIG_OMAP_GPIO
 
 /* NS16550 Configuration */
 #define V_NS16550_CLK			48000000	/* 48MHz (APLL96/2) */
@@ -307,7 +300,6 @@
 
 /* Defines for SPL */
 #define CONFIG_SPL_FRAMEWORK
-#define CONFIG_SPL_BOARD_INIT
 #define CONFIG_SPL_NAND_SIMPLE
 #define CONFIG_SPL_TEXT_BASE		0x40200000
 #define CONFIG_SPL_MAX_SIZE		(SRAM_SCRATCH_SPACE_ADDR - \

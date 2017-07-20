@@ -7,15 +7,20 @@
 
 #include <common.h>
 #include <clk-uclass.h>
-#include <dm/device.h>
+#include <dm.h>
 #include <dm/lists.h>
-#include <dm/root.h>
 #include <dm/util.h>
 #include "pmc.h"
 
 DECLARE_GLOBAL_DATA_PTR;
 
 static const struct udevice_id at91_pmc_match[] = {
+	{ .compatible = "atmel,at91rm9200-pmc" },
+	{ .compatible = "atmel,at91sam9260-pmc" },
+	{ .compatible = "atmel,at91sam9g45-pmc" },
+	{ .compatible = "atmel,at91sam9n12-pmc" },
+	{ .compatible = "atmel,at91sam9x5-pmc" },
+	{ .compatible = "atmel,sama5d3-pmc" },
 	{ .compatible = "atmel,sama5d2-pmc" },
 	{}
 };
@@ -34,7 +39,7 @@ int at91_pmc_core_probe(struct udevice *dev)
 
 	dev = dev_get_parent(dev);
 
-	plat->reg_base = (struct at91_pmc *)dev_get_addr_ptr(dev);
+	plat->reg_base = (struct at91_pmc *)devfdt_get_addr_ptr(dev);
 
 	return 0;
 }
@@ -74,7 +79,7 @@ int at91_clk_sub_device_bind(struct udevice *dev, const char *drv_name)
 		if (!name)
 			return -EINVAL;
 		ret = device_bind_driver_to_node(dev, drv_name, name,
-						 offset, NULL);
+					offset_to_ofnode(offset), NULL);
 		if (ret)
 			return ret;
 	}
@@ -82,7 +87,7 @@ int at91_clk_sub_device_bind(struct udevice *dev, const char *drv_name)
 	return 0;
 }
 
-int at91_clk_of_xlate(struct clk *clk, struct fdtdec_phandle_args *args)
+int at91_clk_of_xlate(struct clk *clk, struct ofnode_phandle_args *args)
 {
 	int periph;
 
@@ -109,7 +114,7 @@ int at91_clk_probe(struct udevice *dev)
 	dev_periph_container = dev_get_parent(dev);
 	dev_pmc = dev_get_parent(dev_periph_container);
 
-	plat->reg_base = (struct at91_pmc *)dev_get_addr_ptr(dev_pmc);
+	plat->reg_base = (struct at91_pmc *)devfdt_get_addr_ptr(dev_pmc);
 
 	return 0;
 }

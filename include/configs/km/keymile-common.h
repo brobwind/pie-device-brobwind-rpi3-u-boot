@@ -13,9 +13,6 @@
 /*
  * Command line configuration.
  */
-#define CONFIG_CMD_IMMAP
-#define CONFIG_CMD_EEPROM
-#define CONFIG_CMD_JFFS2
 #define CONFIG_CMD_MTDPARTS
 
 #undef	CONFIG_WATCHDOG		/* disable platform specific watchdog */

@@ -56,9 +56,8 @@ DECLARE_GLOBAL_DATA_PTR;
 #define SYSCTL_SRC	(1 << 25)
 #define SYSCTL_SRD	(1 << 26)
 
-struct omap_hsmmc_plat {
-	struct mmc_config cfg;
-	struct mmc mmc;
+struct omap2_mmc_platform_config {
+	u32 reg_offset;
 };
 
 struct omap_hsmmc_data {
@@ -327,11 +326,17 @@ static void mmc_reset_controller_fsm(struct hsmmc *mmc_base, u32 bit)
 		}
 	}
 }
-
+#ifndef CONFIG_DM_MMC
 static int omap_hsmmc_send_cmd(struct mmc *mmc, struct mmc_cmd *cmd,
 			struct mmc_data *data)
 {
 	struct omap_hsmmc_data *priv = omap_hsmmc_get_data(mmc);
+#else
+static int omap_hsmmc_send_cmd(struct udevice *dev, struct mmc_cmd *cmd,
+			struct mmc_data *data)
+{
+	struct omap_hsmmc_data *priv = dev_get_priv(dev);
+#endif
 	struct hsmmc *mmc_base;
 	unsigned int flags, mmc_stat;
 	ulong start;
@@ -559,9 +564,17 @@ static int mmc_write_data(struct hsmmc *mmc_base, const char *buf,
 	return 0;
 }
 
+#ifndef CONFIG_DM_MMC
 static int omap_hsmmc_set_ios(struct mmc *mmc)
 {
 	struct omap_hsmmc_data *priv = omap_hsmmc_get_data(mmc);
+#else
+static int omap_hsmmc_set_ios(struct udevice *dev)
+{
+	struct omap_hsmmc_data *priv = dev_get_priv(dev);
+	struct mmc_uclass_priv *upriv = dev_get_uclass_priv(dev);
+	struct mmc *mmc = upriv->mmc;
+#endif
 	struct hsmmc *mmc_base;
 	unsigned int dsor = 0;
 	ulong start;
@@ -618,9 +631,9 @@ static int omap_hsmmc_set_ios(struct mmc *mmc)
 
 #ifdef OMAP_HSMMC_USE_GPIO
 #ifdef CONFIG_DM_MMC
-static int omap_hsmmc_getcd(struct mmc *mmc)
+static int omap_hsmmc_getcd(struct udevice *dev)
 {
-	struct omap_hsmmc_data *priv = omap_hsmmc_get_data(mmc);
+	struct omap_hsmmc_data *priv = dev_get_priv(dev);
 	int value;
 
 	value = dm_gpio_get_value(&priv->cd_gpio);
@@ -633,9 +646,9 @@ static int omap_hsmmc_getcd(struct mmc *mmc)
 	return value;
 }
 
-static int omap_hsmmc_getwp(struct mmc *mmc)
+static int omap_hsmmc_getwp(struct udevice *dev)
 {
-	struct omap_hsmmc_data *priv = omap_hsmmc_get_data(mmc);
+	struct omap_hsmmc_data *priv = dev_get_priv(dev);
 	int value;
 
 	value = dm_gpio_get_value(&priv->wp_gpio);
@@ -675,6 +688,16 @@ static int omap_hsmmc_getwp(struct mmc *mmc)
 #endif
 #endif
 
+#ifdef CONFIG_DM_MMC
+static const struct dm_mmc_ops omap_hsmmc_ops = {
+	.send_cmd	= omap_hsmmc_send_cmd,
+	.set_ios	= omap_hsmmc_set_ios,
+#ifdef OMAP_HSMMC_USE_GPIO
+	.get_cd		= omap_hsmmc_getcd,
+	.get_wp		= omap_hsmmc_getwp,
+#endif
+};
+#else
 static const struct mmc_ops omap_hsmmc_ops = {
 	.send_cmd	= omap_hsmmc_send_cmd,
 	.set_ios	= omap_hsmmc_set_ios,
@@ -684,6 +707,7 @@ static const struct mmc_ops omap_hsmmc_ops = {
 	.getwp		= omap_hsmmc_getwp,
 #endif
 };
+#endif
 
 #ifndef CONFIG_DM_MMC
 int omap_mmc_init(int dev_index, uint host_caps_mask, uint f_max, int cd_gpio,
@@ -773,17 +797,20 @@ int omap_mmc_init(int dev_index, uint host_caps_mask, uint f_max, int cd_gpio,
 	return 0;
 }
 #else
+#if CONFIG_IS_ENABLED(OF_CONTROL) && !CONFIG_IS_ENABLED(OF_PLATDATA)
 static int omap_hsmmc_ofdata_to_platdata(struct udevice *dev)
 {
-	struct omap_hsmmc_data *priv = dev_get_priv(dev);
 	struct omap_hsmmc_plat *plat = dev_get_platdata(dev);
 	struct mmc_config *cfg = &plat->cfg;
+	struct omap2_mmc_platform_config *data =
+		(struct omap2_mmc_platform_config *)dev_get_driver_data(dev);
 	const void *fdt = gd->fdt_blob;
 	int node = dev_of_offset(dev);
 	int val;
 
-	priv->base_addr = map_physmem(dev_get_addr(dev), sizeof(struct hsmmc *),
-				      MAP_NOCACHE);
+	plat->base_addr = map_physmem(devfdt_get_addr(dev),
+				      sizeof(struct hsmmc *),
+				      MAP_NOCACHE) + data->reg_offset;
 
 	cfg->host_caps = MMC_MODE_HS_52MHz | MMC_MODE_HS;
 	val = fdtdec_get_int(fdt, node, "bus-width", -1);
@@ -809,11 +836,12 @@ static int omap_hsmmc_ofdata_to_platdata(struct udevice *dev)
 	cfg->b_max = CONFIG_SYS_MMC_MAX_BLK_COUNT;
 
 #ifdef OMAP_HSMMC_USE_GPIO
-	priv->cd_inverted = fdtdec_get_bool(fdt, node, "cd-inverted");
+	plat->cd_inverted = fdtdec_get_bool(fdt, node, "cd-inverted");
 #endif
 
 	return 0;
 }
+#endif
 
 #ifdef CONFIG_BLK
 
@@ -833,7 +861,10 @@ static int omap_hsmmc_probe(struct udevice *dev)
 	struct mmc *mmc;
 
 	cfg->name = "OMAP SD/MMC";
-	cfg->ops = &omap_hsmmc_ops;
+	priv->base_addr = plat->base_addr;
+#ifdef OMAP_HSMMC_USE_GPIO
+	priv->cd_inverted = plat->cd_inverted;
+#endif
 
 #ifdef CONFIG_BLK
 	mmc = &plat->mmc;
@@ -843,7 +874,7 @@ static int omap_hsmmc_probe(struct udevice *dev)
 		return -1;
 #endif
 
-#ifdef OMAP_HSMMC_USE_GPIO
+#if defined(OMAP_HSMMC_USE_GPIO) && CONFIG_IS_ENABLED(OF_CONTROL)
 	gpio_request_by_name(dev, "cd-gpios", 0, &priv->cd_gpio, GPIOD_IS_IN);
 	gpio_request_by_name(dev, "wp-gpios", 0, &priv->wp_gpio, GPIOD_IS_IN);
 #endif
@@ -851,26 +882,53 @@ static int omap_hsmmc_probe(struct udevice *dev)
 	mmc->dev = dev;
 	upriv->mmc = mmc;
 
-	return 0;
+	return omap_hsmmc_init_setup(mmc);
 }
 
+#if CONFIG_IS_ENABLED(OF_CONTROL) && !CONFIG_IS_ENABLED(OF_PLATDATA)
+static const struct omap2_mmc_platform_config omap3_mmc_pdata = {
+	.reg_offset = 0,
+};
+
+static const struct omap2_mmc_platform_config am33xx_mmc_pdata = {
+	.reg_offset = 0x100,
+};
+
+static const struct omap2_mmc_platform_config omap4_mmc_pdata = {
+	.reg_offset = 0x100,
+};
+
 static const struct udevice_id omap_hsmmc_ids[] = {
-	{ .compatible = "ti,omap3-hsmmc" },
-	{ .compatible = "ti,omap4-hsmmc" },
-	{ .compatible = "ti,am33xx-hsmmc" },
+	{
+			.compatible = "ti,omap3-hsmmc",
+			.data = (ulong)&omap3_mmc_pdata
+	},
+	{
+			.compatible = "ti,omap4-hsmmc",
+			.data = (ulong)&omap4_mmc_pdata
+	},
+	{
+			.compatible = "ti,am33xx-hsmmc",
+			.data = (ulong)&am33xx_mmc_pdata
+	},
 	{ }
 };
+#endif
 
 U_BOOT_DRIVER(omap_hsmmc) = {
 	.name	= "omap_hsmmc",
 	.id	= UCLASS_MMC,
+#if CONFIG_IS_ENABLED(OF_CONTROL) && !CONFIG_IS_ENABLED(OF_PLATDATA)
 	.of_match = omap_hsmmc_ids,
 	.ofdata_to_platdata = omap_hsmmc_ofdata_to_platdata,
+	.platdata_auto_alloc_size = sizeof(struct omap_hsmmc_plat),
+#endif
 #ifdef CONFIG_BLK
 	.bind = omap_hsmmc_bind,
 #endif
+	.ops = &omap_hsmmc_ops,
 	.probe	= omap_hsmmc_probe,
 	.priv_auto_alloc_size = sizeof(struct omap_hsmmc_data),
-	.platdata_auto_alloc_size = sizeof(struct omap_hsmmc_plat),
+	.flags	= DM_FLAG_PRE_RELOC,
 };
 #endif

@@ -211,6 +211,9 @@
 #define CONFIG_SYS_INIT_SP_ADDR		0x301000
 #define CONFIG_SPL_STACK_R
 #define CONFIG_SPL_STACK_R_ADDR		CONFIG_SYS_TEXT_BASE
+/* we have only 4k sram in SPL, so cut SYS_MALLOC_F_LEN */
+#undef CONFIG_SYS_MALLOC_F_LEN
+#define CONFIG_SYS_MALLOC_F_LEN 0x400
 #else
 /*
  * Initial stack pointer: 4k - GENERATED_GBL_DATA_SIZE in internal SRAM,
@@ -233,7 +236,6 @@
 #define CONFIG_SYS_SPL_MALLOC_SIZE      CONFIG_SYS_MALLOC_LEN
 #define CONFIG_SPL_LDSCRIPT	arch/arm/mach-at91/arm926ejs/u-boot-spl.lds
 
-#define CONFIG_SPL_BOARD_INIT
 #define CONFIG_SYS_NAND_ENABLE_PIN_SPL	(2*32 + 14)
 #define CONFIG_SYS_USE_NANDFLASH	1
 #define CONFIG_SPL_NAND_DRIVERS

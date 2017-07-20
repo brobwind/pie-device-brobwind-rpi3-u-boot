@@ -11,8 +11,6 @@
 #ifndef __CONFIG_CL_SOM_AM57X_H
 #define __CONFIG_CL_SOM_AM57X_H
 
-#define CONFIG_DRA7XX
-
 #define CONFIG_NR_DRAM_BANKS		2
 
 #define CONSOLEDEV			"ttyO2"
@@ -44,9 +42,9 @@
 #define CONFIG_SPL_SPI_FLASH_SUPPORT
 #define CONFIG_SPL_SPI_LOAD
 
-/* SD/MMC RAW boot */
-#undef CONFIG_SPL_FS_LOAD_PAYLOAD_NAME
-#undef CONFIG_SYS_MMCSD_FS_BOOT_PARTITION
+/* SD/MMC RAW/FS boot */
+#define CONFIG_SPL_FS_LOAD_PAYLOAD_NAME "u-boot.img"
+#define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION 1
 
 /* Environment */
 #define CONFIG_ENV_SIZE			(16 << 10) /* 16 KiB env size */
@@ -62,8 +60,6 @@
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN  1
 #define CONFIG_SYS_I2C_EEPROM_BUS       3
 
-#define CONFIG_CMD_EEPROM
-#define CONFIG_CMD_EEPROM_LAYOUT
 #define CONFIG_ENV_EEPROM_IS_ON_I2C
 #define CONFIG_SYS_EEPROM_SIZE		256
 
@@ -84,6 +80,8 @@
 #define CONFIG_SYS_I2C_PCA953X_ADDR     0x20
 #define CONFIG_SYS_I2C_PCA953X_WIDTH    { {0x20, 16} }
 
+#endif /* !CONFIG_SPL_BUILD */
+
 /* USB xHCI HOST */
 #define CONFIG_USB_XHCI_OMAP
 #define CONFIG_SYS_USB_XHCI_MAX_ROOT_PORTS 2
@@ -97,8 +95,6 @@
 #define CONFIG_USB_ETHER_RNDIS
 #define CONFIG_USB_ETHER_ASIX
 #define CONFIG_USB_ETHER_MCS7830
-
-#endif /* !CONFIG_SPL_BUILD */
 
 /* CPSW Ethernet */
 #define CONFIG_DRIVER_TI_CPSW
@@ -132,8 +128,10 @@
 	"bootkernel=bootz ${loadaddr} - ${fdtaddr}\0" \
 	"mmcloadfdt=load mmc ${mmcdev} ${fdtaddr} ${fdtfile}\0" \
 	"mmcloadkernel=load mmc ${mmcdev} ${loadaddr} ${kernel}\0" \
+	"emmcloadfdt=load mmc ${mmcdev} ${fdtaddr} ${fdtfile}\0" \
+	"emmcloadkernel=load mmc ${mmcdev} ${loadaddr} ${kernel}\0" \
 	"load_mmc=mmc dev ${mmcdev} && mmc rescan && " \
-		"run mmcloadkernel run mmcloadfdt\0" \
+		"run mmcloadkernel && run mmcloadfdt\0" \
 	"mmcroot=/dev/mmcblk1p2\0" \
 	"mmcrootfstype=ext4 rw rootwait\0" \
 	"mmcargs=setenv bootargs console=${console} root=${mmcroot} " \
@@ -169,7 +167,7 @@
 		"source ${loadaddr}\0" \
 	"sataboot=run load_sata && run sataargs && " \
 		"echo Booting from SATA ... && " \
-		"run bootkernel\0" \
+		"run bootkernel\0"
 
 #undef CONFIG_BOOTCOMMAND
 #define CONFIG_BOOTCOMMAND \

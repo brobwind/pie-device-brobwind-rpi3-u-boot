@@ -11,6 +11,7 @@
  */
 
 #include <common.h>
+#include <api.h>
 /* TODO: can we just include all these headers whether needed or not? */
 #if defined(CONFIG_CMD_BEDBUG)
 #include <bedbug/type.h>
@@ -23,9 +24,7 @@
 #include <dm.h>
 #include <environment.h>
 #include <fdtdec.h>
-#if defined(CONFIG_CMD_IDE)
 #include <ide.h>
-#endif
 #include <initcall.h>
 #include <init_helpers.h>
 #ifdef CONFIG_PS2KBD
@@ -42,6 +41,7 @@
 #endif
 #include <mmc.h>
 #include <nand.h>
+#include <of_live.h>
 #include <onenand_uboot.h>
 #include <scsi.h>
 #include <serial.h>
@@ -57,9 +57,6 @@
 #include <dm/root.h>
 #include <linux/compiler.h>
 #include <linux/err.h>
-#ifdef CONFIG_AVR32
-#include <asm/arch/mmu.h>
-#endif
 #include <efi_loader.h>
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -227,13 +224,6 @@ static int initr_post_backlog(void)
 }
 #endif
 
-#ifdef CONFIG_SYS_DELAYED_ICACHE
-static int initr_icache_enable(void)
-{
-	return 0;
-}
-#endif
-
 #if defined(CONFIG_SYS_INIT_RAM_LOCK) && defined(CONFIG_E500)
 static int initr_unlock_ram_in_cache(void)
 {
@@ -294,6 +284,21 @@ static int initr_noncached(void)
 }
 #endif
 
+#ifdef CONFIG_OF_LIVE
+static int initr_of_live(void)
+{
+	int ret;
+
+	bootstage_start(BOOTSTAGE_ID_ACCUM_OF_LIVE, "of_live");
+	ret = of_live_build(gd->fdt_blob, (struct device_node **)&gd->of_root);
+	bootstage_accum(BOOTSTAGE_ID_ACCUM_OF_LIVE);
+	if (ret)
+		return ret;
+
+	return 0;
+}
+#endif
+
 #ifdef CONFIG_DM
 static int initr_dm(void)
 {
@@ -305,7 +310,9 @@ static int initr_dm(void)
 #ifdef CONFIG_TIMER
 	gd->timer = NULL;
 #endif
+	bootstage_start(BOOTSTATE_ID_ACCUM_DM_R, "dm_r");
 	ret = dm_init_and_scan(false);
+	bootstage_accum(BOOTSTATE_ID_ACCUM_DM_R);
 	if (ret)
 		return ret;
 #ifdef CONFIG_TIMER_EARLY
@@ -320,7 +327,6 @@ static int initr_dm(void)
 
 static int initr_bootstage(void)
 {
-	/* We cannot do this before initr_dm() */
 	bootstage_mark_name(BOOTSTAGE_ID_START_UBOOT_R, "board_init_r");
 
 	return 0;
@@ -432,7 +438,7 @@ static int initr_onenand(void)
 }
 #endif
 
-#ifdef CONFIG_GENERIC_MMC
+#ifdef CONFIG_MMC
 static int initr_mmc(void)
 {
 	puts("MMC:   ");
@@ -485,24 +491,7 @@ static int initr_env(void)
 
 	/* Initialize from environment */
 	load_addr = getenv_ulong("loadaddr", 16, load_addr);
-#if defined(CONFIG_SYS_EXTBDINFO)
-#if defined(CONFIG_405GP) || defined(CONFIG_405EP)
-#if defined(CONFIG_I2CFAST)
-	/*
-	 * set bi_iic_fast for linux taking environment variable
-	 * "i2cfast" into account
-	 */
-	{
-		char *s = getenv("i2cfast");
 
-		if (s && ((*s == 'y') || (*s == 'Y'))) {
-			gd->bd->bi_iic_fast[0] = 1;
-			gd->bd->bi_iic_fast[1] = 1;
-		}
-	}
-#endif /* CONFIG_I2CFAST */
-#endif /* CONFIG_405GP, CONFIG_405EP */
-#endif /* CONFIG_SYS_EXTBDINFO */
 	return 0;
 }
 
@@ -534,7 +523,7 @@ static int initr_api(void)
 #endif
 
 /* enable exceptions */
-#if defined(CONFIG_ARM) || defined(CONFIG_AVR32)
+#ifdef CONFIG_ARM
 static int initr_enable_interrupts(void)
 {
 	enable_interrupts();
@@ -628,7 +617,7 @@ static int initr_post(void)
 }
 #endif
 
-#if defined(CONFIG_CMD_PCMCIA) && !defined(CONFIG_CMD_IDE)
+#if defined(CONFIG_CMD_PCMCIA) && !defined(CONFIG_IDE)
 static int initr_pcmcia(void)
 {
 	puts("PCMCIA:");
@@ -637,14 +626,10 @@ static int initr_pcmcia(void)
 }
 #endif
 
-#if defined(CONFIG_CMD_IDE)
+#if defined(CONFIG_IDE)
 static int initr_ide(void)
 {
-#ifdef	CONFIG_IDE_8xx_PCCARD
-	puts("PCMCIA:");
-#else
 	puts("IDE:   ");
-#endif
 #if defined(CONFIG_START_IDE)
 	if (board_start_ide())
 		ide_init();
@@ -736,15 +721,18 @@ static init_fnc_t init_sequence_r[] = {
 #endif
 	initr_barrier,
 	initr_malloc,
+	initr_bootstage,	/* Needs malloc() but has its own timer */
 	initr_console_record,
 #ifdef CONFIG_SYS_NONCACHED_MEMORY
 	initr_noncached,
 #endif
 	bootstage_relocate,
+#ifdef CONFIG_OF_LIVE
+	initr_of_live,
+#endif
 #ifdef CONFIG_DM
 	initr_dm,
 #endif
-	initr_bootstage,
 #if defined(CONFIG_ARM) || defined(CONFIG_NDS32)
 	board_init,	/* Setup chipselects */
 #endif
@@ -784,9 +772,6 @@ static init_fnc_t init_sequence_r[] = {
 	initr_post_backlog,
 #endif
 	INIT_FUNC_WATCHDOG_RESET
-#ifdef CONFIG_SYS_DELAYED_ICACHE
-	initr_icache_enable,
-#endif
 #if defined(CONFIG_PCI) && defined(CONFIG_SYS_EARLY_PCI_INIT)
 	/*
 	 * Do early PCI configuration _before_ the flash gets initialised,
@@ -815,7 +800,7 @@ static init_fnc_t init_sequence_r[] = {
 #ifdef CONFIG_CMD_ONENAND
 	initr_onenand,
 #endif
-#ifdef CONFIG_GENERIC_MMC
+#ifdef CONFIG_MMC
 	initr_mmc,
 #endif
 #ifdef CONFIG_HAS_DATAFLASH
@@ -857,10 +842,10 @@ static init_fnc_t init_sequence_r[] = {
 	initr_kgdb,
 #endif
 	interrupt_init,
-#if defined(CONFIG_ARM) || defined(CONFIG_AVR32)
+#ifdef CONFIG_ARM
 	initr_enable_interrupts,
 #endif
-#if defined(CONFIG_MICROBLAZE) || defined(CONFIG_AVR32) || defined(CONFIG_M68K)
+#if defined(CONFIG_MICROBLAZE) || defined(CONFIG_M68K)
 	timer_init,		/* initialize timer */
 #endif
 #if defined(CONFIG_LED_STATUS)
@@ -887,10 +872,10 @@ static init_fnc_t init_sequence_r[] = {
 #ifdef CONFIG_POST
 	initr_post,
 #endif
-#if defined(CONFIG_CMD_PCMCIA) && !defined(CONFIG_CMD_IDE)
+#if defined(CONFIG_CMD_PCMCIA) && !defined(CONFIG_IDE)
 	initr_pcmcia,
 #endif
-#if defined(CONFIG_CMD_IDE)
+#if defined(CONFIG_IDE)
 	initr_ide,
 #endif
 #ifdef CONFIG_LAST_STAGE_INIT
@@ -929,10 +914,6 @@ void board_init_r(gd_t *new_gd, ulong dest_addr)
 
 #ifdef CONFIG_NEEDS_MANUAL_RELOC
 	int i;
-#endif
-
-#ifdef CONFIG_AVR32
-	mmu_init_r(dest_addr);
 #endif
 
 #if !defined(CONFIG_X86) && !defined(CONFIG_ARM) && !defined(CONFIG_ARM64)

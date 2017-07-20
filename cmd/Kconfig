@@ -266,7 +266,9 @@ config CMD_XIMG
 	  Extract a part of a multi-image.
 
 config CMD_POWEROFF
-	bool
+	bool "poweroff"
+	help
+	  Poweroff/Shutdown the system
 
 endmenu
 
@@ -314,6 +316,22 @@ config CMD_ENV_EXISTS
 	  Check if a variable is defined in the environment for use in
 	  shell scripting.
 
+config CMD_ENV_CALLBACK
+	bool "env callbacks - print callbacks and their associated variables"
+	help
+	  Some environment variable have callbacks defined by
+	  U_BOOT_ENV_CALLBACK. These are called when the variable changes.
+	  For example changing "baudrate" adjust the serial baud rate. This
+	  command lists the currently defined callbacks.
+
+config CMD_ENV_FLAGS
+	bool "env flags -print variables that have non-default flags"
+	help
+	  Some environment variables have special flags that control their
+	  behaviour. For example, serial# can only be written once and cannot
+	  be deleted. This command shows the variables that have special
+	  flags.
+
 endmenu
 
 menu "Memory commands"
@@ -334,9 +352,64 @@ config CMD_MEMORY
 
 config CMD_CRC32
 	bool "crc32"
+	select HASH
 	default y
 	help
 	  Compute CRC32.
+
+config CRC32_VERIFY
+	bool "crc32 -v"
+	depends on CMD_CRC32
+	help
+	  Add -v option to verify data against a crc32 checksum.
+
+config CMD_EEPROM
+	bool "eeprom - EEPROM subsystem"
+	help
+	  (deprecated, needs conversion to driver model)
+	  Provides commands to read and write EEPROM (Electrically Erasable
+	  Programmable Read Only Memory) chips that are connected over an
+	  I2C bus.
+
+config CMD_EEPROM_LAYOUT
+	bool "Enable layout-aware eeprom commands"
+	depends on CMD_EEPROM
+	help
+	  (deprecated, needs conversion to driver model)
+	  When enabled, additional eeprom sub-commands become available.
+
+	  eeprom print - prints the contents of the eeprom in a human-readable
+	  way (eeprom layout fields, and data formatted to be fit for human
+	  consumption).
+
+	  eeprom update - allows user to update eeprom fields by specifying
+	  the field name, and providing the new data in a human readable format
+	  (same format as displayed by the eeprom print command).
+
+	  Both commands can either auto detect the layout, or be told which
+	  layout to use.
+
+	  Feature API:
+	  __weak int parse_layout_version(char *str)
+		- override to provide your own layout name parsing
+	  __weak void __eeprom_layout_assign(struct eeprom_layout *layout,
+			int layout_version);
+		- override to setup the layout metadata based on the version
+	  __weak int eeprom_layout_detect(unsigned char *data)
+		- override to provide your own algorithm for detecting layout
+			version
+	  eeprom_field.c
+		- contains various printing and updating functions for common
+			types of eeprom fields. Can be used for defining
+			custom layouts.
+
+config EEPROM_LAYOUT_HELP_STRING
+	  string "Tells user what layout names are supported"
+	  depends on CMD_EEPROM_LAYOUT
+	  default "<not defined>"
+	  help
+	    Help printed with the LAYOUT VERSIONS part of the 'eeprom'
+	    command's help.
 
 config CMD_MD5SUM
 	bool "md5sum"
@@ -345,12 +418,24 @@ config CMD_MD5SUM
 	help
 	  Compute MD5 checksum.
 
-config MD5SUM_VERFIY
+config MD5SUM_VERIFY
 	bool "md5sum -v"
 	default n
 	depends on CMD_MD5SUM
 	help
 	  Add -v option to verify data against an MD5 checksum.
+
+config CMD_SHA1SUM
+	bool "sha1sum"
+	select SHA1
+	help
+	  Compute SHA1 checksum.
+
+config SHA1SUM_VERIFY
+	bool "sha1sum -v"
+	depends on CMD_SHA1SUM
+	help
+	  Add -v option to verify data against a SHA1 checksum.
 
 config LOOPW
 	bool "loopw"
@@ -372,6 +457,17 @@ config CMD_MEMINFO
 	bool "meminfo"
 	help
 	  Display memory information.
+
+endmenu
+
+menu "Compression commands"
+
+config CMD_LZMADEC
+	bool "lzmadec"
+	select LZMA
+	help
+	  Support decompressing an LZMA (Lempel-Ziv-Markov chain algorithm)
+	  image from memory.
 
 config CMD_UNZIP
 	bool "unzip"
@@ -418,6 +514,57 @@ config CMD_DEMO
 	  devices are defined in the sandbox device tree, so the easiest
 	  option is to use sandbox and pass the -d point to sandbox's
 	  u-boot.dtb file.
+
+config CMD_IDE
+	bool "ide - Support for IDE drivers"
+	select IDE
+	help
+	  Provides an 'ide' command which allows accessing the IDE drive,
+	  reseting the IDE interface, printing the partition table and
+	  geting device info. It also enables the 'diskboot' command which
+	  permits booting from an IDE drive.
+
+config CMD_IO
+	bool "io - Support for performing I/O accesses"
+	help
+	  Provides an 'iod' command to display I/O space and an 'iow' command
+	  to write values to the I/O space. This can be useful for manually
+	  checking the state of devices during boot when debugging device
+	  drivers, etc.
+
+config CMD_IOTRACE
+	bool "iotrace - Support for tracing I/O activity"
+	help
+	  Provides an 'iotrace' command which supports recording I/O reads and
+	  writes in a trace buffer in memory . It also maintains a checksum
+	  of the trace records (even if space is exhausted) so that the
+	  sequence of I/O accesses can be verified.
+
+	  When debugging drivers it is useful to see what I/O accesses were
+	  done and in what order.
+
+	  Even if the individual accesses are of little interest it can be
+	  useful to verify that the access pattern is consistent each time
+	  an operation is performed. In this case a checksum can be used to
+	  characterise the operation of a driver. The checksum can be compared
+	  across different runs of the operation to verify that the driver is
+	  working properly.
+
+	  In particular, when performing major refactoring of the driver, where
+	  the access pattern should not change, the checksum provides assurance
+	  that the refactoring work has not broken the driver.
+
+	  This works by sneaking into the io.h heder for an architecture and
+	  redirecting I/O accesses through iotrace's tracing mechanism.
+
+	  For now no commands are provided to examine the trace buffer. The
+	  format is fairly simple, so 'md' is a reasonable substitute.
+
+	  Note: The checksum feature is only useful for I/O regions where the
+	  contents do not change outside of software control. Where this is not
+	  suitable you can fall back to manually comparing the addresses. It
+	  might be useful to enhance tracing to only checksum the accesses and
+	  not the data read/written.
 
 config CMD_LOADB
 	bool "loadb"
@@ -559,6 +706,48 @@ config CMD_FPGA
 	help
 	  FPGA support.
 
+config CMD_FPGA_LOADBP
+	bool "fpga loadbp - load partial bitstream (Xilinx only)"
+	depends on CMD_FPGA
+	help
+	  Supports loading an FPGA device from a bitstream buffer containing
+	  a partial bitstream.
+
+config CMD_FPGA_LOADFS
+	bool "fpga loadfs - load bitstream from FAT filesystem (Xilinx only)"
+	depends on CMD_FPGA
+	help
+	  Supports loading an FPGA device from a FAT filesystem.
+
+config CMD_FPGA_LOADMK
+	bool "fpga loadmk - load bitstream from image"
+	depends on CMD_FPGA
+	help
+	  Supports loading an FPGA device from a image generated by mkimage.
+
+config CMD_FPGA_LOADP
+	bool "fpga loadp - load partial bitstream"
+	depends on CMD_FPGA
+	help
+	  Supports loading an FPGA device from a bitstream buffer containing
+	  a partial bitstream.
+
+config CMD_FPGAD
+	bool "fpgad - dump FPGA registers"
+	help
+	  (legacy, needs conversion to driver model)
+	  Provides a way to dump FPGA registers by calling the board-specific
+	  fpga_get_reg() function. This functions similarly to the 'md'
+	  command.
+
+config CMD_FUSE
+	bool "fuse - support for the fuse subssystem"
+	help
+	  (deprecated - needs conversion to driver model)
+	  This allows reading, sensing, programming or overriding fuses
+	  which control the behaviour of the device. The command uses the
+	  fuse_...() API.
+
 config CMD_REMOTEPROC
 	bool "remoteproc"
 	depends on REMOTEPROC
@@ -569,6 +758,11 @@ config CMD_GPIO
 	bool "gpio"
 	help
 	  GPIO support.
+
+config CMD_FDC
+	bool "fdcboot - Boot from floppy device"
+	help
+	  The 'fdtboot' command allows booting an image from a floppy disk.
 
 endmenu
 
@@ -677,6 +871,14 @@ config CMD_LINK_LOCAL
 	help
 	  Acquire a network IP address using the link-local protocol
 
+config CMD_ETHSW
+	bool "ethsw"
+	help
+	  Allow control of L2 Ethernet switch commands. These are supported
+	  by the vsc9953 Ethernet driver at present. Sub-commands allow
+	  operations such as enabling / disabling a port and
+	  viewing/maintaining the filtering database (FDB)
+
 endmenu
 
 menu "Misc commands"
@@ -757,6 +959,14 @@ config CMD_TIME
 	help
 	  Run commands and summarize execution time.
 
+config CMD_GETTIME
+	bool "gettime - read elapsed time"
+	help
+	  Enable the 'gettime' command which reads the elapsed time since
+	  U-Boot started running. This shows the time in seconds and
+	  milliseconds. See also the 'bootstage' command which provides more
+	  flexibility for boot timing.
+
 # TODO: rename to CMD_SLEEP
 config CMD_MISC
 	bool "sleep"
@@ -768,16 +978,6 @@ config CMD_TIMER
 	bool "timer"
 	help
 	  Access the system timer.
-
-config CMD_SETGETDCR
-	bool "getdcr, setdcr, getidcr, setidcr"
-	depends on 4xx
-	default y
-	help
-	  getdcr - Get an AMCC PPC 4xx DCR's value
-	  setdcr - Set an AMCC PPC 4xx DCR's value
-	  getidcr - Get a register value via indirect DCR addressing
-	  setidcr - Set a register value via indirect DCR addressing
 
 config CMD_SOUND
 	bool "sound"
@@ -899,6 +1099,21 @@ config CMD_BLOB
 	  generation/use as key for cryptographic operation. Key
 	  modifier should be 16 byte long.
 
+config CMD_HASH
+	bool "Support 'hash' command"
+	select HASH
+	help
+	  This provides a way to hash data in memory using various supported
+	  algorithms (such as SHA1, MD5, CRC32). The computed digest can be
+	  saved to memory or to an environment variable. It is also possible
+	  to verify a hash against data in memory.
+
+config HASH_VERIFY
+	bool "hash -v"
+	depends on CMD_HASH
+	help
+	  Add -v option to verify data against a hash.
+
 config CMD_TPM
 	bool "Enable the 'tpm' command"
 	depends on TPM
@@ -973,6 +1188,7 @@ config CMD_EXT4_WRITE
 
 config CMD_FAT
 	bool "FAT command support"
+	select FS_FAT
 	help
 	  Support for the FAT fs
 
@@ -986,6 +1202,15 @@ config CMD_FS_UUID
 	bool "fsuuid command"
 	help
 	  Enables fsuuid command for filesystem UUID.
+
+config CMD_JFFS2
+	bool "jffs2 command"
+	select FS_JFFS2
+	help
+	  Enables commands to support the JFFS2 (Journalling Flash File System
+	  version 2) filesystem. This enables fsload, ls and fsinfo which
+	  provide the ability to load files, list directories and obtain
+	  filesystem information.
 
 config CMD_MTDPARTS
 	depends on ARCH_SUNXI
@@ -1024,6 +1249,23 @@ config CMD_DIAG
 	  called Power-on Self Tests (POST). The command allows listing of
 	  available tests and running either all the tests, or specific tests
 	  identified by name.
+
+config CMD_IRQ
+	bool "irq - Show information about interrupts"
+	depends on !ARM && !MIPS && !SH
+	help
+	  This enables two commands:
+
+	     interrupts - enable or disable interrupts
+	     irqinfo - print device-specific interrupt information
+
+config CMD_KGDB
+	bool "kgdb - Allow debugging of U-Boot with gdb"
+	help
+	  This enables a 'kgdb' command which allows gdb to connect to U-Boot
+	  over a serial link for debugging purposes. This allows
+	  single-stepping, inspecting variables, etc. This is supported only
+	  on PowerPC at present.
 
 endmenu
 

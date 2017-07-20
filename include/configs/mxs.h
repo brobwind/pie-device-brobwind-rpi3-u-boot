@@ -126,16 +126,6 @@
 #endif
 #endif
 
-/* I2C */
-#ifdef CONFIG_CMD_I2C
-#define CONFIG_SYS_I2C
-#define CONFIG_SYS_I2C_MXS
-#define CONFIG_HARD_I2C
-#ifndef CONFIG_SYS_I2C_SPEED
-#define CONFIG_SYS_I2C_SPEED		400000
-#endif
-#endif
-
 /* LCD */
 #ifdef CONFIG_VIDEO
 #define CONFIG_VIDEO_MXS
@@ -168,7 +158,6 @@
 
 /* USB */
 #ifdef CONFIG_CMD_USB
-#define CONFIG_USB_EHCI
 #define CONFIG_USB_EHCI_MXS
 #define CONFIG_EHCI_IS_TDI
 #endif

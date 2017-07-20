@@ -16,9 +16,6 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-/* High Level Configuration Options */
-#define CONFIG_OMAP			/* in a TI OMAP core */
-
 #define CONFIG_MACH_TYPE		MACH_TYPE_TRICORDER
 /*
  * 1MB into the SDRAM to allow for SPL's bss at the beginning of SDRAM
@@ -49,14 +46,6 @@
 
 /* Hardware drivers */
 
-/* GPIO support */
-#define CONFIG_OMAP_GPIO
-
-/* GPIO banks */
-#define CONFIG_OMAP3_GPIO_2		/* GPIO32..63 are in GPIO bank 2 */
-
-/* LED support */
-
 /* NS16550 Configuration */
 #define CONFIG_SYS_NS16550_SERIAL
 #define CONFIG_SYS_NS16550_REG_SIZE	(-4)
@@ -77,12 +66,10 @@
  
 
 /* EEPROM */
-#define CONFIG_CMD_EEPROM
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN	2
 #define CONFIG_SYS_EEPROM_BUS_NUM	1
 
 /* TWL4030 */
-#define CONFIG_TWL4030_POWER
 #define CONFIG_TWL4030_LED
 
 /* Board NAND Info */
@@ -116,8 +103,6 @@
 #define CONFIG_CMD_NAND_LOCK_UNLOCK	/* nand (un)lock commands */
 #define CONFIG_CMD_UBIFS		/* UBIFS commands */
 #define CONFIG_LZO			/* LZO is needed for UBIFS */
-
-#undef CONFIG_CMD_JFFS2			/* JFFS2 Support */
 
 /* needed for ubi */
 #define CONFIG_RBTREE
@@ -285,7 +270,6 @@
 #define CONFIG_SPL_FRAMEWORK
 #define CONFIG_SPL_NAND_SIMPLE
 
-#define CONFIG_SPL_BOARD_INIT
 #define CONFIG_SPL_NAND_BASE
 #define CONFIG_SPL_NAND_DRIVERS
 #define CONFIG_SPL_NAND_ECC

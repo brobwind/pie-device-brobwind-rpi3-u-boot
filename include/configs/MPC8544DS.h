@@ -326,13 +326,13 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
  * Environment
  */
 #define CONFIG_ENV_IS_IN_FLASH	1
+#define CONFIG_ENV_SECT_SIZE	0x10000 /* 64K (one sector) */
 #if CONFIG_SYS_MONITOR_BASE > 0xfff80000
 #define CONFIG_ENV_ADDR		0xfff80000
 #else
-#define CONFIG_ENV_ADDR		(CONFIG_SYS_MONITOR_BASE + 0x70000)
+#define CONFIG_ENV_ADDR		(CONFIG_SYS_MONITOR_BASE - CONFIG_ENV_SECT_SIZE)
 #endif
 #define CONFIG_ENV_SIZE		0x2000
-#define CONFIG_ENV_SECT_SIZE	0x10000 /* 64K (one sector) */
 
 #define CONFIG_LOADS_ECHO	1	/* echo on for serial download */
 #define CONFIG_SYS_LOADS_BAUD_CHANGE	1	/* allow baudrate change */
@@ -348,7 +348,6 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 /*
  * Command line configuration.
  */
-#define CONFIG_CMD_IRQ
 #define CONFIG_CMD_REGINFO
 
 #if defined(CONFIG_PCI)
@@ -359,9 +358,8 @@ extern unsigned long get_board_sys_clk(unsigned long dummy);
 /*
  * USB
  */
-#define CONFIG_USB_EHCI
 
-#ifdef CONFIG_USB_EHCI
+#ifdef CONFIG_USB_EHCI_HCD
 #define CONFIG_USB_EHCI_PCI
 #define CONFIG_EHCI_HCD_INIT_AFTER_RESET
 #define CONFIG_PCI_EHCI_DEVICE			0

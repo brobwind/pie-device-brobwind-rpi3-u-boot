@@ -20,9 +20,7 @@
 
 #define MAX_LEVEL	32		/* how deeply nested we will go */
 #define SCRATCHPAD	1024		/* bytes of scratchpad memory */
-#ifndef CONFIG_CMD_FDT_MAX_DUMP
-#define CONFIG_CMD_FDT_MAX_DUMP 64
-#endif
+#define CMD_FDT_MAX_DUMP 64
 
 /*
  * Global data (for the gd->bd)
@@ -259,6 +257,7 @@ static int do_fdt(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 		char *prop;		/* property */
 		int  nodeoffset;	/* node offset from libfdt */
 		static char data[SCRATCHPAD];	/* storage for the property */
+		const void *ptmp;
 		int  len;		/* new length of the property */
 		int  ret;		/* return value */
 
@@ -270,13 +269,6 @@ static int do_fdt(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 
 		pathp  = argv[2];
 		prop   = argv[3];
-		if (argc == 4) {
-			len = 0;
-		} else {
-			ret = fdt_parse_prop(&argv[4], argc - 4, data, &len);
-			if (ret != 0)
-				return ret;
-		}
 
 		nodeoffset = fdt_path_offset (working_fdt, pathp);
 		if (nodeoffset < 0) {
@@ -286,6 +278,21 @@ static int do_fdt(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 			printf ("libfdt fdt_path_offset() returned %s\n",
 				fdt_strerror(nodeoffset));
 			return 1;
+		}
+
+		if (argc == 4) {
+			len = 0;
+		} else {
+			ptmp = fdt_getprop(working_fdt, nodeoffset, prop, &len);
+			if (len > SCRATCHPAD) {
+				printf("prop (%d) doesn't fit in scratchpad!\n",
+				       len);
+				return 1;
+			}
+			memcpy(data, ptmp, len);
+			ret = fdt_parse_prop(&argv[4], argc - 4, data, &len);
+			if (ret != 0)
+				return ret;
 		}
 
 		ret = fdt_setprop(working_fdt, nodeoffset, prop, data, len);
@@ -373,7 +380,7 @@ static int do_fdt(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 				/* no property value */
 				setenv(var, "");
 				return 0;
-			} else if (len > 0) {
+			} else if (nodep && len > 0) {
 				if (subcmd[0] == 'v') {
 					int ret;
 
@@ -768,7 +775,11 @@ static int fdt_parse_prop(char * const *newval, int count, char *data, int *len)
 
 			cp = newp;
 			tmp = simple_strtoul(cp, &newp, 0);
-			*(fdt32_t *)data = cpu_to_fdt32(tmp);
+			if (*cp != '?')
+				*(fdt32_t *)data = cpu_to_fdt32(tmp);
+			else
+				newp++;
+
 			data  += 4;
 			*len += 4;
 
@@ -901,7 +912,7 @@ static void print_data(const void *data, int len)
 	}
 
 	if ((len %4) == 0) {
-		if (len > CONFIG_CMD_FDT_MAX_DUMP)
+		if (len > CMD_FDT_MAX_DUMP)
 			printf("* 0x%p [0x%08x]", data, len);
 		else {
 			const __be32 *p;
@@ -913,7 +924,7 @@ static void print_data(const void *data, int len)
 			printf(">");
 		}
 	} else { /* anything else... hexdump */
-		if (len > CONFIG_CMD_FDT_MAX_DUMP)
+		if (len > CMD_FDT_MAX_DUMP)
 			printf("* 0x%p [0x%08x]", data, len);
 		else {
 			const u8 *s;
@@ -964,7 +975,7 @@ static int fdt_print(const char *pathp, char *prop, int depth)
 			/* no property value */
 			printf("%s %s\n", pathp, prop);
 			return 0;
-		} else if (len > 0) {
+		} else if (nodep && len > 0) {
 			printf("%s = ", prop);
 			print_data (nodep, len);
 			printf("\n");

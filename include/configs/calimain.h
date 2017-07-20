@@ -176,7 +176,6 @@
  * Network & Ethernet Configuration
  */
 #ifdef CONFIG_DRIVER_TI_EMAC
-#define CONFIG_EMAC_MDIO_PHY_NUM	1
 #define CONFIG_MII
 #define CONFIG_BOOTP_DNS
 #define CONFIG_BOOTP_DNS2
@@ -197,7 +196,6 @@
 #define CONFIG_AUTO_COMPLETE
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_SYS_LONGHELP
-#define CONFIG_CRC32_VERIFY
 #define CONFIG_MX_CYCLIC
 
 /*
@@ -300,7 +298,6 @@
 /*
  * U-Boot commands
  */
-#define CONFIG_CMD_ENV
 #define CONFIG_CMD_SAVES
 
 #ifndef CONFIG_DRIVER_TI_EMAC
@@ -318,5 +315,7 @@
 #ifndef __ASSEMBLY__
 int calimain_get_osc_freq(void);
 #endif
+
+#include <asm/arch/hardware.h>
 
 #endif /* __CONFIG_H */

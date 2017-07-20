@@ -223,7 +223,7 @@ static int vf_usb_ofdata_to_platdata(struct udevice *dev)
 
 	priv->portnr = dev->seq;
 
-	priv->ehci = (struct usb_ehci *)dev_get_addr(dev);
+	priv->ehci = (struct usb_ehci *)devfdt_get_addr(dev);
 	mode = fdt_getprop(dt_blob, node, "dr_mode", NULL);
 	if (mode) {
 		if (0 == strcmp(mode, "host")) {
@@ -252,8 +252,9 @@ static int vf_usb_ofdata_to_platdata(struct udevice *dev)
 	}
 
 	if (priv->dr_mode == DR_MODE_OTG) {
-		gpio_request_by_name_nodev(dt_blob, node, "fsl,cdet-gpio", 0,
-					   &priv->cdet_gpio, GPIOD_IS_IN);
+		gpio_request_by_name_nodev(offset_to_ofnode(node),
+					   "fsl,cdet-gpio", 0, &priv->cdet_gpio,
+					   GPIOD_IS_IN);
 		if (dm_gpio_is_valid(&priv->cdet_gpio)) {
 			if (dm_gpio_get_value(&priv->cdet_gpio))
 				priv->init_type = USB_INIT_DEVICE;

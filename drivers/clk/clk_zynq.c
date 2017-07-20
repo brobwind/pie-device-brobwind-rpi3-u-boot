@@ -459,14 +459,14 @@ static int zynq_clk_probe(struct udevice *dev)
 	for (i = 0; i < 2; i++) {
 		sprintf(name, "gem%d_emio_clk", i);
 		ret = clk_get_by_name(dev, name, &priv->gem_emio_clk[i]);
-		if (ret < 0 && ret != -FDT_ERR_NOTFOUND) {
+		if (ret < 0 && ret != -ENODATA) {
 			dev_err(dev, "failed to get %s clock\n", name);
 			return ret;
 		}
 	}
 #endif
 
-	priv->ps_clk_freq = fdtdec_get_uint(gd->fdt_blob, dev->of_offset,
+	priv->ps_clk_freq = fdtdec_get_uint(gd->fdt_blob, dev_of_offset(dev),
 					    "ps-clk-frequency", 33333333UL);
 
 	return 0;

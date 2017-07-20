@@ -525,8 +525,7 @@ int i2c_get_chip_for_busnum(int busnum, int chip_addr, uint offset_len,
  * @node:	Node offset to read from
  * @spi:	Place to put the decoded information
  */
-int i2c_chip_ofdata_to_platdata(const void *blob, int node,
-				struct dm_i2c_chip *chip);
+int i2c_chip_ofdata_to_platdata(struct udevice *dev, struct dm_i2c_chip *chip);
 
 /**
  * i2c_dump_msgs() - Dump a list of I2C messages
@@ -570,9 +569,6 @@ void i2c_dump_msgs(struct i2c_msg *msg, int nmsgs);
 /* define the I2C bus number for RTC and DTT if not already done */
 #if !defined(CONFIG_SYS_RTC_BUS_NUM)
 #define CONFIG_SYS_RTC_BUS_NUM		0
-#endif
-#if !defined(CONFIG_SYS_DTT_BUS_NUM)
-#define CONFIG_SYS_DTT_BUS_NUM		0
 #endif
 #if !defined(CONFIG_SYS_SPD_BUS_NUM)
 #define CONFIG_SYS_SPD_BUS_NUM		0
@@ -664,27 +660,13 @@ extern struct i2c_bus_hose	i2c_bus[];
 #endif
 
 #ifndef I2C_SOFT_DECLARATIONS
-# if defined(CONFIG_MPC8260)
-#  define I2C_SOFT_DECLARATIONS volatile ioport_t *iop = ioport_addr((immap_t *)CONFIG_SYS_IMMR, I2C_PORT);
-# elif defined(CONFIG_8xx)
-#  define I2C_SOFT_DECLARATIONS	volatile immap_t *immr = (immap_t *)CONFIG_SYS_IMMR;
-
-# elif (defined(CONFIG_AT91RM9200) || \
+# if (defined(CONFIG_AT91RM9200) || \
 	defined(CONFIG_AT91SAM9260) ||  defined(CONFIG_AT91SAM9261) || \
 	defined(CONFIG_AT91SAM9263))
 #  define I2C_SOFT_DECLARATIONS	at91_pio_t *pio	= (at91_pio_t *) ATMEL_BASE_PIOA;
 # else
 #  define I2C_SOFT_DECLARATIONS
 # endif
-#endif
-
-#ifdef CONFIG_8xx
-/* Set default value for the I2C bus speed on 8xx. In the
- * future, we'll define these in all 8xx board config files.
- */
-#ifndef	CONFIG_SYS_I2C_SPEED
-#define	CONFIG_SYS_I2C_SPEED	50000
-#endif
 #endif
 
 /*
@@ -706,9 +688,6 @@ void i2c_early_init_f(void);
 #endif
 void i2c_init(int speed, int slaveaddr);
 void i2c_init_board(void);
-#ifdef CONFIG_SYS_I2C_BOARD_LATE_INIT
-void i2c_board_late_init(void);
-#endif
 
 #ifdef CONFIG_SYS_I2C
 /*
@@ -821,11 +800,6 @@ static inline u8 i2c_reg_read(u8 addr, u8 reg)
 {
 	u8 buf;
 
-#ifdef CONFIG_8xx
-	/* MPC8xx needs this.  Maybe one day we can get rid of it. */
-	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
-#endif
-
 #ifdef DEBUG
 	printf("%s: addr=0x%02x, reg=0x%02x\n", __func__, addr, reg);
 #endif
@@ -837,11 +811,6 @@ static inline u8 i2c_reg_read(u8 addr, u8 reg)
 
 static inline void i2c_reg_write(u8 addr, u8 reg, u8 val)
 {
-#ifdef CONFIG_8xx
-	/* MPC8xx needs this.  Maybe one day we can get rid of it. */
-	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
-#endif
-
 #ifdef DEBUG
 	printf("%s: addr=0x%02x, reg=0x%02x, val=0x%02x\n",
 	       __func__, addr, reg, val);
