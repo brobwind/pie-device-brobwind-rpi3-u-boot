@@ -36,16 +36,8 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-#define CONTROL_WKUP_CTRL	0x48002a5c
-#define GPIO_IO_PWRDNZ	(1 << 6)
-#define PBIASLITEVMODE1	(1 << 8)
-
-/*
- * two dimensional array of strucures containining board name and Linux
- * machine IDs; row it selected based on CPU column is slected based
- * on hsusb0_data5 pin having a pulldown resistor
- */
-
+/* This is only needed until SPL gets OF support */
+#ifdef CONFIG_SPL_BUILD
 static const struct ns16550_platdata omap3logic_serial = {
 	.base = OMAP34XX_UART1,
 	.reg_shift = 2,
@@ -57,7 +49,13 @@ U_BOOT_DEVICE(omap3logic_uart) = {
 	"ns16550_serial",
 	&omap3logic_serial
 };
+#endif
 
+/*
+ * two dimensional array of strucures containining board name and Linux
+ * machine IDs; row it selected based on CPU column is slected based
+ * on hsusb0_data5 pin having a pulldown resistor
+ */
 static struct board_id {
 	char *name;
 	int machine_id;
@@ -231,14 +229,14 @@ int board_late_init(void)
 }
 #endif
 
-#if defined(CONFIG_GENERIC_MMC)
+#if defined(CONFIG_MMC)
 int board_mmc_init(bd_t *bis)
 {
 	return omap_mmc_init(0, 0, 0, -1, -1);
 }
 #endif
 
-#if defined(CONFIG_GENERIC_MMC)
+#if defined(CONFIG_MMC)
 void board_mmc_power_init(void)
 {
 	twl4030_power_mmc_init(0);

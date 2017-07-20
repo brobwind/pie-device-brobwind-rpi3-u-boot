@@ -4,6 +4,14 @@ menu "mpc85xx CPU"
 config SYS_CPU
 	default "mpc85xx"
 
+config CMD_ERRATA
+	bool "Enable the 'errata' command"
+	depends on MPC85xx
+	default y
+	help
+	  This enables the 'errata' command which displays a list of errata
+	  work-arounds which are enabled for the current board.
+
 choice
 	prompt "Target select"
 	optional
@@ -80,10 +88,6 @@ config TARGET_MPC8536DS
 # Use DDR3 controller with DDR2 DIMMs on this board
 	select SYS_FSL_DDRC_GEN3
 
-config TARGET_MPC8540ADS
-	bool "Support MPC8540ADS"
-	select ARCH_MPC8540
-
 config TARGET_MPC8541CDS
 	bool "Support MPC8541CDS"
 	select ARCH_MPC8541
@@ -99,10 +103,6 @@ config TARGET_MPC8548CDS
 config TARGET_MPC8555CDS
 	bool "Support MPC8555CDS"
 	select ARCH_MPC8555
-
-config TARGET_MPC8560ADS
-	bool "Support MPC8560ADS"
-	select ARCH_MPC8560
 
 config TARGET_MPC8568MDS
 	bool "Support MPC8568MDS"
@@ -124,6 +124,7 @@ config TARGET_P1010RDB_PA
 	select BOARD_LATE_INIT if CHAIN_OF_TRUST
 	select SUPPORT_SPL
 	select SUPPORT_TPL
+	imply CMD_EEPROM
 
 config TARGET_P1010RDB_PB
 	bool "Support P1010RDB_PB"
@@ -131,6 +132,7 @@ config TARGET_P1010RDB_PB
 	select BOARD_LATE_INIT if CHAIN_OF_TRUST
 	select SUPPORT_SPL
 	select SUPPORT_TPL
+	imply CMD_EEPROM
 
 config TARGET_P1022DS
 	bool "Support P1022DS"
@@ -141,54 +143,63 @@ config TARGET_P1022DS
 config TARGET_P1023RDB
 	bool "Support P1023RDB"
 	select ARCH_P1023
+	imply CMD_EEPROM
 
 config TARGET_P1020MBG
 	bool "Support P1020MBG-PC"
 	select SUPPORT_SPL
 	select SUPPORT_TPL
 	select ARCH_P1020
+	imply CMD_EEPROM
 
 config TARGET_P1020RDB_PC
 	bool "Support P1020RDB-PC"
 	select SUPPORT_SPL
 	select SUPPORT_TPL
 	select ARCH_P1020
+	imply CMD_EEPROM
 
 config TARGET_P1020RDB_PD
 	bool "Support P1020RDB-PD"
 	select SUPPORT_SPL
 	select SUPPORT_TPL
 	select ARCH_P1020
+	imply CMD_EEPROM
 
 config TARGET_P1020UTM
 	bool "Support P1020UTM"
 	select SUPPORT_SPL
 	select SUPPORT_TPL
 	select ARCH_P1020
+	imply CMD_EEPROM
 
 config TARGET_P1021RDB
 	bool "Support P1021RDB"
 	select SUPPORT_SPL
 	select SUPPORT_TPL
 	select ARCH_P1021
+	imply CMD_EEPROM
 
 config TARGET_P1024RDB
 	bool "Support P1024RDB"
 	select SUPPORT_SPL
 	select SUPPORT_TPL
 	select ARCH_P1024
+	imply CMD_EEPROM
 
 config TARGET_P1025RDB
 	bool "Support P1025RDB"
 	select SUPPORT_SPL
 	select SUPPORT_TPL
 	select ARCH_P1025
+	imply CMD_EEPROM
 
 config TARGET_P2020RDB
 	bool "Support P2020RDB-PC"
 	select SUPPORT_SPL
 	select SUPPORT_TPL
 	select ARCH_P2020
+	imply CMD_EEPROM
 
 config TARGET_P1_TWR
 	bool "Support p1_twr"
@@ -211,6 +222,7 @@ config TARGET_T1024QDS
 	select BOARD_LATE_INIT if CHAIN_OF_TRUST
 	select SUPPORT_SPL
 	select PHYS_64BIT
+	imply CMD_EEPROM
 
 config TARGET_T1023RDB
 	bool "Support T1023RDB"
@@ -218,6 +230,7 @@ config TARGET_T1023RDB
 	select BOARD_LATE_INIT if CHAIN_OF_TRUST
 	select SUPPORT_SPL
 	select PHYS_64BIT
+	imply CMD_EEPROM
 
 config TARGET_T1024RDB
 	bool "Support T1024RDB"
@@ -225,12 +238,14 @@ config TARGET_T1024RDB
 	select BOARD_LATE_INIT if CHAIN_OF_TRUST
 	select SUPPORT_SPL
 	select PHYS_64BIT
+	imply CMD_EEPROM
 
 config TARGET_T1040QDS
 	bool "Support T1040QDS"
 	select ARCH_T1040
 	select BOARD_LATE_INIT if CHAIN_OF_TRUST
 	select PHYS_64BIT
+	imply CMD_EEPROM
 
 config TARGET_T1040RDB
 	bool "Support T1040RDB"
@@ -377,6 +392,7 @@ config ARCH_B4420
 	select SYS_FSL_SEC_COMPAT_4
 	select SYS_PPC64
 	select FSL_IFC
+	imply CMD_EEPROM
 
 config ARCH_B4860
 	bool
@@ -402,6 +418,7 @@ config ARCH_B4860
 	select SYS_FSL_SEC_COMPAT_4
 	select SYS_PPC64
 	select FSL_IFC
+	imply CMD_EEPROM
 
 config ARCH_BSC9131
 	bool
@@ -415,6 +432,7 @@ config ARCH_BSC9131
 	select SYS_FSL_SEC_BE
 	select SYS_FSL_SEC_COMPAT_4
 	select FSL_IFC
+	imply CMD_EEPROM
 
 config ARCH_BSC9132
 	bool
@@ -432,6 +450,7 @@ config ARCH_BSC9132
 	select SYS_FSL_SEC_COMPAT_4
 	select SYS_PPC_E500_USE_DEBUG_TLB
 	select FSL_IFC
+	imply CMD_EEPROM
 
 config ARCH_C29X
 	bool
@@ -565,6 +584,7 @@ config ARCH_P1010
 	select SYS_FSL_SEC_COMPAT_4
 	select SYS_PPC_E500_USE_DEBUG_TLB
 	select FSL_IFC
+	imply CMD_EEPROM
 
 config ARCH_P1011
 	bool
@@ -649,6 +669,7 @@ config ARCH_P1024
 	select SYS_FSL_SEC_COMPAT_2
 	select SYS_PPC_E500_USE_DEBUG_TLB
 	select FSL_ELBC
+	imply CMD_EEPROM
 
 config ARCH_P1025
 	bool
@@ -678,6 +699,7 @@ config ARCH_P2020
 	select SYS_FSL_SEC_COMPAT_2
 	select SYS_PPC_E500_USE_DEBUG_TLB
 	select FSL_ELBC
+	imply CMD_EEPROM
 
 config ARCH_P2041
 	bool
@@ -821,6 +843,7 @@ config ARCH_T1023
 	select SYS_FSL_SEC_BE
 	select SYS_FSL_SEC_COMPAT_5
 	select FSL_IFC
+	imply CMD_EEPROM
 
 config ARCH_T1024
 	bool
@@ -838,6 +861,7 @@ config ARCH_T1024
 	select SYS_FSL_SEC_BE
 	select SYS_FSL_SEC_COMPAT_5
 	select FSL_IFC
+	imply CMD_EEPROM
 
 config ARCH_T1040
 	bool
@@ -1363,12 +1387,10 @@ source "board/freescale/bsc9132qds/Kconfig"
 source "board/freescale/c29xpcie/Kconfig"
 source "board/freescale/corenet_ds/Kconfig"
 source "board/freescale/mpc8536ds/Kconfig"
-source "board/freescale/mpc8540ads/Kconfig"
 source "board/freescale/mpc8541cds/Kconfig"
 source "board/freescale/mpc8544ds/Kconfig"
 source "board/freescale/mpc8548cds/Kconfig"
 source "board/freescale/mpc8555cds/Kconfig"
-source "board/freescale/mpc8560ads/Kconfig"
 source "board/freescale/mpc8568mds/Kconfig"
 source "board/freescale/mpc8569mds/Kconfig"
 source "board/freescale/mpc8572ds/Kconfig"

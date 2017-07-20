@@ -114,6 +114,15 @@ config SYS_I2C_DW_ENABLE_STATUS_UNSUPPORTED
 	  enable status register. This config option can be enabled in such
 	  cases.
 
+config SYS_I2C_ASPEED
+	bool "Aspeed I2C Controller"
+	depends on DM_I2C && ARCH_ASPEED
+	help
+	  Say yes here to select Aspeed I2C Host Controller. The driver
+	  supports AST2500 and AST2400 controllers, but is very limited.
+	  Only single master mode is supported and only byte-by-byte
+	  synchronous reads and writes are supported, no Pool Buffers or DMA.
+
 config SYS_I2C_INTEL
 	bool "Intel I2C/SMBUS driver"
 	depends on DM_I2C
@@ -125,7 +134,6 @@ config SYS_I2C_INTEL
 
 config SYS_I2C_IMX_LPI2C
 	bool "NXP i.MX LPI2C driver"
-	depends on ARCH_MX7ULP
 	help
 	  Add support for the NXP i.MX LPI2C driver.
 

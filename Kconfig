@@ -145,6 +145,7 @@ menu "Boot images"
 config FIT
 	bool "Support Flattened Image Tree"
 	select MD5
+	select SHA1
 	help
 	  This option allows you to boot the new uImage structure,
 	  Flattened Image Tree.  FIT is formally a FDT, which can include
@@ -156,6 +157,20 @@ config FIT
 	  verified boot (secure boot using RSA).
 
 if FIT
+
+config FIT_ENABLE_SHA256_SUPPORT
+	bool "Support SHA256 checksum of FIT image contents"
+	select SHA256
+	default y
+	help
+	  Enable this to support SHA256 checksum of FIT image contents. A
+	  SHA256 checksum is a 256-bit (32-byte) hash value used to check that
+	  the image contents have not been corrupted. SHA256 is recommended
+	  for use in secure applications since (as at 2016) there is no known
+	  feasible attack that could produce a 'collision' with differing
+	  input data. Use this for the highest security. Note that only the
+	  SHA256 variant is supported: SHA512 and others are not currently
+	  supported in U-Boot.
 
 config FIT_SIGNATURE
 	bool "Enable signature verification of FIT uImages"
@@ -205,18 +220,22 @@ config FIT_IMAGE_POST_PROCESS
 	  injected into the FIT creation (i.e. the blobs would have been pre-
 	  processed before being added to the FIT image).
 
+if SPL
+
 config SPL_FIT
 	bool "Support Flattened Image Tree within SPL"
 	depends on SPL
+	select SPL_OF_LIBFDT
 
 config SPL_FIT_SIGNATURE
 	bool "Enable signature verification of FIT firmware within SPL"
-	depends on SPL_FIT
 	depends on SPL_DM
+	select SPL_FIT
 	select SPL_RSA
 
 config SPL_LOAD_FIT
 	bool "Enable SPL loading U-Boot as a FIT"
+	select SPL_FIT
 	help
 	  Normally with the SPL framework a legacy image is generated as part
 	  of the build. This contains U-Boot along with information as to
@@ -238,6 +257,26 @@ config SPL_FIT_IMAGE_POST_PROCESS
 	  need to be comprehended in how the images were prepared before being
 	  injected into the FIT creation (i.e. the blobs would have been pre-
 	  processed before being added to the FIT image).
+
+config SPL_FIT_SOURCE
+	string ".its source file for U-Boot FIT image"
+	depends on SPL_FIT
+	help
+	  Specifies a (platform specific) FIT source file to generate the
+	  U-Boot FIT image. This could specify further image to load and/or
+	  execute.
+
+config SPL_FIT_GENERATOR
+	string ".its file generator script for U-Boot FIT image"
+	depends on SPL_FIT
+	default "board/sunxi/mksunxi_fit_atf.sh" if SPL_LOAD_FIT && ARCH_SUNXI
+	help
+	  Specifies a (platform specific) script file to generate the FIT
+	  source file used to build the U-Boot FIT image file. This gets
+	  passed a list of supported device tree file stub names to
+	  include in the generated image.
+
+endif # SPL
 
 endif # FIT
 

@@ -22,8 +22,6 @@
 /*
  * High Level Configuration Options
  */
-#define CONFIG_OMAP	/* in a TI OMAP core */
-#define CONFIG_OMAP_GPIO
 #define CONFIG_CM_T3X	/* working with CM-T35 and CM-T3730 */
 
 #define CONFIG_SDRC	/* The chip has SDRC controller */
@@ -77,8 +75,6 @@
 
 /* USB */
 #define CONFIG_USB_OMAP3
-#define CONFIG_USB_EHCI
-#define CONFIG_USB_EHCI_OMAP
 #define CONFIG_USB_MUSB_UDC
 #define CONFIG_TWL4030_USB
 
@@ -109,7 +105,6 @@
 /*
  * TWL4030
  */
-#define CONFIG_TWL4030_POWER
 #define CONFIG_TWL4030_LED
 
 /*
@@ -249,14 +244,7 @@
 
 #define CONFIG_SPLASHIMAGE_GUARD
 
-/* GPIO banks */
-#ifdef CONFIG_LED_STATUS
-#define CONFIG_OMAP3_GPIO_6	/* GPIO186 is in GPIO bank 6  */
-#endif
-
 /* Display Configuration */
-#define CONFIG_OMAP3_GPIO_2
-#define CONFIG_OMAP3_GPIO_5
 #define CONFIG_VIDEO_OMAP3
 #define LCD_BPP		LCD_COLOR16
 
@@ -274,7 +262,6 @@
 #define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION	1
 #define CONFIG_SPL_FS_LOAD_PAYLOAD_NAME	"u-boot.img"
 
-#define CONFIG_SPL_BOARD_INIT
 #define CONFIG_SPL_NAND_BASE
 #define CONFIG_SPL_NAND_DRIVERS
 #define CONFIG_SPL_NAND_ECC
@@ -318,14 +305,10 @@
 #define CONFIG_SYS_SPL_MALLOC_SIZE	0x100000
 
 /* EEPROM */
-#define CONFIG_CMD_EEPROM
 #define CONFIG_ENV_EEPROM_IS_ON_I2C
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN		1
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	4
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS	5
 #define CONFIG_SYS_EEPROM_SIZE			256
-
-#define CONFIG_CMD_EEPROM_LAYOUT
-#define CONFIG_EEPROM_LAYOUT_HELP_STRING "legacy, v1, v2, v3"
 
 #endif /* __CONFIG_H */

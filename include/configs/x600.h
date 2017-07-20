@@ -100,15 +100,12 @@
 #define CONFIG_FPGA_COUNT	1
 
 /* USB EHCI options */
-#define CONFIG_USB_EHCI
 #define CONFIG_USB_EHCI_SPEAR
 #define CONFIG_USB_MAX_CONTROLLER_COUNT	2
 
 /*
  * Command support defines
  */
-#define CONFIG_CMD_ENV
-#define CONFIG_CMD_FPGA_LOADMK
 #define CONFIG_CMD_MTDPARTS
 #define CONFIG_CMD_NAND
 #define CONFIG_CMD_SAVES

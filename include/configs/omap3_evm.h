@@ -25,8 +25,6 @@
  * ----------------------------------------------------------------------------
  */
 
-#define CONFIG_CMD_JFFS2
-
 #define CONFIG_CMD_NAND
 
 /* ----------------------------------------------------------------------------
@@ -83,13 +81,8 @@
 /*
  * High level configuration options
  */
-#define CONFIG_OMAP			/* This is TI OMAP core */
-#define CONFIG_OMAP_GPIO
 
 #define CONFIG_SDRC			/* The chip has SDRC controller */
-
-#define CONFIG_OMAP3_EVM		/* This is a OMAP3 EVM */
-#define CONFIG_TWL4030_POWER		/* with TWL4030 PMIC */
 
 /*
  * Clock related definitions
@@ -322,7 +315,6 @@
 #define CONFIG_SPL_BSS_START_ADDR	0x80000000
 #define CONFIG_SPL_BSS_MAX_SIZE		0x80000		/* 512 KB */
 
-#define CONFIG_SPL_BOARD_INIT
 #define CONFIG_SPL_OMAP3_ID_NAND
 #define CONFIG_SPL_LDSCRIPT		"arch/arm/mach-omap2/u-boot-spl.lds"
 

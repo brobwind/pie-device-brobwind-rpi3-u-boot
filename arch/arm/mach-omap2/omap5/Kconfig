@@ -1,11 +1,17 @@
 if OMAP54XX
 
+config DRA7XX
+	bool
+	help
+	  DRA7xx is an OMAP based SOC with Dual Core A-15s.
+
 choice
 	prompt "OMAP5 board select"
 	optional
 
 config TARGET_CL_SOM_AM57X
 	bool "CompuLab CL-SOM-AM57x"
+	select DRA7XX
 
 config TARGET_CM_T54
 	bool "CompuLab CM-T54"
@@ -16,12 +22,14 @@ config TARGET_OMAP5_UEVM
 config TARGET_DRA7XX_EVM
 	bool "TI DRA7XX"
 	select BOARD_LATE_INIT
+	select DRA7XX
 	select TI_I2C_BOARD_DETECT
 	select PHYS_64BIT
 
 config TARGET_AM57XX_EVM
 	bool "AM57XX"
 	select BOARD_LATE_INIT
+	select DRA7XX
 	select TI_I2C_BOARD_DETECT
 
 endchoice
@@ -54,6 +62,23 @@ config TI_SECURE_EMIF_PROTECTED_REGION_SIZE
 	  reserved EMIF region set aside for secure OS needs that will  be protected
 	  using hardware memory firewalls. This value must be smaller than the
 	  TI_SECURE_EMIF_TOTAL_REGION_SIZE value.
+
+config OMAP_PLATFORM_RESET_TIME_MAX_USEC
+	int "Something"
+	range 0  31219
+	default 31219
+	help
+	  Most OMAPs' provide a way to specify the time for which the reset
+	  should be held low while the voltages and Oscillator outputs
+	  stabilize.
+	  This time is mostly board and PMIC dependent. Hence the boards are
+	  expected to specify a pre-computed time using the above option.
+	  This value can be computed using a summation of the below 3
+	  parameters
+	  1: Time taken by the Osciallator to stop and restart
+	  2: PMIC OTP time
+	  3: Voltage ramp time, which can be derived using the PMIC slew rate
+	     and value of voltage ramp needed.
 
 if TARGET_DRA7XX_EVM || TARGET_AM57XX_EVM
 menu "Voltage Domain OPP selections"

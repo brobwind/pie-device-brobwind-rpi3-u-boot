@@ -363,7 +363,7 @@ int blk_next_device(struct udevice **devp)
 	} while (1);
 }
 
-int blk_get_device(int if_type, int devnum, struct udevice **devp)
+int blk_find_device(int if_type, int devnum, struct udevice **devp)
 {
 	struct uclass *uc;
 	struct udevice *dev;
@@ -379,11 +379,22 @@ int blk_get_device(int if_type, int devnum, struct udevice **devp)
 		      if_type, devnum, dev->name, desc->if_type, desc->devnum);
 		if (desc->if_type == if_type && desc->devnum == devnum) {
 			*devp = dev;
-			return device_probe(dev);
+			return 0;
 		}
 	}
 
 	return -ENODEV;
+}
+
+int blk_get_device(int if_type, int devnum, struct udevice **devp)
+{
+	int ret;
+
+	ret = blk_find_device(if_type, devnum, devp);
+	if (ret)
+		return ret;
+
+	return device_probe(*devp);
 }
 
 unsigned long blk_dread(struct blk_desc *block_dev, lbaint_t start,
@@ -442,6 +453,32 @@ int blk_prepare_device(struct udevice *dev)
 	return 0;
 }
 
+int blk_get_from_parent(struct udevice *parent, struct udevice **devp)
+{
+	struct udevice *dev;
+	enum uclass_id id;
+	int ret;
+
+	device_find_first_child(parent, &dev);
+	if (!dev) {
+		debug("%s: No block device found for parent '%s'\n", __func__,
+		      parent->name);
+		return -ENODEV;
+	}
+	id = device_get_uclass_id(dev);
+	if (id != UCLASS_BLK) {
+		debug("%s: Incorrect uclass %s for block device '%s'\n",
+		      __func__, uclass_get_name(id), dev->name);
+		return -ENOTBLK;
+	}
+	ret = device_probe(dev);
+	if (ret)
+		return ret;
+	*devp = dev;
+
+	return 0;
+}
+
 int blk_find_max_devnum(enum if_type if_type)
 {
 	struct udevice *dev;
@@ -462,6 +499,44 @@ int blk_find_max_devnum(enum if_type if_type)
 	return max_devnum;
 }
 
+static int blk_next_free_devnum(enum if_type if_type)
+{
+	int ret;
+
+	ret = blk_find_max_devnum(if_type);
+	if (ret == -ENODEV)
+		return 0;
+	if (ret < 0)
+		return ret;
+
+	return ret + 1;
+}
+
+static int blk_claim_devnum(enum if_type if_type, int devnum)
+{
+	struct udevice *dev;
+	struct uclass *uc;
+	int ret;
+
+	ret = uclass_get(UCLASS_BLK, &uc);
+	if (ret)
+		return ret;
+	uclass_foreach_dev(dev, uc) {
+		struct blk_desc *desc = dev_get_uclass_platdata(dev);
+
+		if (desc->if_type == if_type && desc->devnum == devnum) {
+			int next = blk_next_free_devnum(if_type);
+
+			if (next < 0)
+				return next;
+			desc->devnum = next;
+			return 0;
+		}
+	}
+
+	return -ENOENT;
+}
+
 int blk_create_device(struct udevice *parent, const char *drv_name,
 		      const char *name, int if_type, int devnum, int blksz,
 		      lbaint_t size, struct udevice **devp)
@@ -471,14 +546,14 @@ int blk_create_device(struct udevice *parent, const char *drv_name,
 	int ret;
 
 	if (devnum == -1) {
-		ret = blk_find_max_devnum(if_type);
-		if (ret == -ENODEV)
-			devnum = 0;
-		else if (ret < 0)
+		devnum = blk_next_free_devnum(if_type);
+	} else {
+		ret = blk_claim_devnum(if_type, devnum);
+		if (ret < 0 && ret != -ENOENT)
 			return ret;
-		else
-			devnum = ret + 1;
 	}
+	if (devnum < 0)
+		return devnum;
 	ret = device_bind_driver(parent, drv_name, name, &dev);
 	if (ret)
 		return ret;

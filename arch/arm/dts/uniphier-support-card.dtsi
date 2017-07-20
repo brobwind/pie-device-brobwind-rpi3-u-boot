@@ -4,7 +4,7 @@
  * Copyright (C) 2015-2017 Socionext Inc.
  *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
  *
- * SPDX-License-Identifier:	GPL-2.0+	X11
+ * SPDX-License-Identifier: (GPL-2.0+ OR MIT)
  */
 
 &system_bus {
@@ -17,14 +17,14 @@
 		#size-cells = <1>;
 		ranges = <0x00000000 1 0x01f00000 0x00100000>;
 
-		ethsc: ethernet@00000000 {
+		ethsc: ethernet@0 {
 			compatible = "smsc,lan9118", "smsc,lan9115";
 			reg = <0x00000000 0x1000>;
 			phy-mode = "mii";
 			reg-io-width = <4>;
 		};
 
-		serialsc: uart@000b0000 {
+		serialsc: uart@b0000 {
 			compatible = "ns16550a";
 			reg = <0x000b0000 0x20>;
 			clock-frequency = <12288000>;

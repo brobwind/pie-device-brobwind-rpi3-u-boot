@@ -19,12 +19,6 @@
 #define CONFIG_ARM_ARCH_CP15_ERRATA
 
 /*
- * Platform
- */
-
-#define CONFIG_OMAP
-
-/*
  * Board
  */
 
@@ -62,17 +56,6 @@
 #define CONFIG_SYS_MALLOC_LEN		(1024 * 1024 + CONFIG_ENV_SIZE)
 
 /*
- * GPIO
- */
-
-#define CONFIG_OMAP_GPIO
-#define CONFIG_OMAP3_GPIO_2
-#define CONFIG_OMAP3_GPIO_3
-#define CONFIG_OMAP3_GPIO_4
-#define CONFIG_OMAP3_GPIO_5
-#define CONFIG_OMAP3_GPIO_6
-
-/*
  * I2C
  */
 
@@ -81,12 +64,6 @@
 #define CONFIG_SYS_OMAP24_I2C_SLAVE	1
 #define CONFIG_SYS_I2C_OMAP34XX
 #define CONFIG_I2C_MULTI_BUS
-
-/*
- * Power
- */
-
-#define CONFIG_TWL4030_POWER
 
 /*
  * Input
@@ -110,7 +87,6 @@
 #define CONFIG_SPL_STACK		LOW_LEVEL_SRAM_STACK
 
 #define CONFIG_SPL_LDSCRIPT		"arch/arm/mach-omap2/u-boot-spl.lds"
-#define CONFIG_SPL_BOARD_INIT
 
 #define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION		1
 #define CONFIG_SPL_FS_LOAD_PAYLOAD_NAME			"u-boot.img"

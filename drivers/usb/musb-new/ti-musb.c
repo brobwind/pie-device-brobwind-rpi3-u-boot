@@ -88,7 +88,7 @@ static int ti_musb_ofdata_to_platdata(struct udevice *dev)
 	int ctrl_mod;
 	int usb_index;
 
-	platdata->base = (void *)dev_get_addr_index(dev, 1);
+	platdata->base = (void *)devfdt_get_addr_index(dev, 1);
 
 	phys = fdtdec_lookup_phandle(fdt, node, "phys");
 	ctrl_mod = fdtdec_lookup_phandle(fdt, phys, "ti,ctrl_mod");
@@ -227,7 +227,7 @@ static int ti_musb_wrapper_bind(struct udevice *parent)
 		case USB_DR_MODE_HOST:
 			/* Bind MUSB host */
 			ret = device_bind_driver_to_node(parent, "ti-musb-host",
-							 name, node, &dev);
+					name, offset_to_ofnode(node), &dev);
 			if (ret) {
 				error("musb - not able to bind usb host node\n");
 				return ret;

@@ -19,7 +19,6 @@
 
 #include "siemens-am33x-common.h"
 
-#define CONFIG_SYS_MPUCLK	720
 #define DDR_IOCTRL_VAL		0x18b
 #define DDR_PLL_FREQ		266
 
@@ -42,9 +41,6 @@
 #define CONFIG_PHY_ATHEROS
 
 #define CONFIG_FACTORYSET
-
-/* Watchdog */
-#define CONFIG_OMAP_WATCHDOG
 
 #ifndef CONFIG_SPL_BUILD
 

@@ -23,7 +23,6 @@
 
 #define CONFIG_SPL_FRAMEWORK
 #define CONFIG_SYS_NS16550_MEM32
-#define CONFIG_SPL_BOARD_INIT
 
 #ifdef CONFIG_ROCKCHIP_SPL_BACK_TO_BROM
 /* Bootrom will load u-boot binary to 0x0 once return from SPL */
@@ -38,8 +37,6 @@
 
 /* MMC/SD IP block */
 #define CONFIG_BOUNCE_BUFFER
-
-#define CONFIG_FAT_WRITE
 
 /* RAW SD card / eMMC locations. */
 #define CONFIG_SYS_SPI_U_BOOT_OFFS	(128 << 10)

@@ -185,9 +185,6 @@
 #define CONFIG_SYS_MAX_NAND_DEVICE		1
 #define CONFIG_SYS_NAND_MAX_CHIPS		1
 #define CONFIG_SYS_NAND_NO_SUBPAGE_WRITE
-#define CONFIG_ENV_SIZE				(256 << 10)  /* 256 KiB */
-#define CONFIG_ENV_IS_IN_NAND
-#define CONFIG_ENV_OFFSET			0x100000
 #define CONFIG_MTD_PARTITIONS
 #define CONFIG_RBTREE
 #define CONFIG_LZO
@@ -199,7 +196,6 @@
 /* USB Configuration */
 #define CONFIG_USB_XHCI_KEYSTONE
 #define CONFIG_SYS_USB_XHCI_MAX_ROOT_PORTS	2
-#define CONFIG_FS_FAT
 #define CONFIG_USB_SS_BASE			KS2_USB_SS_BASE
 #define CONFIG_USB_HOST_XHCI_BASE		KS2_USB_HOST_XHCI_BASE
 #define CONFIG_DEV_USB_PHY_BASE			KS2_DEV_USB_PHY_BASE
@@ -208,11 +204,9 @@
 /* U-Boot command configuration */
 #define CONFIG_CMD_SAVES
 #define CONFIG_CMD_UBIFS
-#define CONFIG_CMD_EEPROM
 
 /* U-Boot general configuration */
 #define CONFIG_MISC_INIT_R
-#define CONFIG_CRC32_VERIFY
 #define CONFIG_MX_CYCLIC
 #define CONFIG_TIMESTAMP
 
@@ -318,7 +312,7 @@
 #ifndef CONFIG_SOC_K2G
 #define CONFIG_SYS_HZ_CLOCK		ks_clk_get_rate(KS2_CLK1_6)
 #else
-#define CONFIG_SYS_HZ_CLOCK		external_clk[sys_clk]
+#define CONFIG_SYS_HZ_CLOCK		get_external_clk(sys_clk)
 #endif
 
 #endif /* __CONFIG_KS2_EVM_H */

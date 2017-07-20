@@ -168,11 +168,9 @@
 /*
  * Command line configuration.
  */
-#define CONFIG_CMD_IRQ
 #define CONFIG_CMD_MFSL
 
 #if defined(FLASH)
-# define CONFIG_CMD_JFFS2
 # undef CONFIG_CMD_UBIFS
 
 # if !defined(RAMENV)
@@ -186,7 +184,6 @@
 #  define CONFIG_CMD_SAVES
 # endif
 #else
-# undef CONFIG_CMD_JFFS2
 # undef CONFIG_CMD_UBIFS
 #endif
 #endif
@@ -275,7 +272,6 @@
 /* SPL part */
 #define CONFIG_CMD_SPL
 #define CONFIG_SPL_FRAMEWORK
-#define CONFIG_SPL_BOARD_INIT
 
 #define CONFIG_SPL_LDSCRIPT	"arch/microblaze/cpu/u-boot-spl.lds"
 

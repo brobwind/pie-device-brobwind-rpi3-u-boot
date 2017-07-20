@@ -9,6 +9,10 @@
 #include <fsl_ddr_sdram.h>
 
 #include <fsl_ddr.h>
+#if defined(CONFIG_FSL_LSCH2) || defined(CONFIG_FSL_LSCH3) || \
+	defined(CONFIG_ARM)
+#include <asm/arch/clock.h>
+#endif
 
 /*
  * Use our own stack based buffer before relocation to allow accessing longer

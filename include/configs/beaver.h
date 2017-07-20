@@ -39,7 +39,6 @@
 #define CONFIG_SPI_FLASH_SIZE          (4 << 20)
 
 /* USB Host support */
-#define CONFIG_USB_EHCI
 #define CONFIG_USB_EHCI_TEGRA
 
 /* USB networking support */

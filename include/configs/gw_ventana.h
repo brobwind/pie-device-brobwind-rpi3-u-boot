@@ -8,7 +8,6 @@
 #define __CONFIG_H
 
 /* SPL */
-#define CONFIG_SPL_BOARD_INIT
 /* Location in NAND to read U-Boot from */
 #define CONFIG_SYS_NAND_U_BOOT_OFFS     (14 * SZ_1M)
 
@@ -141,9 +140,6 @@
 #define CONFIG_POWER_LTC3676_I2C_ADDR  0x3c
 
 /* Various command support */
-#define CONFIG_CMD_HDMIDETECT    /* detect HDMI output device */
-#define CONFIG_CMD_GSC
-#define CONFIG_CMD_EECONFIG      /* Gateworks EEPROM config cmd */
 #define CONFIG_CMD_UNZIP         /* gzwrite */
 #define CONFIG_RBTREE
 
@@ -156,8 +152,6 @@
 #define CONFIG_ARP_TIMEOUT       200UL
 
 /* USB Configs */
-#define CONFIG_USB_EHCI
-#define CONFIG_USB_EHCI_MX6
 #define CONFIG_USB_HOST_ETHER
 #define CONFIG_USB_ETHER_ASIX
 #define CONFIG_USB_ETHER_SMSC95XX
@@ -178,7 +172,6 @@
 #define CONFIG_VIDEO_IPUV3
 #define CONFIG_VIDEO_LOGO
 #define CONFIG_IPUV3_CLK          260000000
-#define CONFIG_CMD_HDMIDETECT
 #define CONFIG_IMX_HDMI
 #define CONFIG_IMX_VIDEO_SKIP
 #define CONFIG_VIDEO_BMP_LOGO

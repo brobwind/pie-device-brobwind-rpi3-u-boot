@@ -48,8 +48,6 @@
 	"get_pmmc_${boot} run_pmmc get_mon_${boot} run_mon "		\
 	"get_fdt_${boot} get_kern_${boot} run_kern"
 
-#include <configs/ti_armv7_keystone2.h>
-
 /* SPL SPI Loader Configuration */
 #define CONFIG_SPL_TEXT_BASE		0x0c080000
 
@@ -63,8 +61,8 @@
 #define CONFIG_PHY_MICREL
 #define PHY_ANEG_TIMEOUT	10000 /* PHY needs longer aneg time */
 
-#undef CONFIG_ENV_IS_IN_NAND
 #define CONFIG_ENV_IS_IN_FAT
+#define CONFIG_ENV_SIZE			(256 << 10)  /* 256 KiB */
 #define FAT_ENV_INTERFACE		"mmc"
 #define FAT_ENV_DEVICE_AND_PART		"0:1"
 #define FAT_ENV_FILE			"uboot.env"
@@ -80,4 +78,7 @@
 #endif
 
 #define SPI_MTD_PARTS	KEYSTONE_SPI1_MTD_PARTS
+
+#include <configs/ti_armv7_keystone2.h>
+
 #endif /* __CONFIG_K2G_EVM_H */

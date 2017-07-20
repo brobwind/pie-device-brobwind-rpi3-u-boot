@@ -20,7 +20,6 @@
 
 #define CONFIG_SKIP_LOWLEVEL_INIT
 
-#define CONFIG_CMD_FUSE
 #ifdef CONFIG_CMD_FUSE
 #define CONFIG_MXC_OCOTP
 #endif
@@ -191,7 +190,6 @@
 #endif
 
 /* USB Host Support */
-#define CONFIG_USB_EHCI
 #define CONFIG_USB_EHCI_VF
 #define CONFIG_USB_MAX_CONTROLLER_COUNT 2
 #define CONFIG_EHCI_HCD_INIT_AFTER_RESET

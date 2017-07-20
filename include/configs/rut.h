@@ -19,7 +19,6 @@
 
 #include "siemens-am33x-common.h"
 
-#define CONFIG_SYS_MPUCLK	600
 #define RUT_IOCTRL_VAL	0x18b
 #define DDR_PLL_FREQ	303
 
@@ -110,10 +109,6 @@
 #endif
 
 #endif /* CONFIG_SPL_BUILD */
-
-#ifdef CONFIG_SPL_BUILD
-#undef CONFIG_HW_WATCHDOG
-#endif
 
 #if defined(CONFIG_VIDEO)
 #define CONFIG_VIDEO_DA8XX

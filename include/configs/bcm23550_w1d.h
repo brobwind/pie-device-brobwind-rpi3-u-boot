@@ -104,14 +104,10 @@
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_SYS_LONGHELP
 
-#define CONFIG_CRC32_VERIFY
 #define CONFIG_MX_CYCLIC
 
 /* Initial upstream - boot to cmd prompt only */
 #define CONFIG_BOOTCOMMAND		""
-
-/* Commands */
-#define CONFIG_FAT_WRITE
 
 #undef CONFIG_USB_GADGET_VBUS_DRAW
 #define CONFIG_USB_GADGET_VBUS_DRAW	0

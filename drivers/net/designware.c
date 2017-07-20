@@ -18,6 +18,7 @@
 #include <linux/compiler.h>
 #include <linux/err.h>
 #include <asm/io.h>
+#include <power/regulator.h>
 #include "designware.h"
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -661,6 +662,22 @@ int designware_eth_probe(struct udevice *dev)
 	ulong ioaddr;
 	int ret;
 
+#if defined(CONFIG_DM_REGULATOR)
+	struct udevice *phy_supply;
+
+	ret = device_get_supply_regulator(dev, "phy-supply",
+					  &phy_supply);
+	if (ret) {
+		debug("%s: No phy supply\n", dev->name);
+	} else {
+		ret = regulator_set_enable(phy_supply, true);
+		if (ret) {
+			puts("Error enabling phy supply\n");
+			return ret;
+		}
+	}
+#endif
+
 #ifdef CONFIG_DM_PCI
 	/*
 	 * If we are on PCI bus, either directly attached to a PCI root port,
@@ -726,7 +743,7 @@ int designware_eth_ofdata_to_platdata(struct udevice *dev)
 #endif
 	int ret = 0;
 
-	pdata->iobase = dev_get_addr(dev);
+	pdata->iobase = devfdt_get_addr(dev);
 	pdata->phy_interface = -1;
 	phy_mode = fdt_getprop(gd->fdt_blob, dev_of_offset(dev), "phy-mode",
 			       NULL);

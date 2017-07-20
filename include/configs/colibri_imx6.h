@@ -52,7 +52,6 @@
 #define CONFIG_SYS_I2C_SPEED		100000
 
 /* OCOTP Configs */
-#define CONFIG_CMD_FUSE
 #ifdef CONFIG_CMD_FUSE
 #define CONFIG_MXC_OCOTP
 #endif
@@ -65,7 +64,6 @@
 
 #define CONFIG_SUPPORT_EMMC_BOOT	/* eMMC specific */
 #define CONFIG_BOUNCE_BUFFER
-#define CONFIG_FAT_WRITE
 
 /* Network */
 #define CONFIG_FEC_MXC
@@ -115,7 +113,6 @@
 #define CONFIG_VIDEO_LOGO
 #define CONFIG_VIDEO_BMP_LOGO
 #define CONFIG_IPUV3_CLK		260000000
-#define CONFIG_CMD_HDMIDETECT
 #define CONFIG_CONSOLE_MUX
 #define CONFIG_IMX_HDMI
 #define CONFIG_IMX_VIDEO_SKIP
@@ -289,7 +286,5 @@
 #define CONFIG_CMD_TIME
 
 #define CONFIG_SUPPORT_RAW_INITRD
-
-#define CONFIG_CRC32_VERIFY
 
 #endif	/* __CONFIG_H */

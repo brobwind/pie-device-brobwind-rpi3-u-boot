@@ -14,8 +14,6 @@
 
 #include <environment/ti/dfu.h>
 
-#define CONFIG_DRA7XX
-
 #ifdef CONFIG_SPL_BUILD
 #define CONFIG_IODELAY_RECALIBRATION
 #endif
@@ -29,7 +27,7 @@
 #define CONFIG_ENV_IS_IN_MMC
 #define CONFIG_SYS_MMC_ENV_DEV		1	/* SLOT2: eMMC(1) */
 #define CONFIG_ENV_SIZE			(128 << 10)
-#define CONFIG_ENV_OFFSET		0xE0000
+#define CONFIG_ENV_OFFSET		0x260000
 #define CONFIG_ENV_OFFSET_REDUND	(CONFIG_ENV_OFFSET + CONFIG_ENV_SIZE)
 #define CONFIG_SYS_REDUNDAND_ENVIRONMENT
 #endif
@@ -43,6 +41,10 @@
 #define CONFIG_SYS_NS16550_COM2		UART2_BASE	/* UART2 */
 #define CONFIG_SYS_NS16550_COM3		UART3_BASE	/* UART3 */
 
+#define CONFIG_ENV_EEPROM_IS_ON_I2C
+#define CONFIG_SYS_I2C_EEPROM_ADDR	0x50	/* Main EEPROM */
+#define CONFIG_SYS_I2C_EEPROM_ADDR_LEN	2
+
 #define CONFIG_SYS_OMAP_ABE_SYSCK
 
 #ifndef CONFIG_SPL_BUILD
@@ -55,7 +57,7 @@
 	"partitions_android=" \
 	"uuid_disk=${uuid_gpt_disk};" \
 	"name=xloader,start=128K,size=256K,uuid=${uuid_gpt_xloader};" \
-	"name=bootloader,size=768K,uuid=${uuid_gpt_bootloader};" \
+	"name=bootloader,size=1792K,uuid=${uuid_gpt_bootloader};" \
 	"name=environment,size=128K,uuid=${uuid_gpt_environment};" \
 	"name=misc,size=128K,uuid=${uuid_gpt_misc};" \
 	"name=reserved,size=256K,uuid=${uuid_gpt_reserved};" \

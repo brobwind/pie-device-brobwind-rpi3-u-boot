@@ -16,7 +16,6 @@
 #define __CONFIG_H
 
 /* High Level Configuration Options */
-#define CONFIG_OMAP3_DEVKIT8000	1	/* working with DevKit8000 */
 #define CONFIG_MACH_TYPE	MACH_TYPE_DEVKIT8000
 
 /*
@@ -92,11 +91,9 @@
 							/* partition */
 
 /* commands to include */
-#define CONFIG_CMD_JFFS2		/* JFFS2 Support		*/
 #define CONFIG_CMD_NAND_LOCK_UNLOCK	/* nand (un)lock commands	*/
 
 #undef CONFIG_SUPPORT_RAW_INITRD
-#undef CONFIG_FAT_WRITE
 
 /* BOOTP/DHCP options */
 #define CONFIG_BOOTP_SUBNETMASK
