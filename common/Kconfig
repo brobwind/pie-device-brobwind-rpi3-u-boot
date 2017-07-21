@@ -18,6 +18,15 @@ config BOOTSTAGE
 	  Calls to show_boot_progress() will also result in log entries but
 	  these will not have names.
 
+config SPL_BOOTSTAGE
+	bool "Boot timing and reported in SPL"
+	depends on BOOTSTAGE
+	help
+	  Enable recording of boot time in SPL. To make this visible to U-Boot
+	  proper, enable BOOTSTAGE_STASH as well. This will stash the timing
+	  information when SPL finishes and load it when U-Boot proper starts
+	  up.
+
 config BOOTSTAGE_REPORT
 	bool "Display a detailed boot timing report before booting the OS"
 	depends on BOOTSTAGE
@@ -38,13 +47,20 @@ config BOOTSTAGE_REPORT
 		 30,361,327    445,160  start_kernel
 
 config BOOTSTAGE_USER_COUNT
-	hex "Number of boot ID numbers available for user use"
+	int "Number of boot ID numbers available for user use"
 	default 20
 	help
 	  This is the number of available user bootstage records.
 	  Each time you call bootstage_mark(BOOTSTAGE_ID_ALLOC, ...)
 	  a new ID will be allocated from this stash. If you exceed
 	  the limit, recording will stop.
+
+config BOOTSTAGE_RECORD_COUNT
+	int "Number of boot stage records to store"
+	default 30
+	help
+	  This is the size of the bootstage record list and is the maximum
+	  number of bootstage records that can be recorded.
 
 config BOOTSTAGE_FDT
 	bool "Store boot timing information in the OS device tree"
@@ -448,7 +464,7 @@ config BOARD_LATE_INIT
 
 config DISPLAY_CPUINFO
 	bool "Display information about the CPU during start up"
-	default y if ARM || NIOS2 || X86 || XTENSA || MPC5xxx
+	default y if ARM || NIOS2 || X86 || XTENSA
 	help
 	  Display information about the CPU that U-Boot is running on
 	  when U-Boot starts up. The function print_cpuinfo() is called
@@ -519,6 +535,18 @@ config BOARD_EARLY_INIT_F
 	  after driver model is ready in the pre-relocation init sequence.
 	  Note that the normal serial console is not yet set up, but the
 	  debug UART will be available if enabled.
+
+endmenu
+
+menu "Security support"
+
+config HASH
+	bool # "Support hashing API (SHA1, SHA256, etc.)"
+	help
+	  This provides a way to hash data in memory using various supported
+	  algorithms (such as SHA1, MD5, CRC32). The API is defined in hash.h
+	  and the algorithms it supports are defined in common/hash.c. See
+	  also CMD_HASH for command-line access.
 
 endmenu
 

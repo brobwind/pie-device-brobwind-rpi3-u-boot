@@ -129,27 +129,6 @@
 
 #define CONFIG_HWCONFIG
 
-#define CONFIG_DTT_ADM1021	1	/* ADM1021 temp sensor support	*/
-#define CONFIG_SYS_DTT_BUS_NUM	1	/* The I2C bus for DTT		*/
-#define CONFIG_DTT_SENSORS	{ 0, 1 }	/* Sensor index	*/
-/*
- * ADM1021/NCT72 temp sensor configuration (see dtt/adm1021.c for details).
- * there will be one entry in this array for each two (dummy) sensors in
- * CONFIG_DTT_SENSORS.
- *
- * For uCP1020 module:
- * - only one ADM1021/NCT72
- * - i2c addr 0x41
- * - conversion rate 0x02 = 0.25 conversions/second
- * - ALERT output disabled
- * - local temp sensor enabled, min set to 0 deg, max set to 85 deg
- * - remote temp sensor enabled, min set to 0 deg, max set to 85 deg
- */
-#define CONFIG_SYS_DTT_ADM1021	{ { CONFIG_SYS_I2C_NCT72_ADDR, \
-					 0x02, 0, 1, 0, 85, 1, 0, 85} }
-
-#define CONFIG_CMD_DTT
-
 /*
  * These can be toggled for performance analysis, otherwise use default.
  */
@@ -332,7 +311,7 @@
 #define CONFIG_SYS_SPD_BUS_NUM		1 /* For rom_loc and flash bank */
 
 #define CONFIG_RTC_DS1337
-#define CONFIG_SYS_RTC_DS1337_NOOSC
+#define CONFIG_RTC_DS1337_NOOSC
 #define CONFIG_SYS_I2C_RTC_ADDR		0x68
 #define CONFIG_SYS_I2C_PCA9557_ADDR	0x18
 #define CONFIG_SYS_I2C_NCT72_ADDR	0x4C
@@ -442,10 +421,7 @@
 /*
  * Command line configuration.
  */
-#define CONFIG_CMD_IRQ
-#define CONFIG_CMD_IRQ
 #define CONFIG_CMD_REGINFO
-#define CONFIG_CMD_ERRATA
 
 /*
  * USB
@@ -453,11 +429,9 @@
 #define CONFIG_HAS_FSL_DR_USB
 
 #if defined(CONFIG_HAS_FSL_DR_USB)
-#define CONFIG_USB_EHCI
-
 #define CONFIG_USB_MAX_CONTROLLER_COUNT 1
 
-#ifdef CONFIG_USB_EHCI
+#ifdef CONFIG_USB_EHCI_HCD
 #define CONFIG_EHCI_HCD_INIT_AFTER_RESET
 #define CONFIG_USB_EHCI_FSL
 #endif

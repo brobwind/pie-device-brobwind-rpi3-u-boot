@@ -14,7 +14,7 @@
 
 #include <common.h>
 #include <command.h>
-#include <dm/device.h>
+#include <dm.h>
 #include <dm/root.h>
 #include <image.h>
 #include <u-boot/zlib.h>
@@ -31,6 +31,7 @@
 #ifdef CONFIG_ARMV7_NONSEC
 #include <asm/armv7.h>
 #endif
+#include <asm/setup.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 

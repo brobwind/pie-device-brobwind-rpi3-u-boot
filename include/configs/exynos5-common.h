@@ -26,7 +26,6 @@
 
 /* Enable ACE acceleration for SHA1 and SHA256 */
 #define CONFIG_EXYNOS_ACE_SHA
-#define CONFIG_SHA_HW_ACCEL
 
 /* Power Down Modes */
 #define S5P_CHECK_SLEEP			0x00000BAD
@@ -42,12 +41,8 @@
 /* select serial console configuration */
 #define EXYNOS5_DEFAULT_UART_OFFSET	0x010000
 
-#define CONFIG_CMD_HASH
-
 /* Thermal Management Unit */
 #define CONFIG_EXYNOS_TMU
-#define CONFIG_CMD_DTT
-#define CONFIG_TMU_CMD_DTT
 
 /* MMC SPL */
 #define COPY_BL2_FNPTR_ADDR	0x02020030
@@ -135,12 +130,6 @@
 #define CONFIG_SMC911X_16_BIT
 #define CONFIG_ENV_SROM_BANK		1
 #endif /*CONFIG_CMD_NET*/
-
-/* SHA hashing */
-#define CONFIG_CMD_HASH
-#define CONFIG_HASH_VERIFY
-#define CONFIG_SHA1
-#define CONFIG_SHA256
 
 /* Enable Time Command */
 

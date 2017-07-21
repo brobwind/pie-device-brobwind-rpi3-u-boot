@@ -16,9 +16,6 @@
 /*
  * High Level Configuration Options
  */
-#define CONFIG_OMAP		1	/* in a TI OMAP core */
-#define CONFIG_OMAP3_AM3517CRANE	1	/* working with CRANEBOARD */
-
 #define CONFIG_EMIF4	/* The chip has EMIF4 controller */
 
 #include <asm/arch/cpu.h>		/* get chip and board defs */
@@ -104,7 +101,6 @@
 #endif /* CONFIG_USB_AM35X */
 
 /* commands to include */
-#define CONFIG_CMD_JFFS2	/* JFFS2 Support		*/
 
 #define CONFIG_CMD_NAND		/* NAND support			*/
 
@@ -253,7 +249,6 @@
 
 /* Defines for SPL */
 #define CONFIG_SPL_FRAMEWORK
-#define CONFIG_SPL_BOARD_INIT
 #define CONFIG_SPL_NAND_SIMPLE
 #define CONFIG_SPL_TEXT_BASE		0x40200800
 #define CONFIG_SPL_MAX_SIZE		(SRAM_SCRATCH_SPACE_ADDR - \

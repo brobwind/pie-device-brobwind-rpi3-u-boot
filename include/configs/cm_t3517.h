@@ -13,7 +13,6 @@
 /*
  * High Level Configuration Options
  */
-#define CONFIG_OMAP	/* in a TI OMAP core */
 #define CONFIG_CM_T3517	/* working with CM-T3517 */
 
 #define CONFIG_SYS_TEXT_BASE	0x80008000
@@ -80,15 +79,11 @@
 #define CONFIG_SYS_BAUDRATE_TABLE	{4800, 9600, 19200, 38400, 57600,\
 					115200}
 
-#define CONFIG_OMAP_GPIO
-
 /* USB */
 #define CONFIG_USB_MUSB_AM35X
 
 #ifndef CONFIG_USB_MUSB_AM35X
 #define CONFIG_USB_OMAP3
-#define CONFIG_USB_EHCI
-#define CONFIG_USB_EHCI_OMAP
 #define CONFIG_OMAP_EHCI_PHY1_RESET_GPIO 146
 #define CONFIG_OMAP_EHCI_PHY2_RESET_GPIO 147
 #else /* !CONFIG_USB_MUSB_AM35X */
@@ -250,14 +245,7 @@
 /* Status LED */
 #define GREEN_LED_GPIO			186 /* CM-T3517 Green LED is GPIO186 */
 
-/* GPIO banks */
-#ifdef CONFIG_LED_STATUS
-#define CONFIG_OMAP3_GPIO_6	/* GPIO186 is in GPIO bank 6  */
-#endif
-
 /* Display Configuration */
-#define CONFIG_OMAP3_GPIO_2
-#define CONFIG_OMAP3_GPIO_5
 #define CONFIG_VIDEO_OMAP3
 #define LCD_BPP		LCD_COLOR16
 
@@ -269,14 +257,10 @@
 #define CONFIG_OMAP3_SPI
 
 /* EEPROM */
-#define CONFIG_CMD_EEPROM
 #define CONFIG_ENV_EEPROM_IS_ON_I2C
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN		1
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_BITS	4
 #define CONFIG_SYS_EEPROM_PAGE_WRITE_DELAY_MS	5
 #define CONFIG_SYS_EEPROM_SIZE			256
-
-#define CONFIG_CMD_EEPROM_LAYOUT
-#define CONFIG_EEPROM_LAYOUT_HELP_STRING "v1, v2, v3"
 
 #endif /* __CONFIG_H */

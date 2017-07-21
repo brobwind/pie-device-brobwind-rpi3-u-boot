@@ -12,9 +12,6 @@
 /*
  * High Level Configuration Options
  */
-#define CONFIG_OMAP			/* in a TI OMAP core */
-#define CONFIG_OMAP3_MCX		/* working with mcx */
-#define CONFIG_OMAP_GPIO
 
 #define CONFIG_MACH_TYPE	MACH_TYPE_MCX
 
@@ -76,10 +73,6 @@
 					115200}
 
 /* EHCI */
-#define CONFIG_OMAP3_GPIO_2
-#define CONFIG_OMAP3_GPIO_5
-#define CONFIG_USB_EHCI
-#define CONFIG_USB_EHCI_OMAP
 #define CONFIG_OMAP_EHCI_PHY1_RESET_GPIO	57
 #define CONFIG_SYS_USB_EHCI_MAX_ROOT_PORTS 3
 #define	CONFIG_USB_HOST_ETHER
@@ -87,7 +80,6 @@
 #define CONFIG_USB_ETHER_MCS7830
 
 /* commands to include */
-#define CONFIG_CMD_JFFS2	/* JFFS2 Support		*/
 
 #define CONFIG_CMD_NAND		/* NAND support			*/
 #define CONFIG_CMD_UBIFS
@@ -296,7 +288,6 @@
 
 /* Defines for SPL */
 #define CONFIG_SPL_FRAMEWORK
-#define CONFIG_SPL_BOARD_INIT
 #define CONFIG_SPL_NAND_SIMPLE
 
 #define CONFIG_SPL_NAND_BASE

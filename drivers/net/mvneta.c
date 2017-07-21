@@ -1695,7 +1695,7 @@ static int mvneta_probe(struct udevice *dev)
 	pp->base = (void __iomem *)pdata->iobase;
 
 	/* Configure MBUS address windows */
-	if (of_device_is_compatible(dev, "marvell,armada-3700-neta"))
+	if (device_is_compatible(dev, "marvell,armada-3700-neta"))
 		mvneta_bypass_mbus_windows(pp);
 	else
 		mvneta_conf_mbus_windows(pp);
@@ -1756,7 +1756,7 @@ static int mvneta_ofdata_to_platdata(struct udevice *dev)
 	struct eth_pdata *pdata = dev_get_platdata(dev);
 	const char *phy_mode;
 
-	pdata->iobase = dev_get_addr(dev);
+	pdata->iobase = devfdt_get_addr(dev);
 
 	/* Get phy-mode / phy_interface from DT */
 	pdata->phy_interface = -1;

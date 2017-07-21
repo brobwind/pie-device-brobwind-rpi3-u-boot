@@ -15,7 +15,6 @@
 
 #include "siemens-am33x-common.h"
 
-#define CONFIG_SYS_MPUCLK	300
 #define DDR_PLL_FREQ	303
 #undef CONFIG_SPL_AM33XX_ENABLE_RTC32K_OSC
 
@@ -42,9 +41,6 @@
 #define CONFIG_PHY_SMSC
 
 #define CONFIG_FACTORYSET
-
-/* Watchdog */
-#define CONFIG_OMAP_WATCHDOG
 
 /* Define own nand partitions */
 #define CONFIG_ENV_OFFSET_REDUND    0x2E0000

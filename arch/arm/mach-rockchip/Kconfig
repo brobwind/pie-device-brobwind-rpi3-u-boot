@@ -14,6 +14,7 @@ config ROCKCHIP_RK3036
 config ROCKCHIP_RK3188
 	bool "Support Rockchip RK3188"
 	select CPU_V7
+	select SPL_BOARD_INIT if SPL
 	select SUPPORT_SPL
 	select SUPPORT_TPL
 	select SPL
@@ -30,6 +31,7 @@ config ROCKCHIP_RK3188
 config ROCKCHIP_RK3288
 	bool "Support Rockchip RK3288"
 	select CPU_V7
+	select SPL_BOARD_INIT if SPL
 	select SUPPORT_SPL
 	select SPL
 	help
@@ -49,6 +51,18 @@ config ROCKCHIP_RK3328
 	  and video codec support. Peripherals include Gigabit Ethernet,
 	  USB2 host and OTG, SDIO, I2S, UARTs, SPI, I2C and PWMs.
 
+config ROCKCHIP_RK3368
+	bool "Support Rockchip RK3368"
+	select ARM64
+	select SYS_NS16550
+	help
+	  The Rockchip RK3328 is a ARM-based SoC with a octa-core Cortex-A53.
+	  including NEON and GPU, 512KB L2 cache for big cluster and 256 KB
+	  L2 cache for little cluser, PowerVR G6110 based graphics, one video
+	  output processor supporting LVDS、HDMI、eDP, several DDR3 options
+	  and video codec support. Peripherals include Gigabit Ethernet,
+	  USB2 host and OTG, SDIO, I2S, UARTs, SPI, I2C and PWMs.
+
 config ROCKCHIP_RK3399
 	bool "Support Rockchip RK3399"
 	select ARM64
@@ -65,6 +79,13 @@ config ROCKCHIP_RK3399
 	  and video codec support. Peripherals include Gigabit Ethernet,
 	  USB2 host and OTG, SDIO, I2S, UARTs, SPI, I2C and PWMs.
 
+config ROCKCHIP_RV1108
+	bool "Support Rockchip RV1108"
+	select CPU_V7
+	help
+	  The Rockchip RV1108 is a ARM-based SoC with a single-core Cortex-A7
+	  and a DSP.
+
 config ROCKCHIP_SPL_BACK_TO_BROM
 	bool "SPL returns to bootrom"
 	default y if ROCKCHIP_RK3036
@@ -73,6 +94,14 @@ config ROCKCHIP_SPL_BACK_TO_BROM
 	  Rockchip SoCs have ability to load SPL & U-Boot binary. If enabled,
           SPL will return to the boot rom, which will then load the U-Boot
           binary to keep going on.
+
+config ROCKCHIP_SPL_RESERVE_IRAM
+	hex "Size of IRAM reserved in SPL"
+	default 0x4000
+	help
+	  SPL may need reserve memory for firmware loaded by SPL, whose load
+	  address is in IRAM and may overlay with SPL text area if not
+	  reserved.
 
 config ROCKCHIP_BROM_HELPER
 	bool
@@ -84,5 +113,7 @@ source "arch/arm/mach-rockchip/rk3036/Kconfig"
 source "arch/arm/mach-rockchip/rk3188/Kconfig"
 source "arch/arm/mach-rockchip/rk3288/Kconfig"
 source "arch/arm/mach-rockchip/rk3328/Kconfig"
+source "arch/arm/mach-rockchip/rk3368/Kconfig"
 source "arch/arm/mach-rockchip/rk3399/Kconfig"
+source "arch/arm/mach-rockchip/rv1108/Kconfig"
 endif

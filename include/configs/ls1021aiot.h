@@ -158,8 +158,6 @@
 #define CONFIG_SYS_SCSI_MAX_DEVICE	(CONFIG_SYS_SCSI_MAX_SCSI_ID * \
 		CONFIG_SYS_SCSI_MAX_LUN)
 
-#define CONFIG_CMD_FAT
-
 /* SPI */
 #if defined(CONFIG_QSPI_BOOT) || defined(CONFIG_SD_BOOT_QSPI)
 #define CONFIG_SPI_FLASH_SPANSION
@@ -304,16 +302,6 @@
 #define CONFIG_CMD_BOOTZ
 
 #define CONFIG_MISC_INIT_R
-
-/* Hash command with SHA acceleration supported in hardware */
-
-#ifdef CONFIG_FSL_CAAM
-
-#define CONFIG_CMD_HASH
-
-#define CONFIG_SHA_HW_ACCEL
-
-#endif
 
 #include <asm/fsl_secure_boot.h>
 

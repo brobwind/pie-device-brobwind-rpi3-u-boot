@@ -22,6 +22,13 @@ menuconfig NETDEVICES
 
 if NETDEVICES
 
+config PHY_GIGE
+	bool "Enable GbE PHY status parsing and configuration"
+	help
+	  Enables support for parsing the status output and for
+	  configuring GbE PHYs (affects the inner workings of some
+	  commands and miiphyutil.c).
+
 config AG7XXX
 	bool "Atheros AG7xxx Ethernet MAC support"
 	depends on DM_ETH && ARCH_ATH79
@@ -123,6 +130,11 @@ config FEC_MXC
 	  This driver supports the 10/100 Fast Ethernet controller for
 	  NXP i.MX processors.
 
+config FTMAC100
+	bool "Ftmac100 Ethernet Support"
+	help
+	  This MAC is present in Andestech SoCs.
+
 config MVPP2
 	bool "Marvell Armada 375/7K/8K network interface support"
 	depends on ARMADA_375 || ARMADA_8K
@@ -182,6 +194,7 @@ config SUN8I_EMAC
         bool "Allwinner Sun8i Ethernet MAC support"
         depends on DM_ETH
         select PHYLIB
+	select PHY_GIGE
         help
           This driver supports the  Allwinner based SUN8I/SUN50I Ethernet MAC.
 	  It can be found in H3/A64/A83T based SoCs and compatible with both
@@ -224,5 +237,71 @@ config GMAC_ROCKCHIP
 	help
 	  This driver provides Rockchip SoCs network support based on the
 	  Synopsys Designware driver.
+
+config RENESAS_RAVB
+	bool "Renesas Ethernet AVB MAC"
+	depends on DM_ETH && RCAR_GEN3
+	select PHYLIB
+	help
+	  This driver implements support for the Ethernet AVB block in
+	  Renesas M3 and H3 SoCs.
+
+config MPC8XX_FEC
+	bool "Fast Ethernet Controller on MPC8XX"
+	depends on 8xx
+	select MII
+	help
+	  This driver implements support for the Fast Ethernet Controller
+	  on MPC8XX
+
+config ETHER_ON_FEC1
+	bool "FEC1"
+	depends on MPC8XX_FEC
+	default y
+
+config FEC1_PHY
+	int "FEC1 PHY"
+	depends on ETHER_ON_FEC1
+	default -1
+	help
+	  Define to the hardcoded PHY address which corresponds
+	  to the given FEC; i. e.
+		#define CONFIG_FEC1_PHY 4
+	  means that the PHY with address 4 is connected to FEC1
+
+	  When set to -1, means to probe for first available.
+
+config PHY_NORXERR
+	bool "PHY_NORXERR"
+	depends on ETHER_ON_FEC1
+	default n
+	help
+	  The PHY does not have a RXERR line (RMII only).
+	  (so program the FEC to ignore it).
+
+config ETHER_ON_FEC2
+	bool "FEC2"
+	depends on MPC8XX_FEC && MPC885
+	default y
+
+config FEC2_PHY
+	int "FEC2 PHY"
+	depends on ETHER_ON_FEC2
+	default -1
+	help
+	  Define to the hardcoded PHY address which corresponds
+	  to the given FEC; i. e.
+		#define CONFIG_FEC1_PHY 4
+	  means that the PHY with address 4 is connected to FEC1
+
+	  When set to -1, means to probe for first available.
+
+config FEC2_PHY_NORXERR
+	bool "PHY_NORXERR"
+	depends on ETHER_ON_FEC2
+	default n
+	help
+	  The PHY does not have a RXERR line (RMII only).
+	  (so program the FEC to ignore it).
 
 endif # NETDEVICES

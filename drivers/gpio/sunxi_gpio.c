@@ -217,7 +217,7 @@ static int sunxi_gpio_get_function(struct udevice *dev, unsigned offset)
 }
 
 static int sunxi_gpio_xlate(struct udevice *dev, struct gpio_desc *desc,
-			    struct fdtdec_phandle_args *args)
+			    struct ofnode_phandle_args *args)
 {
 	int ret;
 
@@ -296,7 +296,7 @@ static int gpio_sunxi_bind(struct udevice *parent)
 	if (plat)
 		return 0;
 
-	ctlr = (struct sunxi_gpio_reg *)dev_get_addr(parent);
+	ctlr = (struct sunxi_gpio_reg *)devfdt_get_addr(parent);
 	for (bank = 0; bank < soc_data->no_banks; bank++) {
 		struct sunxi_gpio_platdata *plat;
 		struct udevice *dev;

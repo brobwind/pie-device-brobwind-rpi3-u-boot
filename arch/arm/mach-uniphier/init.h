@@ -119,13 +119,14 @@ void uniphier_pro5_clk_init(void);
 void uniphier_pxs2_clk_init(void);
 void uniphier_ld11_clk_init(void);
 void uniphier_ld20_clk_init(void);
+void uniphier_pxs3_clk_init(void);
 
 unsigned int uniphier_boot_device_raw(void);
 int uniphier_have_internal_stm(void);
 int uniphier_boot_from_backend(void);
 int uniphier_pin_init(const char *pinconfig_name);
 void uniphier_smp_kick_all_cpus(void);
-void cci500_init(int nr_slaves);
+void cci500_init(unsigned int nr_slaves);
 
 #undef pr_warn
 #define pr_warn(fmt, args...)	printf(fmt, ##args)

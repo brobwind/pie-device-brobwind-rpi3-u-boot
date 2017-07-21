@@ -4,7 +4,7 @@
  * Copyright (C) 2015-2016 Socionext Inc.
  *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
  *
- * SPDX-License-Identifier:	GPL-2.0+	X11
+ * SPDX-License-Identifier: (GPL-2.0+ OR MIT)
  */
 
 / {
@@ -282,7 +282,7 @@
 			pinctrl-0 = <&pinctrl_system_bus>;
 		};
 
-		smpctrl@59800000 {
+		smpctrl@59801000 {
 			compatible = "socionext,uniphier-smpctrl";
 			reg = <0x59801000 0x400>;
 		};
@@ -446,7 +446,7 @@
 		};
 
 		nand: nand@68000000 {
-			compatible = "socionext,denali-nand-v5a";
+			compatible = "socionext,uniphier-denali-nand-v5a";
 			status = "disabled";
 			reg-names = "nand_data", "denali_reg";
 			reg = <0x68000000 0x20>, <0x68100000 0x1000>;

@@ -54,8 +54,8 @@ DECLARE_GLOBAL_DATA_PTR;
 	!defined(CONFIG_ENV_IS_IN_REMOTE)	&& \
 	!defined(CONFIG_ENV_IS_IN_UBI)		&& \
 	!defined(CONFIG_ENV_IS_NOWHERE)
-# error Define one of CONFIG_ENV_IS_IN_{EEPROM|FLASH|DATAFLASH|ONENAND|\
-SATA|SPI_FLASH|NVRAM|MMC|FAT|EXT4|REMOTE|UBI} or CONFIG_ENV_IS_NOWHERE
+# error Define one of CONFIG_ENV_IS_IN_{EEPROM|FLASH|DATAFLASH|MMC|FAT|EXT4|\
+NAND|NVRAM|ONENAND|SATA|SPI_FLASH|REMOTE|UBI} or CONFIG_ENV_IS_NOWHERE
 #endif
 
 /*
@@ -234,7 +234,6 @@ static int _do_env_set(int flag, int argc, char * const argv[], int env_flag)
 	}
 	debug("Final value for argc=%d\n", argc);
 	name = argv[1];
-	value = argv[2];
 
 	if (strchr(name, '=')) {
 		printf("## Error: illegal character '='"

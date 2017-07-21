@@ -41,8 +41,15 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += \
 	rk3288-veyron-mickey.dtb \
 	rk3288-veyron-minnie.dtb \
 	rk3328-evb.dtb \
+	rk3368-sheep.dtb \
+	rk3368-geekbox.dtb \
+	rk3368-px5-evb.dtb \
 	rk3399-evb.dtb \
-	rk3399-puma.dtb
+	rk3399-firefly.dtb \
+	rk3399-puma-ddr1333.dtb \
+	rk3399-puma-ddr1600.dtb \
+	rk3399-puma-ddr1866.dtb \
+	rv1108-evb.dtb
 dtb-$(CONFIG_ARCH_MESON) += \
 	meson-gxbb-odroidc2.dtb
 dtb-$(CONFIG_TEGRA) += tegra20-harmony.dtb \
@@ -53,7 +60,6 @@ dtb-$(CONFIG_TEGRA) += tegra20-harmony.dtb \
 	tegra20-tec.dtb \
 	tegra20-trimslice.dtb \
 	tegra20-ventana.dtb \
-	tegra20-whistler.dtb \
 	tegra20-colibri.dtb \
 	tegra30-apalis.dtb \
 	tegra30-beaver.dtb \
@@ -81,6 +87,7 @@ dtb-$(CONFIG_ARCH_MVEBU) +=			\
 	armada-388-gp.dtb			\
 	armada-385-amc.dtb			\
 	armada-7040-db.dtb			\
+	armada-7040-db-nand.dtb			\
 	armada-8040-db.dtb			\
 	armada-8040-mcbin.dtb			\
 	armada-xp-gp.dtb			\
@@ -90,8 +97,10 @@ dtb-$(CONFIG_ARCH_MVEBU) +=			\
 	armada-38x-controlcenterdc.dtb
 
 dtb-$(CONFIG_ARCH_UNIPHIER_LD11) += \
+	uniphier-ld11-global.dtb \
 	uniphier-ld11-ref.dtb
 dtb-$(CONFIG_ARCH_UNIPHIER_LD20) += \
+	uniphier-ld20-global.dtb \
 	uniphier-ld20-ref.dtb
 dtb-$(CONFIG_ARCH_UNIPHIER_LD4) += \
 	uniphier-ld4-ref.dtb
@@ -120,6 +129,7 @@ dtb-$(CONFIG_ARCH_ZYNQ) += zynq-zc702.dtb \
 	zynq-microzed.dtb \
 	zynq-picozed.dtb \
 	zynq-topic-miami.dtb \
+	zynq-topic-miamilite.dtb \
 	zynq-topic-miamiplus.dtb \
 	zynq-zc770-xm010.dtb \
 	zynq-zc770-xm011.dtb \
@@ -144,9 +154,11 @@ dtb-$(CONFIG_AM33XX) += am335x-boneblack.dtb am335x-bone.dtb \
 dtb-$(CONFIG_AM43XX) += am437x-gp-evm.dtb am437x-sk-evm.dtb	\
 	am43x-epos-evm.dtb \
 	am437x-idk-evm.dtb
+dtb-$(CONFIG_TI816X) += dm8168-evm.dtb
 dtb-$(CONFIG_THUNDERX) += thunderx-88xx.dtb
 
 dtb-$(CONFIG_ARCH_SOCFPGA) +=				\
+	socfpga_arria10_socdk_sdmmc.dtb			\
 	socfpga_arria5_socdk.dtb			\
 	socfpga_cyclone5_is1.dtb			\
 	socfpga_cyclone5_mcvevk.dtb			\
@@ -172,7 +184,9 @@ dtb-$(CONFIG_ARCH_LS1021A) += ls1021a-qds-duart.dtb \
 	ls1021a-twr-duart.dtb ls1021a-twr-lpuart.dtb \
 	ls1021a-iot-duart.dtb
 dtb-$(CONFIG_FSL_LSCH3) += fsl-ls2080a-qds.dtb \
-	fsl-ls2080a-rdb.dtb
+	fsl-ls2080a-rdb.dtb \
+	fsl-ls2081a-rdb.dtb \
+	fsl-ls2088a-rdb-qspi.dtb
 dtb-$(CONFIG_FSL_LSCH2) += fsl-ls1043a-qds-duart.dtb \
 	fsl-ls1043a-qds-lpuart.dtb \
 	fsl-ls1043a-rdb.dtb \
@@ -185,7 +199,8 @@ dtb-$(CONFIG_FSL_LSCH2) += fsl-ls1043a-qds-duart.dtb \
 
 dtb-$(CONFIG_ARCH_SNAPDRAGON) += dragonboard410c.dtb
 
-dtb-$(CONFIG_STM32F7) += stm32f746-disco.dtb
+dtb-$(CONFIG_STM32F7) += stm32f746-disco.dtb \
+	stm32f769-disco.dtb
 
 dtb-$(CONFIG_MACH_SUN4I) += \
 	sun4i-a10-a1000.dtb \
@@ -303,6 +318,8 @@ dtb-$(CONFIG_MACH_SUN8I_H3) += \
 	sun8i-h3-orangepi-pc-plus.dtb \
 	sun8i-h3-orangepi-plus.dtb \
 	sun8i-h3-orangepi-plus2e.dtb \
+	sun8i-h3-nanopi-m1.dtb \
+	sun8i-h3-nanopi-m1-plus.dtb \
 	sun8i-h3-nanopi-neo.dtb \
 	sun8i-h3-nanopi-neo-air.dtb
 dtb-$(CONFIG_MACH_SUN8I_R40) += \
@@ -310,8 +327,13 @@ dtb-$(CONFIG_MACH_SUN8I_R40) += \
 dtb-$(CONFIG_MACH_SUN8I_V3S) += \
 	sun8i-v3s-licheepi-zero.dtb
 dtb-$(CONFIG_MACH_SUN50I_H5) += \
-	sun50i-h5-orangepi-pc2.dtb
+	sun50i-h5-nanopi-neo2.dtb \
+	sun50i-h5-orangepi-pc2.dtb \
+	sun50i-h5-orangepi-prime.dtb \
+	sun50i-h5-orangepi-zero-plus2.dtb
 dtb-$(CONFIG_MACH_SUN50I) += \
+	sun50i-a64-bananapi-m64.dtb \
+	sun50i-a64-orangepi-win.dtb \
 	sun50i-a64-pine64-plus.dtb \
 	sun50i-a64-pine64.dtb
 dtb-$(CONFIG_MACH_SUN9I) += \
@@ -342,7 +364,8 @@ dtb-$(CONFIG_MX6) += imx6ull-14x14-evk.dtb \
 	imx6ul-isiot-nand.dtb \
 	imx6ul-opos6uldev.dtb
 
-dtb-$(CONFIG_MX7) += imx7-colibri.dtb
+dtb-$(CONFIG_MX7) += imx7-colibri.dtb \
+	imx7d-sdb.dtb
 
 dtb-$(CONFIG_ARCH_MX7ULP) += imx7ulp-evk.dtb
 
@@ -350,6 +373,30 @@ dtb-$(CONFIG_SOC_KEYSTONE) += keystone-k2hk-evm.dtb \
 	keystone-k2l-evm.dtb \
 	keystone-k2e-evm.dtb \
 	keystone-k2g-evm.dtb
+
+dtb-$(CONFIG_TARGET_AT91SAM9263EK) += at91sam9263ek.dtb
+
+dtb-$(CONFIG_TARGET_AT91SAM9RLEK) += at91sam9rlek.dtb
+
+dtb-$(CONFIG_TARGET_AT91SAM9260EK) += \
+	at91sam9260ek.dtb	\
+	at91sam9g20ek.dtb	\
+	at91sam9g20ek_2mmc.dtb
+
+dtb-$(CONFIG_TARGET_AT91SAM9M10G45EK) += at91sam9m10g45ek.dtb
+
+dtb-$(CONFIG_TARGET_AT91SAM9X5EK) += \
+	at91sam9g15ek.dtb	\
+	at91sam9g25ek.dtb	\
+	at91sam9g35ek.dtb	\
+	at91sam9x25ek.dtb	\
+	at91sam9x35ek.dtb
+
+dtb-$(CONFIG_TARGET_AT91SAM9N12EK) += at91sam9n12ek.dtb
+
+dtb-$(CONFIG_TARGET_OMAP3_LOGIC) += \
+	logicpd-torpedo-37xx-devkit.dtb \
+	logicpd-som-lv-37xx-devkit.dtb
 
 dtb-$(CONFIG_TARGET_SAMA5D2_XPLAINED) += \
 	at91-sama5d2_xplained.dtb

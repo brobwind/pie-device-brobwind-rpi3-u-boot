@@ -55,9 +55,7 @@
 #define CONFIG_FASTBOOT_BUF_SIZE	0x07000000
 
 /* USB EHCI */
-#define CONFIG_USB_EHCI
 
-#define CONFIG_USB_EHCI_OMAP
 #define CONFIG_OMAP_EHCI_PHY1_RESET_GPIO	147
 
 #define CONFIG_SYS_USB_EHCI_MAX_ROOT_PORTS 3
@@ -65,10 +63,6 @@
 #define CONFIG_USB_ETHER_ASIX
 #define CONFIG_USB_ETHER_MCS7830
 #define CONFIG_USB_ETHER_SMSC95XX
-
-/* GPIO banks */
-#define CONFIG_OMAP3_GPIO_5		/* GPIO128..159 is in GPIO bank 5 */
-#define CONFIG_OMAP3_GPIO_6		/* GPIO160..191 is in GPIO bank 6 */
 
 /* commands to include */
 

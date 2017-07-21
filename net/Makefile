@@ -26,3 +26,8 @@ obj-$(CONFIG_CMD_RARP) += rarp.o
 obj-$(CONFIG_CMD_SNTP) += sntp.o
 obj-$(CONFIG_CMD_NET)  += tftp.o
 obj-$(CONFIG_UDP_FUNCTION_FASTBOOT)  += fastboot.o
+
+# Disable this warning as it is triggered by:
+# sprintf(buf, index ? "foo%d" : "foo", index)
+# and this is intentional usage.
+CFLAGS_eth_common.o += -Wno-format-extra-args

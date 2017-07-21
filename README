@@ -136,7 +136,6 @@ Directory Hierarchy:
 /arch			Architecture specific files
   /arc			Files generic to ARC architecture
   /arm			Files generic to ARM architecture
-  /avr32		Files generic to AVR32 architecture
   /m68k			Files generic to m68k architecture
   /microblaze		Files generic to microblaze architecture
   /mips			Files generic to MIPS architecture
@@ -292,7 +291,7 @@ board_init_r():
 	- stack is optionally in SDRAM, if CONFIG_SPL_STACK_R is defined and
 		CONFIG_SPL_STACK_R_ADDR points into SDRAM
 	- preloader_console_init() can be called here - typically this is
-		done by defining CONFIG_SPL_BOARD_INIT and then supplying a
+		done by selecting CONFIG_SPL_BOARD_INIT and then supplying a
 		spl_board_init() function containing this call
 	- loads U-Boot or (in falcon mode) Linux
 
@@ -320,41 +319,10 @@ The following options need to be configured:
 
 - Board Type:	Define exactly one, e.g. CONFIG_MPC8540ADS.
 
-- CPU Daughterboard Type: (if CONFIG_ATSTK1000 is defined)
-		Define exactly one, e.g. CONFIG_ATSTK1002
-
 - Marvell Family Member
 		CONFIG_SYS_MVFS		- define it if you want to enable
 					  multiple fs option at one time
 					  for marvell soc family
-
-- 8xx CPU Options: (if using an MPC8xx CPU)
-		CONFIG_8xx_GCLK_FREQ	- deprecated: CPU clock if
-					  get_gclk_freq() cannot work
-					  e.g. if there is no 32KHz
-					  reference PIT/RTC clock
-		CONFIG_8xx_OSCLK	- PLL input clock (either EXTCLK
-					  or XTAL/EXTAL)
-
-- 859/866/885 CPU options: (if using a MPC859 or MPC866 or MPC885 CPU):
-		CONFIG_SYS_8xx_CPUCLK_MIN
-		CONFIG_SYS_8xx_CPUCLK_MAX
-		CONFIG_8xx_CPUCLK_DEFAULT
-			See doc/README.MPC866
-
-		CONFIG_SYS_MEASURE_CPUCLK
-
-		Define this to measure the actual CPU clock instead
-		of relying on the correctness of the configured
-		values. Mostly useful for board bringup to make sure
-		the PLL is locked at the intended frequency. Note
-		that this requires a (stable) reference clock (32 kHz
-		RTC clock or CONFIG_SYS_8XX_XIN)
-
-		CONFIG_SYS_DELAYED_ICACHE
-
-		Define this option if you want to enable the
-		ICache only when Code runs from RAM.
 
 - 85xx CPU Options:
 		CONFIG_SYS_PPC64
@@ -636,10 +604,6 @@ The following options need to be configured:
 		 * Adds the "fdt" command
 		 * The bootm command automatically updates the fdt
 
-		OF_CPU - The proper name of the cpus node (only required for
-			MPC512X and MPC5xxx based boards).
-		OF_SOC - The proper name of the soc node (only required for
-			MPC512X and MPC5xxx based boards).
 		OF_TBCLK - The timebase frequency.
 		OF_STDOUT_PATH - The path to the console device
 
@@ -723,29 +687,10 @@ The following options need to be configured:
 		Define this variable to enable hw flow control in serial driver.
 		Current user of this option is drivers/serial/nsl16550.c driver
 
-- Console Interface:
-		Depending on board, define exactly one serial port
-		(like CONFIG_8xx_CONS_SMC1, CONFIG_8xx_CONS_SMC2,
-		CONFIG_8xx_CONS_SCC1, ...), or switch off the serial
-		console by defining CONFIG_8xx_CONS_NONE
-
-		Note: if CONFIG_8xx_CONS_NONE is defined, the serial
-		port routines must be defined elsewhere
-		(i.e. serial_init(), serial_getc(), ...)
-
 - Console Baudrate:
 		CONFIG_BAUDRATE - in bps
 		Select one of the baudrates listed in
 		CONFIG_SYS_BAUDRATE_TABLE, see below.
-		CONFIG_SYS_BRGCLK_PRESCALE, baudrate prescale
-
-- Console Rx buffer length
-		With CONFIG_SYS_SMC_RXBUFLEN it is possible to define
-		the maximum receive buffer length for the SMC.
-		This option is actual only for 82xx and 8xx possible.
-		If using CONFIG_SYS_SMC_RXBUFLEN also CONFIG_SYS_MAXIDLE
-		must be defined, to setup the maximum idle timeout for
-		the SMC.
 
 - Autoboot Command:
 		CONFIG_BOOTCOMMAND
@@ -827,22 +772,11 @@ The following options need to be configured:
 		CONFIG_CMD_BOOTI	* ARM64 Linux kernel Image support
 		CONFIG_CMD_CACHE	* icache, dcache
 		CONFIG_CMD_CONSOLE	  coninfo
-		CONFIG_CMD_CRC32	* crc32
-		CONFIG_CMD_DATE		* support for RTC, date/time...
 		CONFIG_CMD_DHCP		* DHCP support
 		CONFIG_CMD_DIAG		* Diagnostics
-		CONFIG_CMD_DS4510	* ds4510 I2C gpio commands
-		CONFIG_CMD_DS4510_INFO	* ds4510 I2C info command
-		CONFIG_CMD_DS4510_MEM	* ds4510 I2C eeprom/sram commansd
-		CONFIG_CMD_DS4510_RST	* ds4510 I2C rst command
-		CONFIG_CMD_DTT		* Digital Therm and Thermostat
 		CONFIG_CMD_ECHO		  echo arguments
 		CONFIG_CMD_EDITENV	  edit env variable
-		CONFIG_CMD_EEPROM	* EEPROM read/write support
-		CONFIG_CMD_EEPROM_LAYOUT* EEPROM layout aware commands
 		CONFIG_CMD_ELF		* bootelf, bootvx
-		CONFIG_CMD_ENV_CALLBACK	* display details about env callbacks
-		CONFIG_CMD_ENV_FLAGS	* display details about env flags
 		CONFIG_CMD_ENV_EXISTS	* check existence of env variable
 		CONFIG_CMD_EXPORTENV	* export the environment
 		CONFIG_CMD_EXT2		* ext2 command support
@@ -851,28 +785,17 @@ The following options need to be configured:
 					  that work for multiple fs types
 		CONFIG_CMD_FS_UUID	* Look up a filesystem UUID
 		CONFIG_CMD_SAVEENV	  saveenv
-		CONFIG_CMD_FDC		* Floppy Disk Support
-		CONFIG_CMD_FAT		* FAT command support
 		CONFIG_CMD_FLASH	  flinfo, erase, protect
 		CONFIG_CMD_FPGA		  FPGA device initialization support
-		CONFIG_CMD_FUSE		* Device fuse support
-		CONFIG_CMD_GETTIME	* Get time since boot
 		CONFIG_CMD_GO		* the 'go' command (exec code)
 		CONFIG_CMD_GREPENV	* search environment
-		CONFIG_CMD_HASH		* calculate hash / digest
 		CONFIG_CMD_I2C		* I2C serial bus support
-		CONFIG_CMD_IDE		* IDE harddisk support
 		CONFIG_CMD_IMI		  iminfo
 		CONFIG_CMD_IMLS		  List all images found in NOR flash
 		CONFIG_CMD_IMLS_NAND	* List all images found in NAND flash
-		CONFIG_CMD_IMMAP	* IMMR dump support
-		CONFIG_CMD_IOTRACE	* I/O tracing for debugging
 		CONFIG_CMD_IMPORTENV	* import an environment
 		CONFIG_CMD_INI		* import data from an ini file into the env
-		CONFIG_CMD_IRQ		* irqinfo
 		CONFIG_CMD_ITEST	  Integer/string test of 2 values
-		CONFIG_CMD_JFFS2	* JFFS2 Support
-		CONFIG_CMD_KGDB		* kgdb
 		CONFIG_CMD_LDRINFO	* ldrinfo (display Blackfin loader)
 		CONFIG_CMD_LINK_LOCAL	* link-local IP address auto-configuration
 					  (169.254.*.*)
@@ -906,11 +829,7 @@ The following options need to be configured:
 		CONFIG_SCSI		* SCSI Support
 		CONFIG_CMD_SDRAM	* print SDRAM configuration information
 					  (requires CONFIG_CMD_I2C)
-		CONFIG_CMD_SETGETDCR	  Support for DCR Register access
-					  (4xx only)
 		CONFIG_CMD_SF		* Read/write/erase SPI NOR flash
-		CONFIG_CMD_SHA1SUM	* print sha1 memory digest
-					  (requires CONFIG_CMD_MEMORY)
 		CONFIG_CMD_SOFTSWITCH	* Soft switch setting command for BF60x
 		CONFIG_CMD_SOURCE	  "source" command Support
 		CONFIG_CMD_SPI		* SPI serial bus support
@@ -936,8 +855,8 @@ The following options need to be configured:
 	Note:	Don't enable the "icache" and "dcache" commands
 		(configuration option CONFIG_CMD_CACHE) unless you know
 		what you (and your U-Boot users) are doing. Data
-		cache cannot be enabled on systems like the 8xx or
-		8260 (where accesses to the IMMR region must be
+		cache cannot be enabled on systems like the
+		8xx (where accesses to the IMMR region must be
 		uncached), and it cannot be disabled on all other
 		systems where we (mis-) use the data cache to hold an
 		initial stack and some data.
@@ -1000,7 +919,7 @@ The following options need to be configured:
 		CONFIG_WATCHDOG
 		If this variable is defined, it enables watchdog
 		support for the SoC. There must be support in the SoC
-		specific code for a watchdog. For the 8xx and 8260
+		specific code for a watchdog. For the 8xx
 		CPUs, the SIU Watchdog feature is enabled in the SYPCR
 		register.  When supported for a specific SoC is
 		available, then no further board specific code should
@@ -1028,7 +947,6 @@ The following options need to be configured:
 		has to be selected, too. Define exactly one of the
 		following options:
 
-		CONFIG_RTC_MPC8xx	- use internal RTC of MPC8xx
 		CONFIG_RTC_PCF8563	- use Philips PCF8563 RTC
 		CONFIG_RTC_MC13XXX	- use MC13783 or MC13892 RTC
 		CONFIG_RTC_MC146818	- use MC146818 RTC
@@ -1039,7 +957,7 @@ The following options need to be configured:
 		CONFIG_RTC_DS164x	- use Dallas DS164x RTC
 		CONFIG_RTC_ISL1208	- use Intersil ISL1208 RTC
 		CONFIG_RTC_MAX6900	- use Maxim, Inc. MAX6900 RTC
-		CONFIG_SYS_RTC_DS1337_NOOSC	- Turn off the OSC output for DS1337
+		CONFIG_RTC_DS1337_NOOSC	- Turn off the OSC output for DS1337
 		CONFIG_SYS_RV3029_TCR	- enable trickle charger on
 					  RV3029 RTC.
 
@@ -1088,15 +1006,13 @@ The following options need to be configured:
 - Partition Labels (disklabels) Supported:
 		Zero or more of the following:
 		CONFIG_MAC_PARTITION   Apple's MacOS partition table.
-		CONFIG_DOS_PARTITION   MS Dos partition table, traditional on the
-				       Intel architecture, USB sticks, etc.
 		CONFIG_ISO_PARTITION   ISO partition table, used on CDROM etc.
 		CONFIG_EFI_PARTITION   GPT partition table, common when EFI is the
 				       bootloader.  Note 2TB partition limit; see
 				       disk/part_efi.c
 		CONFIG_MTD_PARTITIONS  Memory Technology Device partition table.
 
-		If IDE or SCSI support is enabled (CONFIG_CMD_IDE or
+		If IDE or SCSI support is enabled (CONFIG_IDE or
 		CONFIG_SCSI) you must configure support for at
 		least one non-MTD partition type as well.
 
@@ -1308,7 +1224,7 @@ The following options need to be configured:
 
 - USB Support:
 		At the moment only the UHCI host controller is
-		supported (PIP405, MIP405, MPC5200); define
+		supported (PIP405, MIP405); define
 		CONFIG_USB_UHCI to enable it.
 		define CONFIG_USB_KEYBOARD to enable the USB Keyboard
 		and define CONFIG_USB_STORAGE to enable the USB
@@ -1316,19 +1232,6 @@ The following options need to be configured:
 		Note:
 		Supported are USB Keyboards and USB Floppy drives
 		(TEAC FD-05PUB).
-		MPC5200 USB requires additional defines:
-			CONFIG_USB_CLOCK
-				for 528 MHz Clock: 0x0001bbbb
-			CONFIG_PSC3_USB
-				for USB on PSC3
-			CONFIG_USB_CONFIG
-				for differential drivers: 0x00001000
-				for single ended drivers: 0x00005000
-				for differential drivers on PSC3: 0x00000100
-				for single ended drivers on PSC3: 0x00004100
-			CONFIG_SYS_USB_EVENT_POLL
-				May be defined to allow interrupt polling
-				instead of using asynchronous interrupts
 
 		CONFIG_USB_EHCI_TXFIFO_THRESH enables setting of the
 		txfilltuning field in the EHCI controller on reset.
@@ -1370,11 +1273,6 @@ The following options need to be configured:
 			CONFIG_SYS_CONSOLE_IS_IN_ENV
 			Define this if you want stdin, stdout &/or stderr to
 			be set to usbtty.
-
-			mpc8xx:
-				CONFIG_SYS_USB_EXTC_CLK 0xBLAH
-				Derive USB clock from external clock "blah"
-				- CONFIG_SYS_USB_EXTC_CLK 0x02
 
 		If you have a USB-IF assigned VendorID then you may wish to
 		define your own vendor specific values either in BoardName.h
@@ -1558,21 +1456,6 @@ The following options need to be configured:
 		CONFIG_SYS_JFFS2_FIRST_SECTOR,
 		CONFIG_SYS_JFFS2_FIRST_BANK, CONFIG_SYS_JFFS2_NUM_BANKS
 		Define these for a default partition on a NOR device
-
-- FAT(File Allocation Table) filesystem write function support:
-		CONFIG_FAT_WRITE
-
-		Define this to enable support for saving memory data as a
-		file in FAT formatted partition.
-
-		This will also enable the command "fatwrite" enabling the
-		user to write files to FAT.
-
-- FAT(File Allocation Table) filesystem cluster size:
-		CONFIG_FS_FAT_MAX_CLUSTSIZE
-
-		Define the max cluster size for fat operations else
-		a default value of 65536 will be defined.
 
 - Keyboard Support:
 		See Kconfig help for available keyboard drivers.
@@ -1759,29 +1642,6 @@ The following options need to be configured:
 		NOTE: the bzip2 algorithm requires a lot of RAM, so
 		the malloc area (as defined by CONFIG_SYS_MALLOC_LEN) should
 		be at least 4MB.
-
-		CONFIG_LZMA
-
-		If this option is set, support for lzma compressed
-		images is included.
-
-		Note: The LZMA algorithm adds between 2 and 4KB of code and it
-		requires an amount of dynamic memory that is given by the
-		formula:
-
-			(1846 + 768 << (lc + lp)) * sizeof(uint16)
-
-		Where lc and lp stand for, respectively, Literal context bits
-		and Literal pos bits.
-
-		This value is upper-bounded by 14MB in the worst case. Anyway,
-		for a ~4MB large kernel image, we have lc=3 and lp=0 for a
-		total amount of (1846 + 768 << (3 + 0)) * 2 = ~41KB... that is
-		a very small buffer.
-
-		Use the lzmainfo tool to determinate the lc and lp values and
-		then calculate the amount of needed dynamic memory (ensuring
-		the appropriate CONFIG_SYS_MALLOC_LEN value).
 
 		CONFIG_LZO
 
@@ -2030,12 +1890,6 @@ The following options need to be configured:
 		In such cases CONFIG_GPIO_LED_INVERTED_TABLE may be defined
 		with a list of GPIO LEDs that have inverted polarity.
 
-- CAN Support:	CONFIG_CAN_DRIVER
-
-		Defining CONFIG_CAN_DRIVER enables CAN driver support
-		on those systems that support this (optional)
-		feature, like the TQM8xxL modules.
-
 - I2C Support:	CONFIG_SYS_I2C
 
 		This enable the NEW i2c subsystem, and will allow you to use
@@ -2222,52 +2076,7 @@ The following options need to be configured:
 
 		If you do not have i2c muxes on your board, omit this define.
 
-- Legacy I2C Support:	CONFIG_HARD_I2C
-
-		NOTE: It is intended to move drivers to CONFIG_SYS_I2C which
-		provides the following compelling advantages:
-
-		- more than one i2c adapter is usable
-		- approved multibus support
-		- better i2c mux support
-
-		** Please consider updating your I2C driver now. **
-
-		These enable legacy I2C serial bus commands. Defining
-		CONFIG_HARD_I2C will include the appropriate I2C driver
-		for the selected CPU.
-
-		This will allow you to use i2c commands at the u-boot
-		command line (as long as you set CONFIG_CMD_I2C in
-		CONFIG_COMMANDS) and communicate with i2c based realtime
-		clock chips. See common/cmd_i2c.c for a description of the
-		command line interface.
-
-		CONFIG_HARD_I2C selects a hardware I2C controller.
-
-		There are several other quantities that must also be
-		defined when you define CONFIG_HARD_I2C.
-
-		In both cases you will need to define CONFIG_SYS_I2C_SPEED
-		to be the frequency (in Hz) at which you wish your i2c bus
-		to run and CONFIG_SYS_I2C_SLAVE to be the address of this node (ie
-		the CPU's i2c node address).
-
-		Now, the u-boot i2c code for the mpc8xx
-		(arch/powerpc/cpu/mpc8xx/i2c.c) sets the CPU up as a master node
-		and so its address should therefore be cleared to 0 (See,
-		eg, MPC823e User's Manual p.16-473). So, set
-		CONFIG_SYS_I2C_SLAVE to 0.
-
-		CONFIG_SYS_I2C_INIT_MPC5XXX
-
-		When a board is reset during an i2c bus transfer
-		chips might think that the current transfer is still
-		in progress.  Reset the slave devices by sending start
-		commands until the slave device responds.
-
-		That's all that's required for CONFIG_HARD_I2C.
-
+- Legacy I2C Support:
 		If you use the software i2c interface (CONFIG_SYS_I2C_SOFT)
 		then the following macros need to be defined (examples are
 		from include/configs/lwmon.h):
@@ -2278,12 +2087,6 @@ The following options need to be configured:
 		controller or configure ports.
 
 		eg: #define I2C_INIT (immr->im_cpm.cp_pbdir |=	PB_SCL)
-
-		I2C_PORT
-
-		(Only for MPC8260 CPU). The I/O port to use (the code
-		assumes both bits are on the same port). Valid values
-		are 0..3 for ports A..D.
 
 		I2C_ACTIVE
 
@@ -2356,23 +2159,6 @@ The following options need to be configured:
 		custom i2c_init_board() routine in boards/xxx/board.c
 		is run early in the boot sequence.
 
-		CONFIG_SYS_I2C_BOARD_LATE_INIT
-
-		An alternative to CONFIG_SYS_I2C_INIT_BOARD. If this option is
-		defined a custom i2c_board_late_init() routine in
-		boards/xxx/board.c is run AFTER the operations in i2c_init()
-		is completed. This callpoint can be used to unreset i2c bus
-		using CPU i2c controller register accesses for CPUs whose i2c
-		controller provide such a method. It is called at the end of
-		i2c_init() to allow i2c_init operations to setup the i2c bus
-		controller on the CPU (e.g. setting bus speed & slave address).
-
-		CONFIG_I2CFAST (PPC405GP|PPC405EP only)
-
-		This option enables configuration of bi_iic_fast[] flags
-		in u-boot bd_info structure based on u-boot environment
-		variable "i2cfast". (see also i2cfast)
-
 		CONFIG_I2C_MULTI_BUS
 
 		This option allows the use of multiple I2C buses, each of which
@@ -2407,17 +2193,6 @@ The following options need to be configured:
 
 		If defined, then this indicates the I2C bus number for the RTC.
 		If not defined, then U-Boot assumes that RTC is on I2C bus 0.
-
-		CONFIG_SYS_DTT_BUS_NUM
-
-		If defined, then this indicates the I2C bus number for the DTT.
-		If not defined, then U-Boot assumes that DTT is on I2C bus 0.
-
-		CONFIG_SYS_I2C_DTT_ADDR:
-
-		If defined, specifies the I2C address of the DTT device.
-		If not defined, then U-Boot uses predefined value for
-		specified DTT device.
 
 		CONFIG_SOFT_I2C_READ_REPEATED_START
 
@@ -2484,19 +2259,6 @@ The following options need to be configured:
 		CONFIG_FPGA_COUNT
 
 		Specify the number of FPGA devices to support.
-
-		CONFIG_CMD_FPGA_LOADMK
-
-		Enable support for fpga loadmk command
-
-		CONFIG_CMD_FPGA_LOADP
-
-		Enable support for fpga loadp command - load partial bitstream
-
-		CONFIG_CMD_FPGA_LOADBP
-
-		Enable support for fpga loadbp command - load partial bitstream
-		(Xilinx only)
 
 		CONFIG_SYS_FPGA_PROG_FEEDBACK
 
@@ -2612,9 +2374,9 @@ The following options need to be configured:
 		following board configurations are known to be
 		"pRAM-clean":
 
-			IVMS8, IVML24, SPD8xx, TQM8xxL,
+			IVMS8, IVML24, SPD8xx,
 			HERMES, IP860, RPXlite, LWMON,
-			FLAGADM, TQM8260
+			FLAGADM
 
 - Access to physical memory region (> 4GB)
 		Some basic support is provided for operations on memory not
@@ -2785,12 +2547,6 @@ The following options need to be configured:
 		Define this option to include a destructive SPI flash
 		test ('sf test').
 
-		CONFIG_SF_DUAL_FLASH		Dual flash memories
-
-		Define this option to use dual flash support where two flash
-		memories can be connected with a given cs line.
-		Currently Xilinx Zynq qspi supports these type of connections.
-
 - SystemACE Support:
 		CONFIG_SYSTEMACE
 
@@ -2824,38 +2580,6 @@ The following options need to be configured:
 		the remainder of the TFTP transfer to proceed normally.
 		A better solution is to properly configure the firewall,
 		but sometimes that is not allowed.
-
-- Hashing support:
-		CONFIG_CMD_HASH
-
-		This enables a generic 'hash' command which can produce
-		hashes / digests from a few algorithms (e.g. SHA1, SHA256).
-
-		CONFIG_HASH_VERIFY
-
-		Enable the hash verify command (hash -v). This adds to code
-		size a little.
-
-		CONFIG_SHA1 - This option enables support of hashing using SHA1
-		algorithm. The hash is calculated in software.
-		CONFIG_SHA256 - This option enables support of hashing using
-		SHA256 algorithm. The hash is calculated in software.
-		CONFIG_SHA_HW_ACCEL - This option enables hardware acceleration
-		for SHA1/SHA256 hashing.
-		This affects the 'hash' command and also the
-		hash_lookup_algo() function.
-		CONFIG_SHA_PROG_HW_ACCEL - This option enables
-		hardware-acceleration for SHA1/SHA256 progressive hashing.
-		Data can be streamed in a block at a time and the hashing
-		is performed in hardware.
-
-		Note: There is also a sha1sum command, which should perhaps
-		be deprecated in favour of 'hash sha1'.
-
-- Freescale i.MX specific commands:
-		CONFIG_CMD_HDMIDETECT
-		This enables 'hdmidet' command which returns true if an
-		HDMI monitor is detected.  This command is i.MX 6 specific.
 
 - bootcount support:
 		CONFIG_BOOTCOUNT_LIMIT
@@ -3052,15 +2776,6 @@ FIT uImage format:
 
 		This define is introduced, as the legacy image format is
 		enabled per default for backward compatibility.
-
-- FIT image support:
-		CONFIG_FIT_DISABLE_SHA256
-		Supporting SHA256 hashes has quite an impact on binary size.
-		For constrained systems sha256 hash support can be disabled
-		with this option.
-
-		TODO(sjg@chromium.org): Adjust this option to be positive,
-		and move it to Kconfig
 
 - Standalone program support:
 		CONFIG_STANDALONE_LOAD_ADDR
@@ -3726,11 +3441,6 @@ Configuration Settings:
 	If defined, don't allow the -f switch to env set override variable
 	access flags.
 
-- CONFIG_OMAP_PLATFORM_RESET_TIME_MAX_USEC (OMAP only)
-	This is set by OMAP boards for the max time that reset should
-	be asserted. See doc/README.omap-reset-time for details on how
-	the value can be calculated on a given board.
-
 - CONFIG_USE_STDINT
 	If stdint.h is available with your toolchain you can define this
 	option to enable it. You can provide option 'USE_STDINT=1' when
@@ -4065,7 +3775,7 @@ but it can not erase, write this NOR flash by SRIO or PCIE interface.
          environment.
 
        - CONFIG_FAT_WRITE:
-         This should be defined. Otherwise it cannot save the environment file.
+         This must be enabled. Otherwise it cannot save the environment file.
 
 - CONFIG_ENV_IS_IN_MMC:
 
@@ -4117,16 +3827,6 @@ but it can not erase, write this NOR flash by SRIO or PCIE interface.
 	  This value need not be set, even when CONFIG_ENV_OFFSET_REDUND is
 	  set. If this value is set, it must be set to the same value as
 	  CONFIG_ENV_SIZE.
-
-- CONFIG_SYS_SPI_INIT_OFFSET
-
-	Defines offset to the initial SPI buffer area in DPRAM. The
-	area is used at an early stage (ROM part) if the environment
-	is configured to reside in the SPI EEPROM: We need a 520 byte
-	scratch DPRAM area. It is used between the two initialization
-	calls (spi_init_f() and spi_init_r()). A value of 0xB00 seems
-	to be a good choice since it makes it far enough from the
-	start of the data area as well as from the stack pointer.
 
 Please note that the environment is read-only until the monitor
 has been relocated to RAM and a RAM copy of the environment has been
@@ -4181,13 +3881,6 @@ Low Level (hardware related) configuration options:
 - CONFIG_SYS_CACHELINE_SIZE:
 		Cache Line Size of the CPU.
 
-- CONFIG_SYS_DEFAULT_IMMR:
-		Default address of the IMMR after system reset.
-
-		Needed on some 8260 systems (MPC8260ADS, PQ2FADS-ZU,
-		and RPXsuper) to be able to adjust the position of
-		the IMMR register after a reset.
-
 - CONFIG_SYS_CCSRBAR_DEFAULT:
 		Default (power-on reset) physical address of CCSR on Freescale
 		PowerPC SOCs.
@@ -4195,9 +3888,6 @@ Low Level (hardware related) configuration options:
 - CONFIG_SYS_CCSRBAR:
 		Virtual address of CCSR.  On a 32-bit build, this is typically
 		the same value as CONFIG_SYS_CCSRBAR_DEFAULT.
-
-		CONFIG_SYS_DEFAULT_IMMR must also be set to this value,
-		for cross-platform code that uses that macro instead.
 
 - CONFIG_SYS_CCSRBAR_PHYS:
 		Physical address of CCSR.  CCSR can be relocated to a new
@@ -4261,7 +3951,7 @@ Low Level (hardware related) configuration options:
 
 - CONFIG_SYS_IMMR:	Physical address of the Internal Memory.
 		DO NOT CHANGE unless you know exactly what you're
-		doing! (11-4) [MPC8xx/82xx systems only]
+		doing! (11-4) [MPC8xx systems only]
 
 - CONFIG_SYS_INIT_RAM_ADDR:
 
@@ -4274,9 +3964,7 @@ Low Level (hardware related) configuration options:
 		sequences.
 
 		U-Boot uses the following memory types:
-		- MPC8xx and MPC8260: IMMR (internal memory of the CPU)
-		- MPC824X: data cache
-		- PPC4xx:  data cache
+		- MPC8xx: IMMR (internal memory of the CPU)
 
 - CONFIG_SYS_GBL_DATA_OFFSET:
 
@@ -4296,16 +3984,6 @@ Low Level (hardware related) configuration options:
 		point to an otherwise UNUSED address space between
 		the top of RAM and the start of the PCI space.
 
-- CONFIG_SYS_SIUMCR:	SIU Module Configuration (11-6)
-
-- CONFIG_SYS_SYPCR:	System Protection Control (11-9)
-
-- CONFIG_SYS_TBSCR:	Time Base Status and Control (11-26)
-
-- CONFIG_SYS_PISCR:	Periodic Interrupt Status and Control (11-31)
-
-- CONFIG_SYS_PLPRCR:	PLL, Low-Power, and Reset Control Register (15-30)
-
 - CONFIG_SYS_SCCR:	System Clock and reset Control Register (15-27)
 
 - CONFIG_SYS_OR_TIMING_SDRAM:
@@ -4313,8 +3991,6 @@ Low Level (hardware related) configuration options:
 
 - CONFIG_SYS_MAMR_PTA:
 		periodic timer for refresh
-
-- CONFIG_SYS_DER:	Debug Event Register (37-47)
 
 - FLASH_BASE0_PRELIM, FLASH_BASE1_PRELIM, CONFIG_SYS_REMAP_OR_AM,
   CONFIG_SYS_PRELIM_OR_AM, CONFIG_SYS_OR_TIMING_FLASH, CONFIG_SYS_OR0_REMAP,
@@ -4326,43 +4002,6 @@ Low Level (hardware related) configuration options:
   CONFIG_SYS_OR_TIMING_SDRAM, CONFIG_SYS_OR2_PRELIM, CONFIG_SYS_BR2_PRELIM,
   CONFIG_SYS_OR3_PRELIM, CONFIG_SYS_BR3_PRELIM:
 		Memory Controller Definitions: BR2/3 and OR2/3 (SDRAM)
-
-- CONFIG_SYS_MAMR_PTA, CONFIG_SYS_MPTPR_2BK_4K, CONFIG_SYS_MPTPR_1BK_4K, CONFIG_SYS_MPTPR_2BK_8K,
-  CONFIG_SYS_MPTPR_1BK_8K, CONFIG_SYS_MAMR_8COL, CONFIG_SYS_MAMR_9COL:
-		Machine Mode Register and Memory Periodic Timer
-		Prescaler definitions (SDRAM timing)
-
-- CONFIG_SYS_I2C_UCODE_PATCH, CONFIG_SYS_I2C_DPMEM_OFFSET [0x1FC0]:
-		enable I2C microcode relocation patch (MPC8xx);
-		define relocation offset in DPRAM [DSP2]
-
-- CONFIG_SYS_SMC_UCODE_PATCH, CONFIG_SYS_SMC_DPMEM_OFFSET [0x1FC0]:
-		enable SMC microcode relocation patch (MPC8xx);
-		define relocation offset in DPRAM [SMC1]
-
-- CONFIG_SYS_SPI_UCODE_PATCH, CONFIG_SYS_SPI_DPMEM_OFFSET [0x1FC0]:
-		enable SPI microcode relocation patch (MPC8xx);
-		define relocation offset in DPRAM [SCC4]
-
-- CONFIG_SYS_CPM_POST_WORD_ADDR: (MPC8xx, MPC8260 only)
-		Offset of the bootmode word in DPRAM used by post
-		(Power On Self Tests). This definition overrides
-		#define'd default value in commproc.h resp.
-		cpm_8260.h.
-
-- CONFIG_SYS_PCI_SLV_MEM_LOCAL, CONFIG_SYS_PCI_SLV_MEM_BUS, CONFIG_SYS_PICMR0_MASK_ATTRIB,
-  CONFIG_SYS_PCI_MSTR0_LOCAL, CONFIG_SYS_PCIMSK0_MASK, CONFIG_SYS_PCI_MSTR1_LOCAL,
-  CONFIG_SYS_PCIMSK1_MASK, CONFIG_SYS_PCI_MSTR_MEM_LOCAL, CONFIG_SYS_PCI_MSTR_MEM_BUS,
-  CONFIG_SYS_CPU_PCI_MEM_START, CONFIG_SYS_PCI_MSTR_MEM_SIZE, CONFIG_SYS_POCMR0_MASK_ATTRIB,
-  CONFIG_SYS_PCI_MSTR_MEMIO_LOCAL, CONFIG_SYS_PCI_MSTR_MEMIO_BUS, CPU_PCI_MEMIO_START,
-  CONFIG_SYS_PCI_MSTR_MEMIO_SIZE, CONFIG_SYS_POCMR1_MASK_ATTRIB, CONFIG_SYS_PCI_MSTR_IO_LOCAL,
-  CONFIG_SYS_PCI_MSTR_IO_BUS, CONFIG_SYS_CPU_PCI_IO_START, CONFIG_SYS_PCI_MSTR_IO_SIZE,
-  CONFIG_SYS_POCMR2_MASK_ATTRIB: (MPC826x only)
-		Overrides the default PCI memory map in arch/powerpc/cpu/mpc8260/pci.c if set.
-
-- CONFIG_PCI_DISABLE_PCIE:
-		Disable PCI-Express on systems where it is supported but not
-		required.
 
 - CONFIG_PCI_ENUM_ONLY
 		Only scan through and get the devices on the buses.
@@ -4437,21 +4076,6 @@ Low Level (hardware related) configuration options:
 - CONFIG_SYS_83XX_DDR_USES_CS0
 		Only for 83xx systems. If specified, then DDR should
 		be configured using CS0 and CS1 instead of CS2 and CS3.
-
-- CONFIG_ETHER_ON_FEC[12]
-		Define to enable FEC[12] on a 8xx series processor.
-
-- CONFIG_FEC[12]_PHY
-		Define to the hardcoded PHY address which corresponds
-		to the given FEC; i. e.
-			#define CONFIG_FEC1_PHY 4
-		means that the PHY with address 4 is connected to FEC1
-
-		When set to -1, means to probe for first available.
-
-- CONFIG_FEC[12]_PHY_NORXERR
-		The PHY does not have a RXERR line (RMII only).
-		(so program the FEC to ignore it).
 
 - CONFIG_RMII
 		Enable RMII mode for all FECs.
@@ -4529,11 +4153,6 @@ Low Level (hardware related) configuration options:
 - CONFIG_X86_RESET_VECTOR
 		If defined, the x86 reset vector code is included. This is not
 		needed when U-Boot is running from Coreboot.
-
-- CONFIG_SYS_MPUCLK
-		Defines the MPU clock speed (in MHz).
-
-		NOTE : currently only supported on AM335x platforms.
 
 - CONFIG_SPL_AM33XX_ENABLE_RTC32K_OSC:
 		Enables the RTC32K OSC on AM33xx based plattforms
@@ -5207,9 +4826,9 @@ details; basically, the header defines the following image properties:
   LynxOS, pSOS, QNX, RTEMS, INTEGRITY;
   Currently supported: Linux, NetBSD, VxWorks, QNX, RTEMS, LynxOS,
   INTEGRITY).
-* Target CPU Architecture (Provisions for Alpha, ARM, AVR32, Intel x86,
+* Target CPU Architecture (Provisions for Alpha, ARM, Intel x86,
   IA64, MIPS, NDS32, Nios II, PowerPC, IBM S390, SuperH, Sparc, Sparc 64 Bit;
-  Currently supported: ARM, AVR32, Intel x86, MIPS, NDS32, Nios II, PowerPC).
+  Currently supported: ARM, Intel x86, MIPS, NDS32, Nios II, PowerPC).
 * Compression Type (uncompressed, gzip, bzip2)
 * Load Address
 * Entry Point
@@ -6000,9 +5619,9 @@ configuration for CS0# this is a mirror of the on board Flash memory.
 To be able to re-map memory U-Boot then jumps to its link address.
 To be able to implement the initialization code in C, a (small!)
 initial stack is set up in the internal Dual Ported RAM (in case CPUs
-which provide such a feature like MPC8xx or MPC8260), or in a locked
-part of the data cache. After that, U-Boot initializes the CPU core,
-the caches and the SIU.
+which provide such a feature like), or in a locked part of the data
+cache. After that, U-Boot initializes the CPU core, the caches and
+the SIU.
 
 Next, all (potentially) available memory banks are mapped using a
 preliminary mapping. For example, we put them on 512 MB boundaries

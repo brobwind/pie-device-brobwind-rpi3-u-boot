@@ -3,7 +3,7 @@
 #
 
 VERSION = 2017
-PATCHLEVEL = 05
+PATCHLEVEL = 07
 SUBLEVEL =
 EXTRAVERSION =
 NAME =
@@ -653,7 +653,6 @@ libs-y += drivers/
 libs-y += drivers/dma/
 libs-y += drivers/gpio/
 libs-y += drivers/i2c/
-libs-y += drivers/mmc/
 libs-y += drivers/mtd/
 libs-$(CONFIG_CMD_NAND) += drivers/mtd/nand/
 libs-y += drivers/mtd/onenand/
@@ -747,6 +746,9 @@ BOARD_SIZE_CHECK =
 endif
 
 # Statically apply RELA-style relocations (currently arm64 only)
+# This is useful for arm64 where static relocation needs to be performed on
+# the raw binary, but certain simulators only accept an ELF file (but don't
+# do the relocation).
 ifneq ($(CONFIG_STATIC_RELA),)
 # $(1) is u-boot ELF, $(2) is u-boot bin, $(3) is text base
 DO_STATIC_RELA = \
@@ -829,6 +831,10 @@ MKIMAGEOUTPUT ?= /dev/null
 
 quiet_cmd_mkimage = MKIMAGE $@
 cmd_mkimage = $(objtree)/tools/mkimage $(MKIMAGEFLAGS_$(@F)) -d $< $@ \
+	$(if $(KBUILD_VERBOSE:1=), >$(MKIMAGEOUTPUT))
+
+quiet_cmd_mkfitimage = MKIMAGE $@
+cmd_mkfitimage = $(objtree)/tools/mkimage $(MKIMAGEFLAGS_$(@F)) -f $(U_BOOT_ITS) -E $@ \
 	$(if $(KBUILD_VERBOSE:1=), >$(MKIMAGEOUTPUT))
 
 quiet_cmd_cat = CAT     $@
@@ -950,6 +956,19 @@ quiet_cmd_cpp_cfg = CFG     $@
 cmd_cpp_cfg = $(CPP) -Wp,-MD,$(depfile) $(cpp_flags) $(LDPPFLAGS) -ansi \
 	-DDO_DEPS_ONLY -D__ASSEMBLY__ -x assembler-with-cpp -P -dM -E -o $@ $<
 
+# Boards with more complex image requirments can provide an .its source file
+# or a generator script
+ifneq ($(CONFIG_SPL_FIT_SOURCE),"")
+U_BOOT_ITS = $(subst ",,$(CONFIG_SPL_FIT_SOURCE))
+else
+ifneq ($(CONFIG_SPL_FIT_GENERATOR),"")
+U_BOOT_ITS := u-boot.its
+$(U_BOOT_ITS): FORCE
+	$(srctree)/$(CONFIG_SPL_FIT_GENERATOR) \
+	$(patsubst %,arch/$(ARCH)/dts/%.dtb,$(subst ",,$(CONFIG_OF_LIST))) > $@
+endif
+endif
+
 ifdef CONFIG_SPL_LOAD_FIT
 MKIMAGEFLAGS_u-boot.img = -f auto -A $(ARCH) -T firmware -C none -O u-boot \
 	-a $(CONFIG_SYS_TEXT_BASE) -e $(CONFIG_SYS_UBOOT_START) \
@@ -981,6 +1000,9 @@ MKIMAGEFLAGS_u-boot.pbl = -n $(srctree)/$(CONFIG_SYS_FSL_PBL_RCW:"%"=%) \
 u-boot-dtb.img u-boot.img u-boot.kwb u-boot.pbl u-boot-ivt.img: \
 		$(if $(CONFIG_SPL_LOAD_FIT),u-boot-nodtb.bin dts/dt.dtb,u-boot.bin) FORCE
 	$(call if_changed,mkimage)
+
+u-boot.itb: u-boot-nodtb.bin dts/dt.dtb $(U_BOOT_ITS) FORCE
+	$(call if_changed,mkfitimage)
 
 u-boot-spl.kwb: u-boot.img spl/u-boot-spl.bin FORCE
 	$(call if_changed,mkimage)
@@ -1094,7 +1116,7 @@ cmd_ldr = $(LD) $(LDFLAGS_$(@F)) \
 
 u-boot.rom: u-boot-x86-16bit.bin u-boot.bin \
 		$(if $(CONFIG_SPL_X86_16BIT_INIT),spl/u-boot-spl.bin) \
-		$(if $(CONFIG_HAVE_REFCODE),refcode.bin) FORCE
+		$(if $(CONFIG_HAVE_REFCODE),refcode.bin) checkbinman FORCE
 	$(call if_changed,binman)
 
 OBJCOPYFLAGS_u-boot-x86-16bit.bin := -O binary -j .start16 -j .resetvec
@@ -1103,7 +1125,8 @@ u-boot-x86-16bit.bin: u-boot FORCE
 endif
 
 ifneq ($(CONFIG_ARCH_SUNXI),)
-u-boot-sunxi-with-spl.bin: spl/sunxi-spl.bin u-boot.img u-boot.dtb FORCE
+u-boot-sunxi-with-spl.bin: spl/sunxi-spl.bin u-boot.img u-boot.dtb \
+		checkbinman FORCE
 	$(call if_changed,binman)
 endif
 
@@ -1180,17 +1203,17 @@ OBJCOPYFLAGS_u-boot-img-spl-at-end.bin := -I binary -O binary \
 u-boot-img-spl-at-end.bin: u-boot.img spl/u-boot-spl.bin FORCE
 	$(call if_changed,pad_cat)
 
-# Create a new ELF from a raw binary file.  This is useful for arm64
-# where static relocation needs to be performed on the raw binary,
-# but certain simulators only accept an ELF file (but don't do the
-# relocation).
-# FIXME refactor dts/Makefile to share target/arch detection
+# Create a new ELF from a raw binary file.
+ifndef PLATFORM_ELFENTRY
+  PLATFORM_ELFENTRY = "_start"
+endif
+quiet_cmd_u-boot-elf ?= LD      $@
+	cmd_u-boot-elf ?= $(LD) u-boot-elf.o -o $@ \
+	--defsym=$(PLATFORM_ELFENTRY)=$(CONFIG_SYS_TEXT_BASE) \
+	-Ttext=$(CONFIG_SYS_TEXT_BASE)
 u-boot.elf: u-boot.bin
-	@$(OBJCOPY)  -B aarch64 -I binary -O elf64-littleaarch64 \
-		$< u-boot-elf.o
-	@$(LD) u-boot-elf.o -o $@ \
-		--defsym=_start=$(CONFIG_SYS_TEXT_BASE) \
-		-Ttext=$(CONFIG_SYS_TEXT_BASE)
+	$(Q)$(OBJCOPY) -I binary $(PLATFORM_ELFFLAGS) $< u-boot-elf.o
+	$(call if_changed,u-boot-elf)
 
 # Rule to link u-boot
 # May be overridden by arch/$(ARCH)/config.mk
@@ -1331,6 +1354,18 @@ $(version_h): include/config/uboot.release FORCE
 
 $(timestamp_h): $(srctree)/Makefile FORCE
 	$(call filechk,timestamp.h)
+
+checkbinman: tools
+	@if ! ( echo 'import libfdt' | ( PYTHONPATH=tools python )); then \
+		echo >&2; \
+		echo >&2 '*** binman needs the Python libfdt library.'; \
+		echo >&2 '*** Either install it on your system, or try:'; \
+		echo >&2 '***'; \
+		echo >&2 '*** sudo apt-get install swig libpython-dev'; \
+		echo >&2 '***'; \
+		echo >&2 '*** to have U-Boot build its own version.'; \
+		false; \
+	fi
 
 # ---------------------------------------------------------------------------
 quiet_cmd_cpp_lds = LDS     $@

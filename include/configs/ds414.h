@@ -23,7 +23,6 @@
 /*
  * Commands configuration
  */
-#define CONFIG_CMD_ENV
 
 /* I2C */
 #define CONFIG_SYS_I2C
@@ -74,8 +73,6 @@
 #endif
 
 #if !defined(CONFIG_USB_XHCI_HCD)
-#define CONFIG_USB_EHCI
-#define CONFIG_USB_EHCI_MARVELL
 #define CONFIG_EHCI_IS_TDI
 #endif
 

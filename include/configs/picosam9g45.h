@@ -98,8 +98,6 @@
 #define CONFIG_AT91_WANTS_COMMON_PHY
 
 /* USB */
-#define CONFIG_USB_EHCI
-#define CONFIG_USB_EHCI_ATMEL
 #define CONFIG_SYS_USB_EHCI_MAX_ROOT_PORTS	2
 
 #define CONFIG_SYS_LOAD_ADDR		0x22000000	/* load address */
@@ -118,7 +116,6 @@
 #define FAT_ENV_DEVICE_AND_PART	"0"
 #define FAT_ENV_FILE		"uboot.env"
 #define CONFIG_ENV_IS_IN_FAT
-#define CONFIG_FAT_WRITE
 #define CONFIG_ENV_SIZE		0x4000
 
 #define CONFIG_BOOTARGS		"console=ttyS0,115200 " \

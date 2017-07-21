@@ -174,9 +174,6 @@
 #endif
 
 /* Command line configuration */
-#ifndef SPL_NO_ENV
-#define CONFIG_CMD_ENV
-#endif
 
 /*  MMC  */
 #ifndef SPL_NO_MMC
@@ -208,20 +205,21 @@
 #define CONFIG_SYS_FM_MURAM_SIZE	0x60000
 
 #ifdef CONFIG_NAND_BOOT
-/* Store Fman ucode at offeset 0x160000(11 blocks). */
+/* Store Fman ucode at offeset 0x900000(72 blocks). */
 #define CONFIG_SYS_QE_FMAN_FW_IN_NAND
-#define CONFIG_SYS_FMAN_FW_ADDR		(11 * CONFIG_SYS_NAND_BLOCK_SIZE)
+#define CONFIG_SYS_FMAN_FW_ADDR		(72 * CONFIG_SYS_NAND_BLOCK_SIZE)
 #elif defined(CONFIG_SD_BOOT)
 /*
  * PBL SD boot image should stored at 0x1000(8 blocks), the size of the image is
  * about 1MB (2040 blocks), Env is stored after the image, and the env size is
- * 0x2000 (16 blocks), 8 + 2040 + 16 = 2064, enlarge it to 2080(0x820).
+ * 0x2000 (16 blocks), 8 + 2040 + 16 = 2064, enlarge it to 18432(0x4800).
  */
 #define CONFIG_SYS_QE_FMAN_FW_IN_MMC
-#define CONFIG_SYS_FMAN_FW_ADDR		(512 * 0x820)
+#define CONFIG_SYS_FMAN_FW_ADDR		(512 * 0x4800)
+#define CONFIG_SYS_QE_FW_ADDR		(512 * 0x4a08)
 #elif defined(CONFIG_QSPI_BOOT)
 #define CONFIG_SYS_QE_FW_IN_SPIFLASH
-#define CONFIG_SYS_FMAN_FW_ADDR		0x400d0000
+#define CONFIG_SYS_FMAN_FW_ADDR		0x40900000
 #define CONFIG_ENV_SPI_BUS		0
 #define CONFIG_ENV_SPI_CS		0
 #define CONFIG_ENV_SPI_MAX_HZ		1000000
@@ -229,7 +227,8 @@
 #else
 #define CONFIG_SYS_QE_FMAN_FW_IN_NOR
 /* FMan fireware Pre-load address */
-#define CONFIG_SYS_FMAN_FW_ADDR		0x60300000
+#define CONFIG_SYS_FMAN_FW_ADDR		0x60900000
+#define CONFIG_SYS_QE_FW_ADDR		0x60940000
 #endif
 #define CONFIG_SYS_QE_FMAN_FW_LENGTH	0x10000
 #define CONFIG_SYS_FDT_PAD		(0x3000 + CONFIG_SYS_QE_FMAN_FW_LENGTH)
@@ -301,10 +300,6 @@
 
 #define CONFIG_SYS_BOOTM_LEN   (64 << 20)      /* Increase max gunzip size */
 
-/* Hash command with SHA acceleration supported in hardware */
-#ifdef CONFIG_FSL_CAAM
-#define CONFIG_CMD_HASH
-#define CONFIG_SHA_HW_ACCEL
-#endif
+#include <asm/arch/soc.h>
 
 #endif /* __LS1043A_COMMON_H */

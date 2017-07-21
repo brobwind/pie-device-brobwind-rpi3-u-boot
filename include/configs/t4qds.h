@@ -241,8 +241,6 @@
 /*
  * Command line configuration.
  */
-#define CONFIG_CMD_ERRATA
-#define CONFIG_CMD_IRQ
 
 #ifdef CONFIG_PCI
 #define CONFIG_CMD_PCI
