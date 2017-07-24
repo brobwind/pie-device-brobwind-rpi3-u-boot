@@ -228,7 +228,7 @@ static int bcm2835_sdhci_probe(struct udevice *dev)
 }
 
 static const struct udevice_id bcm2835_sdhci_match[] = {
-	{ .compatible = "brcm,bcm2835-sdhci" },
+	{ .compatible = "brcm,bcm2835-mmc" },
 	{ /* sentinel */ }
 };
 
