@@ -322,7 +322,7 @@ U_BOOT_ENV_CALLBACK(dnsip, on_dnsip);
 void net_auto_load(void)
 {
 #if defined(CONFIG_CMD_NFS)
-	const char *s = getenv("autoload");
+	const char *s = env_get("autoload");
 
 	if (s != NULL && strcmp(s, "NFS") == 0) {
 		/*
@@ -332,7 +332,7 @@ void net_auto_load(void)
 		return;
 	}
 #endif
-	if (getenv_yesno("autoload") == 0) {
+	if (env_get_yesno("autoload") == 0) {
 		/*
 		 * Just use BOOTP/RARP to configure system;
 		 * Do not use TFTP to load the bootfile.
@@ -497,7 +497,7 @@ restart:
 			cdp_start();
 			break;
 #endif
-#if defined(CONFIG_NETCONSOLE) && !(CONFIG_SPL_BUILD)
+#if defined(CONFIG_NETCONSOLE) && !defined(CONFIG_SPL_BUILD)
 		case NETCONS:
 			nc_start();
 			break;
@@ -624,8 +624,8 @@ restart:
 			if (net_boot_file_size > 0) {
 				printf("Bytes transferred = %d (%x hex)\n",
 				       net_boot_file_size, net_boot_file_size);
-				setenv_hex("filesize", net_boot_file_size);
-				setenv_hex("fileaddr", load_addr);
+				env_set_hex("filesize", net_boot_file_size);
+				env_set_hex("fileaddr", load_addr);
 			}
 			if (protocol != NETCONS)
 				eth_halt();
@@ -676,7 +676,7 @@ int net_start_again(void)
 	unsigned long retrycnt = 0;
 	int ret;
 
-	nretry = getenv("netretry");
+	nretry = env_get("netretry");
 	if (nretry) {
 		if (!strcmp(nretry, "yes"))
 			retry_forever = 1;
@@ -1266,7 +1266,7 @@ void net_process_received_packet(uchar *in_packet, int len)
 		}
 #endif
 
-#if defined(CONFIG_NETCONSOLE) && !(CONFIG_SPL_BUILD)
+#if defined(CONFIG_NETCONSOLE) && !defined(CONFIG_SPL_BUILD)
 		nc_input_packet((uchar *)ip + IP_UDP_HDR_SIZE,
 				src_ip,
 				ntohs(ip->udp_dst),
@@ -1545,7 +1545,7 @@ ushort string_to_vlan(const char *s)
 	return htons(id);
 }
 
-ushort getenv_vlan(char *var)
+ushort env_get_vlan(char *var)
 {
-	return string_to_vlan(getenv(var));
+	return string_to_vlan(env_get(var));
 }
