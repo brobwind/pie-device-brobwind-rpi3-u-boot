@@ -28,7 +28,7 @@ static int do_boot_android(cmd_tbl_t *cmdtp, int flag, int argc,
 		if (addr_arg_endp == argv[4] || *addr_arg_endp != '\0')
 			return CMD_RET_USAGE;
 	} else {
-		addr_str = getenv("loadaddr");
+		addr_str = env_get("loadaddr");
 		if (addr_str)
 			load_address = simple_strtoul(addr_str, NULL, 16);
 		else

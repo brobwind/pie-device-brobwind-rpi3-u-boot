@@ -150,7 +150,7 @@ static int android_part_get_info_by_name_suffix(struct blk_desc *dev_desc,
 
 static int android_bootloader_boot_bootloader(void)
 {
-	const char *fastboot_cmd = getenv("fastbootcmd");
+	const char *fastboot_cmd = env_get("fastbootcmd");
 
 	if (fastboot_cmd)
 		return run_command(fastboot_cmd, CMD_FLAG_ENV);
@@ -160,7 +160,7 @@ static int android_bootloader_boot_bootloader(void)
 static int android_bootloader_boot_kernel(unsigned long kernel_address)
 {
 	char kernel_addr_str[12];
-	char *fdt_addr = getenv("fdt_addr");
+	char *fdt_addr = env_get("fdt_addr");
 	char *bootm_args[] = {
 		"bootm", kernel_addr_str, kernel_addr_str, fdt_addr, NULL };
 
@@ -219,7 +219,7 @@ static char *android_assemble_cmdline(const char *slot_suffix,
 	char *allocated_rootdev = NULL;
 	unsigned long rootdev_len;
 
-	env_cmdline = getenv("bootargs");
+	env_cmdline = env_get("bootargs");
 	if (env_cmdline)
 		*(current_chunk++) = env_cmdline;
 
@@ -234,7 +234,7 @@ static char *android_assemble_cmdline(const char *slot_suffix,
 		*(current_chunk++) = allocated_suffix;
 	}
 
-	rootdev_input = getenv("android_rootdev");
+	rootdev_input = env_get("android_rootdev");
 	if (rootdev_input) {
 		rootdev_len = strlen(ANDROID_ARG_ROOT) + CONFIG_SYS_CBSIZE + 1;
 		allocated_rootdev = malloc(rootdev_len);
@@ -334,13 +334,13 @@ int android_bootloader_boot_flow(struct blk_desc *dev_desc,
 		return ret;
 
 	/* Set Android root variables. */
-	setenv_ulong("android_root_devnum", dev_desc->devnum);
-	setenv_ulong("android_root_partnum", system_part_num);
-	setenv("android_slotsufix", slot_suffix);
+	env_set_ulong("android_root_devnum", dev_desc->devnum);
+	env_set_ulong("android_root_partnum", system_part_num);
+	env_set("android_slotsufix", slot_suffix);
 
 	/* Assemble the command line */
 	command_line = android_assemble_cmdline(slot_suffix, mode_cmdline);
-	setenv("bootargs", command_line);
+	env_set("bootargs", command_line);
 
 	debug("ANDROID: bootargs: \"%s\"\n", command_line);
 
