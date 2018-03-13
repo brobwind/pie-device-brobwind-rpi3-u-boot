@@ -197,7 +197,7 @@ static int fastboot_bind(struct usb_configuration *c, struct usb_function *f)
 		f->hs_descriptors = fb_hs_function;
 	}
 
-	s = getenv("serial#");
+	s = env_get("serial#");
 	if (s)
 		g_dnl_set_serialnumber((char *)s);
 
@@ -395,7 +395,7 @@ static void cb_getvar(struct usb_ep *ep, struct usb_request *req)
 
 	strsep(&cmd, ":");
 	if (!cmd) {
-		error("missing variable");
+		pr_err("missing variable");
 		fastboot_tx_write_str("FAILmissing var");
 		return;
 	}
@@ -411,7 +411,7 @@ static void cb_getvar(struct usb_ep *ep, struct usb_request *req)
 		sprintf(str_num, "0x%08x", CONFIG_FASTBOOT_BUF_SIZE);
 		strncat(response, str_num, chars_left);
 	} else if (!strcmp_l1("serialno", cmd)) {
-		s = getenv("serial#");
+		s = env_get("serial#");
 		if (s)
 			strncat(response, s, chars_left);
 		else
@@ -426,7 +426,7 @@ static void cb_getvar(struct usb_ep *ep, struct usb_request *req)
 		}
 
 		sprintf(envstr, "fastboot.%s", cmd);
-		s = getenv(envstr);
+		s = env_get(envstr);
 		if (s) {
 			strncat(response, s, chars_left);
 		} else {
@@ -546,7 +546,7 @@ static void do_bootm_on_complete(struct usb_ep *ep, struct usb_request *req)
 
 	puts("Booting kernel..\n");
 
-	sprintf(boot_addr_start, "0x%lx", load_addr);
+	sprintf(boot_addr_start, "0x%lx", (long)CONFIG_FASTBOOT_BUF_ADDR);
 	do_bootm(NULL, 0, 2, bootm_args);
 
 	/* This only happens if image is somehow faulty so we start over */
@@ -578,7 +578,7 @@ static void cb_flash(struct usb_ep *ep, struct usb_request *req)
 
 	strsep(&cmd, ":");
 	if (!cmd) {
-		error("missing partition name");
+		pr_err("missing partition name");
 		fastboot_tx_write_str("FAILmissing partition name");
 		return;
 	}
@@ -626,7 +626,7 @@ static void cb_erase(struct usb_ep *ep, struct usb_request *req)
 
 	strsep(&cmd, ":");
 	if (!cmd) {
-		error("missing partition name");
+		pr_err("missing partition name");
 		fastboot_tx_write_str("FAILmissing partition name");
 		return;
 	}
@@ -696,7 +696,7 @@ static void rx_handler_command(struct usb_ep *ep, struct usb_request *req)
 	}
 
 	if (!func_cb) {
-		error("unknown command: %s", cmdbuf);
+		pr_err("unknown command: %.*s", req->actual, cmdbuf);
 		fastboot_tx_write_str("FAILunknown command");
 	} else {
 		if (req->actual < req->length) {
@@ -704,7 +704,7 @@ static void rx_handler_command(struct usb_ep *ep, struct usb_request *req)
 			buf[req->actual] = 0;
 			func_cb(ep, req);
 		} else {
-			error("buffer overflow");
+			pr_err("buffer overflow");
 			fastboot_tx_write_str("FAILbuffer overflow");
 		}
 	}

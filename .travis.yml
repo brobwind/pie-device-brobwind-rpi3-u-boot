@@ -29,9 +29,6 @@ addons:
     - device-tree-compiler
 
 install:
- # install latest device tree compiler
- #- git clone --depth=1 git://git.kernel.org/pub/scm/utils/dtc/dtc.git /tmp/dtc
- #- make -j4 -C /tmp/dtc
  # Clone uboot-test-hooks
  - git clone --depth=1 git://github.com/swarren/uboot-test-hooks.git /tmp/uboot-test-hooks
  - ln -s travis-ci /tmp/uboot-test-hooks/bin/`hostname`
@@ -52,7 +49,7 @@ install:
 
 env:
   global:
-    - PATH=/tmp/dtc:/tmp/qemu-install/bin:/tmp/uboot-test-hooks/bin:$PATH
+    - PATH=/tmp/qemu-install/bin:/tmp/uboot-test-hooks/bin:/usr/bin:/bin
     - PYTHONPATH=/tmp/uboot-test-hooks/py/travis-ci
     - BUILD_DIR=build
     - HOSTCC="cc"
@@ -141,6 +138,12 @@ matrix:
     - env:
         - BUILDMAN="aries"
     - env:
+        - JOB="Boundary Devices"
+          BUILDMAN="boundary"
+    - env:
+        - JOB="engicam"
+          BUILDMAN="engicam"
+    - env:
         - JOB="Freescale ARM32"
           BUILDMAN="freescale -x powerpc,m68k,aarch64"
     - env:
@@ -148,12 +151,16 @@ matrix:
           BUILDMAN="freescale&aarch64"
     - env:
         - JOB="i.MX6 (non-Freescale)"
-          BUILDMAN="mx6 -x freescale"
+          BUILDMAN="mx6 -x freescale,toradex,boundary,engicam"
     - env:
         - JOB="i.MX (non-Freescale, non-i.MX6)"
-          BUILDMAN="mx -x freescale,mx6"
+          BUILDMAN="mx -x freescale,mx6,toradex"
+    - env:
+        - BUILDMAN="k2"
     - env:
         - BUILDMAN="samsung"
+    - env:
+        - BUILDMAN="socfpga"
     - env:
         - BUILDMAN="sun4i"
     - env:
@@ -170,16 +177,19 @@ matrix:
         - BUILDMAN="sun50i"
     - env:
         - JOB="Catch-all ARM"
-          BUILDMAN="arm -x arm11,arm7,arm9,aarch64,atmel,aries,freescale,kirkwood,mvebu,siemens,tegra,uniphier,mx,samsung,sunxi,am33xx,omap3,omap4,omap5,pxa,rockchip"
+          BUILDMAN="arm -x arm11,arm7,arm9,aarch64,atmel,aries,freescale,kirkwood,mvebu,siemens,tegra,uniphier,mx,samsung,sunxi,am33xx,omap3,omap4,omap5,pxa,rockchip,toradex,socfpga,k2,xilinx"
     - env:
         - BUILDMAN="sandbox x86"
           TOOLCHAIN="x86_64"
+    - env:
+        - BUILDMAN="toradex"
     - env:
         - BUILDMAN="kirkwood"
     - env:
         - BUILDMAN="mvebu"
     - env:
-        - BUILDMAN="pxa"
+        - JOB="PXA"
+        - BUILDMAN="pxa -x toradex"
     - env:
         - BUILDMAN="m68k"
           TOOLCHAIN="m68k"
@@ -210,7 +220,8 @@ matrix:
     - env:
         - BUILDMAN="siemens"
     - env:
-        - BUILDMAN="tegra"
+        - JOB="tegra"
+          BUILDMAN="tegra -x toradex"
     - env:
         - JOB="am33xx"
           BUILDMAN="am33xx -x siemens"
@@ -223,12 +234,16 @@ matrix:
     - env:
         - BUILDMAN="uniphier"
     - env:
-        - BUILDMAN="aarch64 -x tegra,freescale,mvebu,uniphier,sunxi,samsung,rockchip"
+        - JOB="aarch64"
+          BUILDMAN="aarch64 -x tegra,freescale,mvebu,uniphier,sunxi,samsung,rockchip"
     - env:
         - BUILDMAN="rockchip"
     - env:
         - BUILDMAN="sh4"
           TOOLCHAIN="sh4"
+    - env:
+        - JOB="Xilinx (ARM)"
+          BUILDMAN="xilinx -x microblaze"
     - env:
         - BUILDMAN="xtensa"
           TOOLCHAIN="xtensa"
@@ -264,6 +279,15 @@ matrix:
           BUILDMAN="^sandbox$"
           TOOLCHAIN="x86_64"
     - env:
+        - TEST_PY_BD="sandbox_spl"
+          TEST_PY_TEST_SPEC="test_ofplatdata"
+          BUILDMAN="^sandbox$"
+          TOOLCHAIN="x86_64"
+    - env:
+        - TEST_PY_BD="sandbox_flattree"
+          BUILDMAN="^sandbox_flattree$"
+          TOOLCHAIN="x86_64"
+    - env:
         - TEST_PY_BD="vexpress_ca15_tc2"
           TEST_PY_ID="--id qemu"
           QEMU_TARGET="arm-softmmu"
@@ -279,6 +303,11 @@ matrix:
           TEST_PY_ID="--id qemu"
           QEMU_TARGET="arm-softmmu"
           BUILDMAN="^integratorcp_cm926ejs$"
+    - env:
+        - TEST_PY_BD="qemu_arm"
+          TEST_PY_TEST_SPEC="not sleep"
+          QEMU_TARGET="arm-softmmu"
+          BUILDMAN="^qemu_arm$"
     - env:
         - TEST_PY_BD="qemu_mips"
           TEST_PY_TEST_SPEC="not sleep"

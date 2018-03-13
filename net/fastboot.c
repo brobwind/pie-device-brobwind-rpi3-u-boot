@@ -185,7 +185,7 @@ static void fastboot_send(struct fastboot_header fb_header, char *fastboot_data,
 			/* A/B not implemented, for now do nothing */
 			write_fb_response("OKAY", "", response);
 		} else {
-			error("command %s not implemented.\n", cmd_string);
+			pr_err("command %s not implemented.\n", cmd_string);
 			write_fb_response("FAIL", "unrecognized command", response);
 		}
 		/* Sent some INFO packets, need to update sequence number in header */
@@ -198,7 +198,7 @@ static void fastboot_send(struct fastboot_header fb_header, char *fastboot_data,
 		packet += strlen(response);
 		break;
 	default:
-		error("ID %d not implemented.\n", fb_header.id);
+		pr_err("ID %d not implemented.\n", fb_header.id);
 		return;
 	}
 
@@ -216,7 +216,7 @@ static void fastboot_send(struct fastboot_header fb_header, char *fastboot_data,
 		if (!strcmp("boot", cmd_string)) {
 			boot_downloaded_image();
 		} else if (!strcmp("continue", cmd_string)) {
-			run_command(getenv("bootcmd"), CMD_FLAG_ENV);
+			run_command(env_get("bootcmd"), CMD_FLAG_ENV);
 		} else if (!strncmp("reboot", cmd_string, 6)) {
 			/* Matches reboot or reboot-bootloader */
 			do_reset(NULL, 0, 0, NULL);
@@ -251,7 +251,7 @@ static void fb_getvar(char *response)
 		sprintf(buf_size_str, "0x%08x", CONFIG_FASTBOOT_BUF_SIZE);
 		write_fb_response("OKAY", buf_size_str, response);
 	} else if (!strcmp("serialno", cmd_parameter)) {
-		const char *tmp = getenv("serial#");
+		const char *tmp = env_get("serial#");
 		if (tmp) {
 			write_fb_response("OKAY", tmp, response);
 		} else {
@@ -260,7 +260,7 @@ static void fb_getvar(char *response)
 	} else if (!strcmp("version-baseband", cmd_parameter)) {
 		write_fb_response("OKAY", "N/A", response);
 	} else if (!strcmp("product", cmd_parameter)) {
-		const char *board = getenv("board");
+		const char *board = env_get("board");
 		if (board) {
 			write_fb_response("OKAY", board, response);
 		} else {
@@ -390,7 +390,7 @@ static void fb_erase(char *response)
 static void fb_continue(char *response)
 {
 	char *bootcmd;
-	bootcmd = getenv("bootcmd");
+	bootcmd = env_get("bootcmd");
 	if (bootcmd) {
 		write_fb_response("OKAY", "", response);
 	} else {
@@ -417,7 +417,7 @@ static void fb_reboot(char *response)
 static void boot_downloaded_image(void)
 {
 	char kernel_addr[12];
-	char *fdt_addr = getenv("fdt_addr_r");
+	char *fdt_addr = env_get("fdt_addr_r");
 	char *bootm_args[] = { "bootm", kernel_addr, "-", fdt_addr, NULL };
 
 	sprintf(kernel_addr, "0x%lx", (long)CONFIG_FASTBOOT_BUF_ADDR);
@@ -512,7 +512,7 @@ static void fastboot_handler(uchar *packet, unsigned dport, struct in_addr sip,
 		}
 		break;
 	default:
-		error("ID %d not implemented.\n", fb_header.id);
+		pr_err("ID %d not implemented.\n", fb_header.id);
 		fb_header.id = FASTBOOT_ERROR;
 		fastboot_send(fb_header, fastboot_data, 0, 0);
 		break;
