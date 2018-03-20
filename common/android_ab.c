@@ -39,7 +39,7 @@ void android_boot_control_default(struct android_bootloader_control *abc)
 	memcpy(abc->slot_suffix, "a\0\0\0", 4);
 	abc->magic = ANDROID_BOOT_CTRL_MAGIC;
 	abc->version = ANDROID_BOOT_CTRL_VERSION;
-	abc->nb_slot = ARRAY_SIZE(abc->slot_info);
+	abc->nb_slot = ANDROID_NUM_SLOTS;
 	memset(abc->reserved0, 0, sizeof(abc->reserved0));
 	for (i = 0; i < abc->nb_slot; ++i) {
 		abc->slot_info[i] = metadata;
