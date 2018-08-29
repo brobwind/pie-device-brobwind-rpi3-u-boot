@@ -1,0 +1,1 @@
+#define PLAIN_VERSION "2018.07"
