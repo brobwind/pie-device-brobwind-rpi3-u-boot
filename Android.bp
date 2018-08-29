@@ -89,4 +89,10 @@ cc_binary_host {
         "scripts/dtc/libfdt",
         "tools",
     ],
+
+    target: {
+        darwin: {
+            enabled: false,
+        },
+    },
 }
