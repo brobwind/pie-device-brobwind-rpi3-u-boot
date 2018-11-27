@@ -27,6 +27,7 @@ cc_binary_host {
         "-Wno-pointer-arith",
         "-Wno-unused-parameter",
         "-Wno-visibility",
+        "-Wno-sign-compare",
         "-include linux/kconfig.h",
         "-include compiler.h",
     ],
