@@ -607,16 +607,6 @@ config CMD_ADC
 	  Shows ADC device info and permit printing one-shot analog converted
 	  data from a named Analog to Digital Converter.
 
-config CMD_BOOT_ANDROID
-	bool "boot_android"
-	default n
-	depends on ANDROID_BOOTLOADER
-	help
-	  Performs the Android Bootloader boot flow, loading the appropriate
-	  Android image (normal kernel, recovery kernel or "bootloader" mode)
-	  and booting it. The boot mode is determined by the contents of the
-	  Android Bootloader Message.
-
 config CMD_CLK
 	bool "clk - Show clock frequencies"
 	help
