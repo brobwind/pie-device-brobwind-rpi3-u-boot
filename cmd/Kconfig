@@ -607,17 +607,6 @@ config CMD_ADC
 	  Shows ADC device info and permit printing one-shot analog converted
 	  data from a named Analog to Digital Converter.
 
-config CMD_ANDROID_AB_SELECT
-	bool "android_ab_select"
-	default n
-	depends on ANDROID_AB
-	help
-	  On Android devices with more than one boot slot (multiple copies of
-	  the kernel and system images) this provides a command to select which
-	  slot should be used to boot from and register the boot attempt. This
-	  is used by the new A/B update model where one slot is updated in the
-	  background while running from the other slot.
-
 config CMD_BOOT_ANDROID
 	bool "boot_android"
 	default n
@@ -848,15 +837,6 @@ config CMD_LOADS
 	default y
 	help
 	  Load an S-Record file over serial line
-
-config CMD_LOAD_ANDROID
-       bool "load_android"
-       default n
-       depends on ANDROID_BOOT_IMAGE
-       help
-         Load an Android Boot image from storage. The Android Boot images
-         define the size and kernel address on the header, which are used by
-         this command.
 
 config CMD_MMC
 	bool "mmc"
