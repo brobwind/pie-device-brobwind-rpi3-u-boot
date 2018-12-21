@@ -21,8 +21,6 @@
 
 #define CONFIG_PCI_INDIRECT_BRIDGE
 
-#define CONFIG_MISC_INIT_R	1	/* Call misc_init_r		*/
-
 /*
  * Only possible on E500 Version 2 or newer cores.
  */
@@ -110,9 +108,6 @@
 #define CONFIG_SYS_OR0_PRELIM		0xfe000030	/* 32MB Flash		*/
 #define CONFIG_SYS_BR1_PRELIM		0xfc001001	/* port size 16bit	*/
 #define CONFIG_SYS_OR1_PRELIM		0xfe000030	/* 32MB Flash		*/
-
-#define CONFIG_SYS_FLASH_CFI				/* flash is CFI compat.	*/
-#define CONFIG_FLASH_CFI_DRIVER			/* Use common CFI driver*/
 
 #define CONFIG_SYS_MAX_FLASH_BANKS	2		/* number of banks	*/
 #define CONFIG_SYS_MAX_FLASH_SECT	256		/* sectors per device	*/
@@ -220,7 +215,6 @@
 #undef CONFIG_PCI_SCAN_SHOW		/* show pci devices on startup	*/
 #endif	/* CONFIG_PCI */
 
-#define CONFIG_MII		1	/* MII PHY management */
 #define CONFIG_TSEC1	1
 #define CONFIG_TSEC1_NAME	"TSEC0"
 #define CONFIG_TSEC3	1

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
- * Copyright 2017 NXP
+ * Copyright 2017-2018 NXP
  */
 
 #ifndef __LS1088_COMMON_H
@@ -22,12 +22,12 @@
 
 #define CONFIG_REMAKE_ELF
 #define CONFIG_FSL_LAYERSCAPE
-#define CONFIG_MP
 
 #include <asm/arch/stream_id_lsch3.h>
 #include <asm/arch/config.h>
 #include <asm/arch/soc.h>
 
+#define LS1088ARDB_PB_BOARD            0x4A
 /* Link Definitions */
 #define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_FSL_OCRAM_BASE + 0xfff0)
 
@@ -167,8 +167,6 @@ unsigned long long get_qixis_addr(void);
 /* Physical Memory Map */
 #define CONFIG_CHIP_SELECTS_PER_CTRL	4
 
-#define CONFIG_NR_DRAM_BANKS		2
-
 #define CONFIG_HWCONFIG
 #define HWCONFIG_BUFFER_SIZE		128
 
@@ -196,17 +194,17 @@ unsigned long long get_qixis_addr(void);
 
 #if defined(CONFIG_QSPI_BOOT)
 #define CONFIG_BOOTCOMMAND	"sf probe 0:0;" \
-				"sf read 0x80200000 0xd00000 0x100000;"\
-				" fsl_mc apply dpl 0x80200000 &&" \
+				"sf read 0x80001000 0xd00000 0x100000;"\
+				" fsl_mc lazyapply dpl 0x80001000 &&" \
 				" sf read $kernel_load $kernel_start" \
 				" $kernel_size && bootm $kernel_load"
 #elif defined(CONFIG_SD_BOOT)
-#define CONFIG_BOOTCOMMAND	"mmcinfo;mmc read 0x80200000 0x6800 0x800;"\
-				" fsl_mc apply dpl 0x80200000 &&" \
+#define CONFIG_BOOTCOMMAND	"mmcinfo;mmc read 0x80001000 0x6800 0x800;"\
+				" fsl_mc lazyapply dpl 0x80001000 &&" \
 				" mmc read $kernel_load $kernel_start" \
 				" $kernel_size && bootm $kernel_load"
 #else /* NOR BOOT*/
-#define CONFIG_BOOTCOMMAND	"fsl_mc apply dpl 0x580d00000 &&" \
+#define CONFIG_BOOTCOMMAND	"fsl_mc lazyapply dpl 0x580d00000 &&" \
 				" cp.b $kernel_start $kernel_load" \
 				" $kernel_size && bootm $kernel_load"
 #endif
@@ -216,7 +214,6 @@ unsigned long long get_qixis_addr(void);
 #define CONFIG_SYS_CBSIZE		512	/* Console I/O Buffer Size */
 #define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE + \
 					sizeof(CONFIG_SYS_PROMPT) + 16)
-#define CONFIG_SYS_PROMPT_HUSH_PS2	"> "
 #define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE /* Boot args buffer */
 #define CONFIG_SYS_MAXARGS		64	/* max command args */
 

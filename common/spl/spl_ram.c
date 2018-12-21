@@ -49,7 +49,7 @@ static int spl_ram_load_image(struct spl_image_info *spl_image,
 		load.read = spl_ram_load_read;
 		spl_load_simple_fit(spl_image, &load, 0, header);
 	} else {
-		ulong u_boot_pos = binman_sym(ulong, u_boot_any, pos);
+		ulong u_boot_pos = binman_sym(ulong, u_boot_any, image_pos);
 
 		debug("Legacy image\n");
 		/*
@@ -63,8 +63,8 @@ static int spl_ram_load_image(struct spl_image_info *spl_image,
 			 * No binman support or no information. For now, fix it
 			 * to the address pointed to by U-Boot.
 			 */
-			u_boot_pos = CONFIG_SYS_TEXT_BASE -
-					sizeof(struct image_header);
+			u_boot_pos = (ulong)spl_get_load_buffer(-sizeof(*header),
+								sizeof(*header));
 		}
 		header = (struct image_header *)map_sysmem(u_boot_pos, 0);
 

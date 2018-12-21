@@ -11,10 +11,7 @@
 
 #include "at91-sama5_common.h"
 
-#define CONFIG_MISC_INIT_R
-
 /* SDRAM */
-#define CONFIG_NR_DRAM_BANKS		1
 #define CONFIG_SYS_SDRAM_BASE           0x20000000
 #define CONFIG_SYS_SDRAM_SIZE		0x20000000
 
@@ -33,7 +30,6 @@
 
 /* NAND flash */
 #ifdef CONFIG_CMD_NAND
-#define CONFIG_NAND_ATMEL
 #define CONFIG_SYS_MAX_NAND_DEVICE	1
 #define CONFIG_SYS_NAND_BASE		0x80000000
 /* our ALE is AD21 */

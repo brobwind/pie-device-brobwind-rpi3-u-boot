@@ -18,6 +18,13 @@ config DM_SPI
 
 if DM_SPI
 
+config SPI_MEM
+	bool "SPI memory extension"
+	help
+	  Enable this option if you want to enable the SPI memory extension.
+	  This extension is meant to simplify interaction with SPI memories
+	  by providing an high-level interface to send memory-like commands.
+
 config ALTERA_SPI
 	bool "Altera SPI driver"
 	help
@@ -66,6 +73,13 @@ config BCM63XX_SPI
 	  access the SPI NOR flash on platforms embedding these Broadcom
 	  SPI cores.
 
+config BCMSTB_SPI
+	bool "BCMSTB SPI driver"
+	help
+	  Enable the Broadcom set-top box SPI driver. This driver can
+	  be used to access the SPI flash on platforms embedding this
+	  Broadcom SPI core.
+
 config CADENCE_QSPI
 	bool "Cadence QSPI driver"
 	help
@@ -102,6 +116,35 @@ config ICH_SPI
 	  access the SPI NOR flash on platforms embedding this Intel
 	  ICH IP core.
 
+config MESON_SPIFC
+	bool "Amlogic Meson SPI Flash Controller driver"
+	depends on ARCH_MESON
+	help
+	  Enable the Amlogic Meson SPI Flash Controller SPIFC) driver.
+	  This driver can be used to access the SPI NOR flash chips on
+	  Amlogic Meson SoCs.
+
+config MPC8XX_SPI
+	bool "MPC8XX SPI Driver"
+	depends on MPC8xx
+	help
+	  Enable support for SPI on MPC8XX
+
+config MT7621_SPI
+	bool "MediaTek MT7621 SPI driver"
+	depends on ARCH_MT7620
+	help
+	  Enable the MT7621 SPI driver. This driver can be used to access
+	  the SPI NOR flash on platforms embedding this Ralink / MediaTek
+	  SPI core, like MT7621/7628/7688.
+
+config MTK_QSPI
+	bool "Mediatek QSPI driver"
+	help
+	  Enable the Mediatek QSPI driver. This driver can be
+	  used to access the SPI NOR flash on platforms embedding this
+	  Mediatek QSPI IP core.
+
 config MVEBU_A3700_SPI
 	bool "Marvell Armada 3700 SPI driver"
 	select CLK_ARMADA_3720
@@ -117,6 +160,14 @@ config PIC32_SPI
 	  Enable the Microchip PIC32 SPI driver. This driver can be used
 	  to access the SPI NOR flash, MMC-over-SPI on platforms based on
 	  Microchip PIC32 family devices.
+
+config PL022_SPI
+	bool "ARM AMBA PL022 SSP controller driver"
+	depends on ARM
+	help
+	  This selects the ARM(R) AMBA(R) PrimeCell PL022 SSP
+	  controller. If you have an embedded system with an AMBA(R)
+	  bus and a PL022 controller, say Y or M here.
 
 config RENESAS_RPC_SPI
 	bool "Renesas RPC SPI driver"
@@ -167,6 +218,11 @@ config STM32_QSPI
 	  used to access the SPI NOR flash chips on platforms embedding
 	  this ST IP core.
 
+config SUN4I_SPI
+	bool "Allwinner A10 SoCs SPI controller"
+	help
+	  SPI driver for Allwinner sun4i, sun5i and sun7i SoCs
+
 config TEGRA114_SPI
 	bool "nVidia Tegra114 SPI driver"
 	help
@@ -208,7 +264,7 @@ config XILINX_SPI
 
 config ZYNQ_SPI
 	bool "Zynq SPI driver"
-	depends on ARCH_ZYNQ || ARCH_ZYNQMP
+	depends on ARCH_ZYNQ || ARCH_ZYNQMP || ARCH_VERSAL
 	help
 	  Enable the Zynq SPI driver. This driver can be used to
 	  access the SPI NOR flash on platforms embedding this Zynq
@@ -222,6 +278,13 @@ config ZYNQ_QSPI
 	  used to access the SPI NOR flash on platforms embedding this
 	  Zynq QSPI IP core. This IP is used to connect the flash in
 	  4-bit qspi, 8-bit dual stacked and shared 4-bit dual parallel.
+
+config ZYNQMP_GQSPI
+	bool "Configure ZynqMP Generic QSPI"
+	depends on ARCH_ZYNQMP || ARCH_VERSAL
+	help
+	  This option is used to enable ZynqMP QSPI controller driver which
+	  is used to communicate with qspi flash devices.
 
 endif # if DM_SPI
 
@@ -285,12 +348,6 @@ config LPC32XX_SSP
 	bool "LPC32XX SPI Driver"
 	help
 	  Enable support for SPI on LPC32xx
-
-config MPC8XX_SPI
-	bool "MPC8XX SPI Driver"
-	depends on MPC8xx
-	help
-	  Enable support for SPI on MPC8XX
 
 config MPC8XXX_SPI
 	bool "MPC8XXX SPI Driver"

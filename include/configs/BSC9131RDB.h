@@ -15,7 +15,6 @@
 #ifdef CONFIG_SPIFLASH
 #define CONFIG_RAMBOOT_SPIFLASH
 #define CONFIG_SYS_RAMBOOT
-#define CONFIG_SYS_EXTRA_ENV_RELOC
 #define CONFIG_RESET_VECTOR_ADDRESS	0x110bfffc
 #endif
 
@@ -234,7 +233,6 @@ extern unsigned long get_sdram_size(void);
 
 #if defined(CONFIG_TSEC_ENET)
 
-#define CONFIG_MII			/* MII PHY management */
 #define CONFIG_MII_DEFAULT_TSEC	1	/* Allow unregistered phys */
 #define CONFIG_TSEC1	1
 #define CONFIG_TSEC1_NAME	"eTSEC1"
@@ -267,7 +265,6 @@ extern unsigned long get_sdram_size(void);
 #define CONFIG_ENV_SECT_SIZE	0x10000
 #define CONFIG_ENV_SIZE		0x2000
 #elif defined(CONFIG_NAND)
-#define CONFIG_SYS_EXTRA_ENV_RELOC
 #define CONFIG_ENV_SIZE		CONFIG_SYS_NAND_BLOCK_SIZE
 #define CONFIG_ENV_OFFSET	((768 * 1024) + CONFIG_SYS_NAND_BLOCK_SIZE)
 #define CONFIG_ENV_RANGE	(3 * CONFIG_ENV_SIZE)
@@ -312,8 +309,6 @@ extern unsigned long get_sdram_size(void);
 /*
  * Dynamic MTD Partition support with mtdparts
  */
-#define CONFIG_MTD_DEVICE
-#define CONFIG_MTD_PARTITIONS
 
 /*
  * Environment Configuration

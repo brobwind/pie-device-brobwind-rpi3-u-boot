@@ -11,7 +11,6 @@
 #include <asm/arch/fsl_serdes.h>
 #include <asm/arch/ls102xa_devdis.h>
 #include <asm/arch/ls102xa_soc.h>
-#include <asm/arch/ls102xa_sata.h>
 #include <hwconfig.h>
 #include <mmc.h>
 #include <fsl_csu.h>
@@ -468,6 +467,7 @@ void board_init_f(ulong dummy)
 
 	preloader_console_init();
 
+	timer_init();
 	dram_init();
 
 	/* Allow OCRAM access permission as R/W */
@@ -556,9 +556,6 @@ void spl_board_init(void)
 #ifdef CONFIG_BOARD_LATE_INIT
 int board_late_init(void)
 {
-#ifdef CONFIG_SCSI_AHCI_PLAT
-	ls1021a_sata_init();
-#endif
 #ifdef CONFIG_CHAIN_OF_TRUST
 	fsl_setenv_chain_of_trust();
 #endif

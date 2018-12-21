@@ -10,8 +10,6 @@
 
 #include "mx7_common.h"
 
-#define CONFIG_DBG_MONITOR
-
 #define CONFIG_MXC_UART_BASE            UART1_IPS_BASE_ADDR
 
 /* Size of malloc() pool */
@@ -25,7 +23,6 @@
 
 /* Network */
 #define CONFIG_FEC_MXC
-#define CONFIG_MII
 #define CONFIG_FEC_XCV_TYPE             RGMII
 #define CONFIG_ETHPRIME                 "FEC"
 #define CONFIG_FEC_MXC_PHYADDR          0
@@ -64,9 +61,7 @@
 #undef CONFIG_SYS_AUTOLOAD
 #undef CONFIG_EXTRA_ENV_SETTINGS
 #undef CONFIG_BOOTCOMMAND
-#undef CONFIG_BOOTDELAY
 
-#define CONFIG_BOOTDELAY		3
 #define CONFIG_SYS_AUTOLOAD		"no"
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
@@ -133,7 +128,6 @@
 #define CONFIG_SYS_HZ			1000
 
 /* Physical Memory Map */
-#define CONFIG_NR_DRAM_BANKS		1
 #define PHYS_SDRAM			MMDC0_ARB_BASE_ADDR
 
 #define CONFIG_SYS_SDRAM_BASE		PHYS_SDRAM

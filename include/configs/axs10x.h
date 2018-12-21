@@ -53,7 +53,6 @@
 /*
  * Ethernet PHY configuration
  */
-#define CONFIG_MII
 
 /*
  * USB 1.1 configuration
@@ -65,6 +64,13 @@
  * Environment settings
  */
 #define CONFIG_ENV_SIZE			SZ_16K
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"upgrade=if mmc rescan && " \
+		"fatload mmc 0:1 ${loadaddr} u-boot-update.img && " \
+		"iminfo ${loadaddr} && source ${loadaddr}; then; else echo " \
+		"\"Fail to upgrade.\n" \
+		"Do you have u-boot-update.img and u-boot.head on first (FAT) SD card partition?\"" \
+		"; fi\0"
 
 /*
  * Environment configuration

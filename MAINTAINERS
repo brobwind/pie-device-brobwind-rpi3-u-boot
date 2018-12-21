@@ -2,6 +2,8 @@ Descriptions of section entries:
 
 	P: Person (obsolete)
 	M: Mail patches to: FullName <address@domain>
+	R: Designated reviewer: FullName <address@domain>
+	   These reviewers should be CCed on patches.
 	L: Mailing list that is relevant to this area
 	W: Web-page with status/info
 	Q: Patchwork web based patch tracking system site
@@ -74,6 +76,7 @@ ARC HSDK CREG GPIO
 M:	Eugeniy Paltsev <Eugeniy.Paltsev@synopsys.com>
 S:	Maintained
 L:	uboot-snps-arc@synopsys.com
+F:	doc/device-tree-bindings/gpio/snps,creg-gpio.txt
 F:	drivers/gpio/hsdk-creg-gpio.c
 
 ARM
@@ -107,9 +110,20 @@ F:	drivers/video/bcm2835.c
 F:	include/dm/platform_data/serial_bcm283x_mu.h
 F:	drivers/pinctrl/broadcom/
 
+ARM BROADCOM BCMSTB
+M:	Thomas Fitzsimmons <fitzsim@fitzsim.org>
+S:	Maintained
+F:	arch/arm/mach-bcmstb/
+F:	board/broadcom/bcmstb/
+F:	configs/bcm7*_defconfig
+F:	doc/README.bcm7xxx
+F:	drivers/mmc/bcmstb_sdhci.c
+F:	drivers/spi/bcmstb_spi.c
+
 ARM FREESCALE IMX
 M:	Stefano Babic <sbabic@denx.de>
 M:	Fabio Estevam <fabio.estevam@nxp.com>
+R:	NXP Linux Team <linux-imx@nxp.com>
 S:	Maintained
 T:	git git://git.denx.de/u-boot-imx.git
 F:	arch/arm/cpu/arm1136/mx*/
@@ -128,7 +142,7 @@ S:	Maintained
 F:	arch/arm/cpu/armv8/hisilicon
 F:	arch/arm/include/asm/arch-hi6220/
 
-ARM MARVELL KIRKWOOD ARMADA-XP ARMADA-38X
+ARM MARVELL KIRKWOOD ARMADA-XP ARMADA-38X ARMADA-37XX
 M:	Prafulla Wadaskar <prafulla@marvell.com>
 M:	Luka Perkov <luka.perkov@sartura.hr>
 M:	Stefan Roese <sr@denx.de>
@@ -137,6 +151,7 @@ T:	git git://git.denx.de/u-boot-marvell.git
 F:	arch/arm/mach-kirkwood/
 F:	arch/arm/mach-mvebu/
 F:	drivers/ata/ahci_mvebu.c
+F:	drivers/phy/marvell/
 
 ARM MARVELL PXA
 M:	Marek Vasut <marex@denx.de>
@@ -144,6 +159,35 @@ S:	Maintained
 T:	git git://git.denx.de/u-boot-pxa.git
 F:	arch/arm/cpu/pxa/
 F:	arch/arm/include/asm/arch-pxa/
+
+ARM MEDIATEK
+M:	Ryder Lee <ryder.lee@mediatek.com>
+M:	Weijie Gao <weijie.gao@mediatek.com>
+S:	Maintained
+F:	arch/arm/mach-mediatek/
+F:	arch/arm/include/asm/arch-mediatek/
+F:	board/mediatek/
+F:	doc/README.mediatek
+F:	drivers/clk/mediatek/
+F:	drivers/mmc/mtk-sd.c
+F:	drivers/pinctrl/mediatek/
+F:	drivers/power/domain/mtk-power-domain.c
+F:	drivers/ram/mediatek/
+F:	drivers/spi/mtk_qspi.c
+F:	drivers/timer/mtk_timer.c
+F:	drivers/watchdog/mtk_wdt.c
+F:	tools/mtk_image.c
+F:	tools/mtk_image.h
+N:	mediatek
+
+ARM OWL
+M:	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+S:	Maintained
+F:	arch/arm/include/asm/arch-owl/
+F:	arch/arm/mach-owl/
+F:	board/ucRobotics/
+F:	drivers/clk/owl/
+F:	drivers/serial/serial_owl.c
 
 ARM RENESAS RMOBILE/R-CAR
 M:	Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
@@ -187,6 +231,12 @@ ARM SNAPDRAGON
 M:	Ramon Fried <ramon.fried@gmail.com>
 S:	Maintained
 F:	arch/arm/mach-snapdragon/
+F:	drivers/gpio/msm_gpio.c
+F:	drivers/mmc/msm_sdhci.c
+F:	drivers/phy/msm8916-usbh-phy.c
+F:	drivers/serial/serial_msm.c
+F:	drivers/smem/msm_smem.c
+F:	drivers/usb/host/ehci-msm.c
 
 ARM STI
 M:	Patrice Chotard <patrice.chotard@st.com>
@@ -203,11 +253,22 @@ F:	arch/arm/include/asm/arch-spear/
 
 ARM STM STM32MP
 M:	Patrick Delaunay <patrick.delaunay@st.com>
+M:	Christophe Kerello <christophe.kerello@st.com>
+M:	Patrice Chotard <patrice.chotard@st.com>
+L:	uboot-stm32@st-md-mailman.stormreply.com (moderated for non-subscribers)
 S:	Maintained
 F:	arch/arm/mach-stm32mp
 F:	drivers/clk/clk_stm32mp1.c
+F:	drivers/i2c/stm32f7_i2c.c
 F:	drivers/misc/stm32mp_fuse.c
+F:	drivers/mmc/stm32_sdmmc2.c
+F:	drivers/phy/phy-stm32-usbphyc.c
+F:	drivers/pinctrl/pinctrl_stm32.c
+F:	drivers/power/regulator/stm32-vrefbuf.c
 F:	drivers/ram/stm32mp1/
+F:	drivers/misc/stm32_rcc.c
+F:	drivers/reset/stm32-reset.c
+F:	drivers/spi/stm32_qspi.c
 
 ARM STM STV0991
 M:	Vikas Manocha <vikas.manocha@st.com>
@@ -237,6 +298,7 @@ M:	Tom Rini <trini@konsulko.com>
 S:	Maintained
 T:	git git://git.denx.de/u-boot-ti.git
 F:	arch/arm/mach-davinci/
+F:	arch/arm/mach-k3/
 F:	arch/arm/mach-keystone/
 F:	arch/arm/include/asm/arch-omap*/
 F:	arch/arm/include/asm/ti-common/
@@ -248,6 +310,19 @@ T:	git git://git.denx.de/u-boot-uniphier.git
 F:	arch/arm/mach-uniphier/
 F:	configs/uniphier_*_defconfig
 N:	uniphier
+
+ARM VERSAL
+M:	Michal Simek <michal.simek@xilinx.com>
+S:	Maintained
+T:	git git://git.denx.de/u-boot-microblaze.git
+F:	arch/arm/mach-versal/
+
+ARM VERSATILE EXPRESS DRIVERS
+M:	Liviu Dudau <liviu.dudau@foss.arm.com>
+S:	Maintained
+T:	git git://github.com/ARM-software/u-boot.git
+F:	drivers/misc/vexpress_config.c
+N:	vexpress
 
 ARM ZYNQ
 M:	Michal Simek <monstr@monstr.eu>
@@ -261,7 +336,7 @@ F:	drivers/i2c/i2c-cdns.c
 F:	drivers/i2c/muxes/pca954x.c
 F:	drivers/i2c/zynq_i2c.c
 F:	drivers/mmc/zynq_sdhci.c
-F:	drivers/mtd/nand/zynq_nand.c
+F:	drivers/mtd/nand/raw/zynq_nand.c
 F:	drivers/net/phy/xilinx_phy.c
 F:	drivers/net/zynq_gem.c
 F:	drivers/serial/serial_zynq.c
@@ -285,7 +360,7 @@ F:	drivers/i2c/i2c-cdns.c
 F:	drivers/i2c/muxes/pca954x.c
 F:	drivers/i2c/zynq_i2c.c
 F:	drivers/mmc/zynq_sdhci.c
-F:	drivers/mtd/nand/zynq_nand.c
+F:	drivers/mtd/nand/raw/zynq_nand.c
 F:	drivers/net/phy/xilinx_phy.c
 F:	drivers/net/zynq_gem.c
 F:	drivers/serial/serial_zynq.c
@@ -296,6 +371,7 @@ F:	drivers/usb/host/ehci-zynq.c
 F:	drivers/watchdog/cdns_wdt.c
 F:	include/zynqmppl.h
 F:	tools/zynqmp*
+N:	ultra96
 N:	zynqmp
 
 ARM ZYNQMP R5
@@ -303,6 +379,11 @@ M:	Michal Simek <michal.simek@xilinx.com>
 S:	Maintained
 T:	git git://git.denx.de/u-boot-microblaze.git
 F:	arch/arm/mach-zynqmp-r5/
+
+BINMAN
+M:	Simon Glass <sjg@chromium.org>
+S:	Maintained
+F:	tools/binman/
 
 BUILDMAN
 M:	Simon Glass <sjg@chromium.org>
@@ -340,18 +421,32 @@ F:	test/dm/
 
 EFI PAYLOAD
 M:	Alexander Graf <agraf@suse.de>
+R:	Heinrich Schuchardt <xypron.glpk@gmx.de>
 S:	Maintained
 T:	git git://github.com/agraf/u-boot.git
-F:	doc/DocBook/efi.tmpl
 F:	doc/README.uefi
 F:	doc/README.iscsi
+F:	Documentation/efi.rst
+F:	include/capitalization.h
+F:	include/cp1250.h
+F:	include/cp437.h
 F:	include/efi*
 F:	include/pe.h
 F:	include/asm-generic/pe.h
+F:	lib/charset.c
 F:	lib/efi*/
 F:	test/py/tests/test_efi*
+F:	test/unicode_ut.c
 F:	cmd/bootefi.c
 F:	tools/file2include.c
+
+FPGA
+M:	Michal Simek <michal.simek@xilinx.com>
+S:	Maintained
+T:	git git://git.denx.de/u-boot-microblaze.git
+F:	drivers/fpga/
+F:	cmd/fpga.c
+F:	include/fpga.h
 
 FLATTENED DEVICE TREE
 M:	Simon Glass <sjg@chromium.org>
@@ -389,6 +484,13 @@ F:	cmd/log.c
 F:	test/log/log_test.c
 F:	test/py/tests/test_log.py
 
+MALI DISPLAY PROCESSORS
+M:	Liviu Dudau <liviu.dudau@foss.arm.com>
+S:	Supported
+T:	git git://github.com/ARM-software/u-boot.git
+F:	drivers/video/mali_dp.c
+F:	drivers/i2c/i2c-versatile.c
+
 MICROBLAZE
 M:	Michal Simek <monstr@monstr.eu>
 S:	Maintained
@@ -400,6 +502,7 @@ F:	drivers/net/xilinx_axi_emac.c
 F:	drivers/net/xilinx_emaclite.c
 F:	drivers/serial/serial_xuartlite.c
 F:	drivers/spi/xilinx_spi.c
+F:	drivers/sysreset/sysreset_gpio.c
 F:	drivers/watchdog/xilinx_tb_wdt.c
 N:	xilinx
 
@@ -416,10 +519,10 @@ T:	git git://git.denx.de/u-boot-mmc.git
 F:	drivers/mmc/
 
 NAND FLASH
-M:	Scott Wood <oss@buserror.net>
-S:	Maintained
+#M:	Scott Wood <oss@buserror.net>
+S:	Orphaned (Since 2018-07)
 T:	git git://git.denx.de/u-boot-nand-flash.git
-F:	drivers/mtd/nand/
+F:	drivers/mtd/nand/raw/
 
 NDS32
 M:	Macpaul Lin <macpaul@andestech.com>
@@ -472,6 +575,17 @@ POWERPC MPC83XX
 M:	Mario Six <mario.six@gdsys.cc>
 S:	Maintained
 T:	git git://git.denx.de/u-boot-mpc83xx.git
+F:	drivers/ram/mpc83xx_sdram.c
+F:	include/dt-bindings/memory/mpc83xx-sdram.h
+F:	drivers/sysreset/sysreset_mpc83xx.c
+F:	drivers/sysreset/sysreset_mpc83xx.h
+F:	drivers/clk/mpc83xx_clk.c
+F:	drivers/clk/mpc83xx_clk.h
+F:	include/dt-bindings/clk/mpc83xx-clk.h
+F:	drivers/timer/mpc83xx_timer.c
+F:	drivers/cpu/mpc83xx_cpu.c
+F:	drivers/cpu/mpc83xx_cpu.h
+F:	drivers/misc/mpc83xx_serdes.c
 F:	arch/powerpc/cpu/mpc83xx/
 F:	arch/powerpc/include/asm/arch-mpc83xx/
 
@@ -526,6 +640,11 @@ S:	Maintained
 F:	drivers/spmi/
 F:	include/spmi/
 
+TDA19988 HDMI ENCODER
+M:	Liviu Dudau <liviu.dudau@foss.arm.com>
+S:	Maintained
+F:	drivers/video/tda19988.c
+
 TI SYSTEM SECURITY
 M:	Andrew F. Davis <afd@ti.com>
 S:	Supported
@@ -546,6 +665,13 @@ TQ GROUP
 #M:	Martin Krause <martin.krause@tq-systems.de>
 S:	Orphaned (Since 2016-02)
 T:	git git://git.denx.de/u-boot-tq-group.git
+
+TEE
+M:	Jens Wiklander <jens.wiklander@linaro.org>
+S:	Maintained
+F:	drivers/tee/
+F:	include/tee.h
+F:	include/tee/
 
 UBI
 M:	Kyungmin Park <kmpark@infradead.org>
@@ -573,6 +699,7 @@ T:	git git://git.denx.de/u-boot-video.git
 F:	drivers/video/
 F:	common/lcd*.c
 F:	include/lcd*.h
+F:	include/video*.h
 
 X86
 M:	Simon Glass <sjg@chromium.org>
@@ -592,5 +719,6 @@ L:	u-boot@lists.denx.de
 Q:	http://patchwork.ozlabs.org/project/uboot/list/
 S:	Maintained
 T:	git git://git.denx.de/u-boot.git
+F:	configs/tools-only_defconfig
 F:	*
 F:	*/

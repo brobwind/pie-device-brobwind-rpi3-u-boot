@@ -20,7 +20,6 @@
 /*
  * Memory configurations
  */
-#define CONFIG_NR_DRAM_BANKS		1
 #define PHYS_SDRAM_1			0x0
 #define CONFIG_SYS_MALLOC_LEN		(64 * 1024 * 1024)
 #define CONFIG_SYS_MEMTEST_START	PHYS_SDRAM_1
@@ -32,8 +31,21 @@
 #define CONFIG_SYS_INIT_RAM_ADDR	0xFFE00000
 #define CONFIG_SYS_INIT_RAM_SIZE	0x40000 /* 256KB */
 #endif
+
+/*
+ * Some boards (e.g. socfpga_sr1500) use 8 bytes at the end of the internal
+ * SRAM as bootcounter storage. Make sure to not put the stack directly
+ * at this address to not overwrite the bootcounter by checking, if the
+ * bootcounter address is located in the internal SRAM.
+ */
+#if ((CONFIG_SYS_BOOTCOUNT_ADDR > CONFIG_SYS_INIT_RAM_ADDR) &&	\
+     (CONFIG_SYS_BOOTCOUNT_ADDR < (CONFIG_SYS_INIT_RAM_ADDR +	\
+				   CONFIG_SYS_INIT_RAM_SIZE)))
+#define CONFIG_SYS_INIT_SP_ADDR		CONFIG_SYS_BOOTCOUNT_ADDR
+#else
 #define CONFIG_SYS_INIT_SP_ADDR			\
 	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_RAM_SIZE)
+#endif
 
 #define CONFIG_SYS_SDRAM_BASE		PHYS_SDRAM_1
 
@@ -75,7 +87,6 @@
  */
 #ifdef CONFIG_CMD_NET
 #define CONFIG_DW_ALTDESCRIPTOR
-#define CONFIG_MII
 #endif
 
 /*
@@ -88,11 +99,13 @@
 /*
  * L4 OSC1 Timer 0
  */
+#ifndef CONFIG_TIMER
 /* This timer uses eosc1, whose clock frequency is fixed at any condition. */
 #define CONFIG_SYS_TIMERBASE		SOCFPGA_OSC1TIMER0_ADDRESS
 #define CONFIG_SYS_TIMER_COUNTS_DOWN
 #define CONFIG_SYS_TIMER_COUNTER	(CONFIG_SYS_TIMERBASE + 0x4)
 #define CONFIG_SYS_TIMER_RATE		25000000
+#endif
 
 /*
  * L4 Watchdog
@@ -156,8 +169,6 @@ unsigned int cm_get_l4_sp_clk_hz(void);
 /* Enable multiple SPI NOR flash manufacturers */
 #ifndef CONFIG_SPL_BUILD
 #define CONFIG_SPI_FLASH_MTD
-#define CONFIG_MTD_DEVICE
-#define CONFIG_MTD_PARTITIONS
 #endif
 /* QSPI reference clock */
 #ifndef __ASSEMBLY__

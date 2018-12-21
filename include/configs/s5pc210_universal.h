@@ -17,14 +17,12 @@
 #define CONFIG_SYS_L2CACHE_OFF		1
 
 /* Universal has 2 banks of DRAM */
-#define CONFIG_NR_DRAM_BANKS		2
 #define CONFIG_SYS_SDRAM_BASE		0x40000000
 #define PHYS_SDRAM_1			CONFIG_SYS_SDRAM_BASE
 
 #define SDRAM_BANK_SIZE			(256 << 20)	/* 256 MB */
 
 /* select serial console configuration */
-#define CONFIG_SERIAL2
 
 /* Console configuration */
 
@@ -42,9 +40,6 @@
 #define CONFIG_SYS_MEMTEST_START	CONFIG_SYS_SDRAM_BASE
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_SDRAM_BASE + 0x5000000)
 #define CONFIG_SYS_LOAD_ADDR		(CONFIG_SYS_SDRAM_BASE + 0x4800000)
-
-#define CONFIG_MTD_DEVICE
-#define CONFIG_MTD_PARTITIONS
 
 /* Actual modem binary size is 16MiB. Add 2MiB for bad block handling */
 
@@ -146,8 +141,6 @@ int universal_spi_read(void);
 
 /* Common misc for Samsung */
 #define CONFIG_MISC_COMMON
-
-#define CONFIG_MISC_INIT_R
 
 /* Download menu - Samsung common */
 #define CONFIG_LCD_MENU

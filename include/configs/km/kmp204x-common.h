@@ -28,7 +28,6 @@
 /* High Level Configuration Options */
 #define CONFIG_SYS_BOOK3E_HV		/* Category E.HV supported */
 #define CONFIG_FSL_CORENET		/* Freescale CoreNet platform */
-#define CONFIG_MP			/* support multiple processors */
 
 #define CONFIG_SYS_FSL_CPC		/* Corenet Platform Cache */
 #define CONFIG_SYS_NUM_CPC		CONFIG_SYS_NUM_DDR_CTLRS
@@ -40,7 +39,6 @@
 #define CONFIG_SYS_DPAA_RMAN		/* RMan */
 
 /* Environment in SPI Flash */
-#define CONFIG_SYS_EXTRA_ENV_RELOC
 #define CONFIG_ENV_SPI_BUS              0
 #define CONFIG_ENV_SPI_CS               0
 #define CONFIG_ENV_SPI_MAX_HZ           20000000
@@ -188,7 +186,6 @@ unsigned long get_board_sys_clk(unsigned long dummy);
 #define CONFIG_SYS_OR1_PRELIM  CONFIG_SYS_QRIO_OR_PRELIM /* QRIO Options */
 
 #define CONFIG_MISC_INIT_F
-#define CONFIG_MISC_INIT_R
 
 #define CONFIG_HWCONFIG
 
@@ -353,7 +350,6 @@ int get_scl(void);
  */
 
 /* we don't need flash support */
-#undef CONFIG_FLASH_CFI_MTD
 #undef CONFIG_JFFS2_CMDLINE
 
 /*

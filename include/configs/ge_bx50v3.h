@@ -31,8 +31,6 @@
 #define CONFIG_REVISION_TAG
 #define CONFIG_SYS_MALLOC_LEN		(10 * SZ_1M)
 
-#define CONFIG_HW_WATCHDOG
-#define CONFIG_IMX_WATCHDOG
 #define CONFIG_WATCHDOG_TIMEOUT_MSECS 6000
 
 #define CONFIG_MXC_UART
@@ -65,7 +63,6 @@
 /* Networking Configs */
 #ifdef CONFIG_NET
 #define CONFIG_FEC_MXC
-#define CONFIG_MII
 #define IMX_FEC_BASE			ENET_BASE_ADDR
 #define CONFIG_FEC_XCV_TYPE		RGMII
 #define CONFIG_ETHPRIME		"FEC"
@@ -88,7 +85,6 @@
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"bootcause=POR\0" \
-	"bootlimit=10\0" \
 	"image=/boot/fitImage\0" \
 	"fdt_high=0xffffffff\0" \
 	"dev=mmc\0" \
@@ -167,7 +163,6 @@
 #define CONFIG_SYS_LOAD_ADDR           CONFIG_LOADADDR
 
 /* Physical Memory Map */
-#define CONFIG_NR_DRAM_BANKS           1
 #define PHYS_SDRAM                     MMDC0_ARB_BASE_ADDR
 
 #define CONFIG_SYS_SDRAM_BASE          PHYS_SDRAM
@@ -187,9 +182,6 @@
 #define CONFIG_ENV_SPI_CS		CONFIG_SF_DEFAULT_CS
 #define CONFIG_ENV_SPI_MODE		CONFIG_SF_DEFAULT_MODE
 #define CONFIG_ENV_SPI_MAX_HZ		CONFIG_SF_DEFAULT_SPEED
-
-#ifndef CONFIG_SYS_DCACHE_OFF
-#endif
 
 #define CONFIG_SYS_FSL_USDHC_NUM	3
 

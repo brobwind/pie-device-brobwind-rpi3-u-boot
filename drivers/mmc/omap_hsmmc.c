@@ -83,7 +83,6 @@ struct omap_hsmmc_data {
 #if CONFIG_IS_ENABLED(DM_MMC)
 	struct gpio_desc cd_gpio;	/* Change Detect GPIO */
 	struct gpio_desc wp_gpio;	/* Write Protect GPIO */
-	bool cd_inverted;
 #else
 	int cd_gpio;
 	int wp_gpio;
@@ -215,6 +214,10 @@ static unsigned char mmc_board_init(struct mmc *mmc)
 #ifdef CONFIG_TARGET_OMAP3_CAIRO
 	/* for cairo board, we need to set up 1.8 Volt bias level on MMC1 */
 	pbias_lite &= ~PBIASLITEVMODE0;
+#endif
+#ifdef CONFIG_TARGET_OMAP3_LOGIC
+	/* For Logic PD board, 1.8V bias to go enable gpio127 for mmc_cd */
+	pbias_lite &= ~PBIASLITEVMODE1;
 #endif
 #ifdef CONFIG_MMC_OMAP36XX_PINS
 	if (get_cpu_family() == CPU_OMAP36XX) {
@@ -1364,25 +1367,25 @@ static int omap_hsmmc_set_ios(struct udevice *dev)
 #if CONFIG_IS_ENABLED(DM_MMC)
 static int omap_hsmmc_getcd(struct udevice *dev)
 {
+	int value = -1;
+#if CONFIG_IS_ENABLED(DM_GPIO)
 	struct omap_hsmmc_data *priv = dev_get_priv(dev);
-	int value;
-
 	value = dm_gpio_get_value(&priv->cd_gpio);
+#endif
 	/* if no CD return as 1 */
 	if (value < 0)
 		return 1;
 
-	if (priv->cd_inverted)
-		return !value;
 	return value;
 }
 
 static int omap_hsmmc_getwp(struct udevice *dev)
 {
+	int value = 0;
+#if CONFIG_IS_ENABLED(DM_GPIO)
 	struct omap_hsmmc_data *priv = dev_get_priv(dev);
-	int value;
-
 	value = dm_gpio_get_value(&priv->wp_gpio);
+#endif
 	/* if no WP return as 0 */
 	if (value < 0)
 		return 0;
@@ -1854,10 +1857,6 @@ static int omap_hsmmc_ofdata_to_platdata(struct udevice *dev)
 	}
 #endif
 
-#ifdef OMAP_HSMMC_USE_GPIO
-	plat->cd_inverted = fdtdec_get_bool(fdt, node, "cd-inverted");
-#endif
-
 	return 0;
 }
 #endif
@@ -1886,9 +1885,6 @@ static int omap_hsmmc_probe(struct udevice *dev)
 	priv->base_addr = plat->base_addr;
 	priv->controller_flags = plat->controller_flags;
 	priv->hw_rev = plat->hw_rev;
-#ifdef OMAP_HSMMC_USE_GPIO
-	priv->cd_inverted = plat->cd_inverted;
-#endif
 
 #ifdef CONFIG_BLK
 	mmc = plat->mmc;
@@ -1901,9 +1897,11 @@ static int omap_hsmmc_probe(struct udevice *dev)
 	device_get_supply_regulator(dev, "pbias-supply",
 				    &priv->pbias_supply);
 #endif
-#if defined(OMAP_HSMMC_USE_GPIO) && CONFIG_IS_ENABLED(OF_CONTROL)
+#if defined(OMAP_HSMMC_USE_GPIO)
+#if CONFIG_IS_ENABLED(OF_CONTROL) && CONFIG_IS_ENABLED(DM_GPIO)
 	gpio_request_by_name(dev, "cd-gpios", 0, &priv->cd_gpio, GPIOD_IS_IN);
 	gpio_request_by_name(dev, "wp-gpios", 0, &priv->wp_gpio, GPIOD_IS_IN);
+#endif
 #endif
 
 	mmc->dev = dev;
@@ -1955,6 +1953,8 @@ U_BOOT_DRIVER(omap_hsmmc) = {
 	.ops = &omap_hsmmc_ops,
 	.probe	= omap_hsmmc_probe,
 	.priv_auto_alloc_size = sizeof(struct omap_hsmmc_data),
+#if !CONFIG_IS_ENABLED(OF_CONTROL)
 	.flags	= DM_FLAG_PRE_RELOC,
+#endif
 };
 #endif

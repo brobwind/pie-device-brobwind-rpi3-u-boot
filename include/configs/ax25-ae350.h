@@ -45,7 +45,6 @@
 /*
  * Physical Memory Map
  */
-#define CONFIG_NR_DRAM_BANKS	2
 #define PHYS_SDRAM_0	0x00000000		/* SDRAM Bank #1 */
 #define PHYS_SDRAM_1	\
 	(PHYS_SDRAM_0 + PHYS_SDRAM_0_SIZE)	/* SDRAM Bank #2 */
@@ -83,11 +82,8 @@
  */
 
 /* use CFI framework */
-#define CONFIG_SYS_FLASH_CFI
-#define CONFIG_FLASH_CFI_DRIVER
 
 #define CONFIG_SYS_FLASH_CFI_WIDTH	FLASH_CFI_16BIT
-#define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
 #define CONFIG_SYS_CFI_FLASH_STATUS_POLL
 
 /* support JEDEC */

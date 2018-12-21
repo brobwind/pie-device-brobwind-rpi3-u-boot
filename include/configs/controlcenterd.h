@@ -36,7 +36,6 @@
 
 /* High Level Configuration Options */
 #define CONFIG_CONTROLCENTERD
-#define CONFIG_MP			/* support multiple processors */
 
 #define CONFIG_ENABLE_36BIT_PHYS
 
@@ -177,19 +176,12 @@
 #define CONFIG_SYS_FSL_I2C2_SLAVE	0x7F
 #define CONFIG_SYS_FSL_I2C2_OFFSET	0x3100
 
-#ifndef CONFIG_TRAILBLAZER
-#endif
-
 #define CONFIG_PCA9698			/* NXP PCA9698 */
 
 #define CONFIG_SYS_I2C_EEPROM_ADDR 0x52
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN 2
 
 #ifndef CONFIG_TRAILBLAZER
-/*
- * eSPI - Enhanced SPI
- */
-#define CONFIG_HARD_SPI
 
 #define CONFIG_SF_DEFAULT_SPEED		10000000
 #define CONFIG_SF_DEFAULT_MODE		0
@@ -257,7 +249,6 @@
 
 #define CONFIG_TSECV2
 
-#define CONFIG_MII			/* MII PHY management */
 #define CONFIG_TSEC1		1
 #define CONFIG_TSEC1_NAME	"eTSEC1"
 #define CONFIG_TSEC2		1
@@ -303,8 +294,6 @@
 #define CONFIG_SYS_MMC_ENV_DEV	0
 #endif
 
-#define CONFIG_SYS_EXTRA_ENV_RELOC
-
 /*
  * Command line configuration.
  */
@@ -315,7 +304,6 @@
 /*
  * Board initialisation callbacks
  */
-#define CONFIG_MISC_INIT_R
 #endif /* CONFIG_TRAILBLAZER */
 
 /*

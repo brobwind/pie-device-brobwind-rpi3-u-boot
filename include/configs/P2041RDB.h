@@ -27,7 +27,6 @@
 
 /* High Level Configuration Options */
 #define CONFIG_SYS_BOOK3E_HV		/* Category E.HV supported */
-#define CONFIG_MP			/* support multiple processors */
 
 #ifndef CONFIG_RESET_VECTOR_ADDRESS
 #define CONFIG_RESET_VECTOR_ADDRESS	0xeffffffc
@@ -49,15 +48,7 @@
 
 #define CONFIG_ENV_OVERWRITE
 
-#ifndef CONFIG_MTD_NOR_FLASH
-#else
-#define CONFIG_FLASH_CFI_DRIVER
-#define CONFIG_SYS_FLASH_CFI
-#define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
-#endif
-
 #if defined(CONFIG_SPIFLASH)
-	#define CONFIG_SYS_EXTRA_ENV_RELOC
 	#define CONFIG_ENV_SPI_BUS              0
 	#define CONFIG_ENV_SPI_CS               0
 	#define CONFIG_ENV_SPI_MAX_HZ           10000000
@@ -66,13 +57,11 @@
 	#define CONFIG_ENV_OFFSET               0x100000        /* 1MB */
 	#define CONFIG_ENV_SECT_SIZE            0x10000
 #elif defined(CONFIG_SDCARD)
-	#define CONFIG_SYS_EXTRA_ENV_RELOC
 	#define CONFIG_FSL_FIXED_MMC_LOCATION
 	#define CONFIG_SYS_MMC_ENV_DEV          0
 	#define CONFIG_ENV_SIZE			0x2000
 	#define CONFIG_ENV_OFFSET		(512 * 1658)
 #elif defined(CONFIG_NAND)
-#define CONFIG_SYS_EXTRA_ENV_RELOC
 #define CONFIG_ENV_SIZE			CONFIG_SYS_NAND_BLOCK_SIZE
 #define CONFIG_ENV_OFFSET		(7 * CONFIG_SYS_NAND_BLOCK_SIZE)
 #elif defined(CONFIG_SRIO_PCIE_BOOT_SLAVE)
@@ -256,8 +245,6 @@ unsigned long get_board_sys_clk(unsigned long dummy);
 #define CONFIG_SYS_FLASH_EMPTY_INFO
 #define CONFIG_SYS_FLASH_AMD_CHECK_DQ7
 #define CONFIG_SYS_FLASH_BANKS_LIST	{CONFIG_SYS_FLASH_BASE_PHYS + 0x8000000}
-
-#define CONFIG_MISC_INIT_R
 
 #define CONFIG_HWCONFIG
 
@@ -543,7 +530,6 @@ unsigned long get_board_sys_clk(unsigned long dummy);
 #define CONFIG_SYS_FM1_10GEC1_PHY_ADDR	0
 
 #define CONFIG_SYS_TBIPA_VALUE	8
-#define CONFIG_MII		/* MII PHY management */
 #define CONFIG_ETHPRIME		"FM1@DTSEC1"
 #endif
 

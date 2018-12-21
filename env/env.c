@@ -119,21 +119,12 @@ static void env_set_inited(enum env_location location)
  */
 __weak enum env_location env_get_location(enum env_operation op, int prio)
 {
-	switch (op) {
-	case ENVOP_GET_CHAR:
-	case ENVOP_INIT:
-	case ENVOP_LOAD:
-		if (prio >= ARRAY_SIZE(env_locations))
-			return ENVL_UNKNOWN;
+	if (prio >= ARRAY_SIZE(env_locations))
+		return ENVL_UNKNOWN;
 
-		gd->env_load_location = env_locations[prio];
-		return gd->env_load_location;
+	gd->env_load_prio = prio;
 
-	case ENVOP_SAVE:
-		return gd->env_load_location;
-	}
-
-	return ENVL_UNKNOWN;
+	return env_locations[prio];
 }
 
 
@@ -195,15 +186,26 @@ int env_load(void)
 			continue;
 
 		printf("Loading Environment from %s... ", drv->name);
+		/*
+		 * In error case, the error message must be printed during
+		 * drv->load() in some underlying API, and it must be exactly
+		 * one message.
+		 */
 		ret = drv->load();
-		if (ret)
-			printf("Failed (%d)\n", ret);
-		else
+		if (ret) {
+			debug("Failed (%d)\n", ret);
+		} else {
 			printf("OK\n");
-
-		if (!ret)
 			return 0;
+		}
 	}
+
+	/*
+	 * In case of invalid environment, we set the 'default' env location
+	 * to the highest priority. In this way, next calls to env_save()
+	 * will restore the environment at the right place.
+	 */
+	env_get_location(ENVOP_LOAD, 0);
 
 	return -ENODEV;
 }
@@ -211,16 +213,16 @@ int env_load(void)
 int env_save(void)
 {
 	struct env_driver *drv;
-	int prio;
 
-	for (prio = 0; (drv = env_driver_lookup(ENVOP_SAVE, prio)); prio++) {
+	drv = env_driver_lookup(ENVOP_SAVE, gd->env_load_prio);
+	if (drv) {
 		int ret;
 
 		if (!drv->save)
-			continue;
+			return -ENODEV;
 
 		if (!env_has_inited(drv->location))
-			continue;
+			return -ENODEV;
 
 		printf("Saving Environment to %s... ", drv->name);
 		ret = drv->save();

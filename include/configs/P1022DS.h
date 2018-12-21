@@ -81,7 +81,6 @@
 #endif
 
 /* High Level Configuration Options */
-#define CONFIG_MP			/* support multiple processors */
 
 #ifndef CONFIG_RESET_VECTOR_ADDRESS
 #define CONFIG_RESET_VECTOR_ADDRESS	0xeffffffc
@@ -221,8 +220,6 @@
 #endif
 #endif
 
-#define CONFIG_FLASH_CFI_DRIVER
-#define CONFIG_SYS_FLASH_CFI
 #define CONFIG_SYS_FLASH_EMPTY_INFO
 
 /* Nand Flash */
@@ -263,7 +260,6 @@
 
 #endif /* CONFIG_NAND_FSL_ELBC */
 
-#define CONFIG_MISC_INIT_R
 #define CONFIG_HWCONFIG
 
 #define CONFIG_FSL_NGPIXIS
@@ -307,7 +303,6 @@
 #define CONFIG_SYS_INIT_L2_END	(CONFIG_SYS_INIT_L2_ADDR + CONFIG_SYS_L2_SIZE)
 #define CONFIG_SPL_RELOC_TEXT_BASE	0xf8f81000
 #define CONFIG_SPL_RELOC_STACK		(CONFIG_SYS_INIT_L2_ADDR + 116 * 1024)
-#define CONFIG_SPL_RELOC_STACK_SIZE	(32 << 10)
 #define CONFIG_SPL_RELOC_MALLOC_ADDR	(CONFIG_SYS_INIT_L2_ADDR + 148 * 1024)
 #define CONFIG_SPL_RELOC_MALLOC_SIZE	(108 << 10)
 #define CONFIG_SPL_GD_ADDR		(CONFIG_SYS_INIT_L2_ADDR + 112 * 1024)
@@ -363,9 +358,6 @@
 #undef CONFIG_SYS_FLASH_EMPTY_INFO
 #endif
 
-#ifndef CONFIG_FSL_DIU_FB
-#endif
-
 #ifdef CONFIG_ATI
 #define VIDEO_IO_OFFSET		CONFIG_SYS_PCIE1_IO_VIRT
 #define CONFIG_BIOSEMU
@@ -393,12 +385,6 @@
 #define CONFIG_SYS_I2C_EEPROM_ADDR	0x57
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN	1
 #define CONFIG_SYS_EEPROM_BUS_NUM	1
-
-/*
- * eSPI - Enhanced SPI
- */
-
-#define CONFIG_HARD_SPI
 
 #define CONFIG_SF_DEFAULT_SPEED		10000000
 #define CONFIG_SF_DEFAULT_MODE		0
@@ -493,7 +479,6 @@
 
 #define CONFIG_TSECV2
 
-#define CONFIG_MII			/* MII PHY management */
 #define CONFIG_TSEC1		1
 #define CONFIG_TSEC1_NAME	"eTSEC1"
 #define CONFIG_TSEC2		1
@@ -514,9 +499,6 @@
 /*
  * Dynamic MTD Partition support with mtdparts
  */
-#define CONFIG_MTD_DEVICE
-#define CONFIG_MTD_PARTITIONS
-#define CONFIG_FLASH_CFI_MTD
 
 /*
  * Environment

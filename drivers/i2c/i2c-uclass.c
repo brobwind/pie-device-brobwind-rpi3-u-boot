@@ -347,6 +347,17 @@ int i2c_get_chip_for_busnum(int busnum, int chip_addr, uint offset_len,
 		debug("Cannot find I2C bus %d\n", busnum);
 		return ret;
 	}
+
+	/* detect the presence of the chip on the bus */
+	ret = i2c_probe_chip(bus, chip_addr, 0);
+	debug("%s: bus='%s', address %02x, ret=%d\n", __func__, bus->name,
+	      chip_addr, ret);
+	if (ret) {
+		debug("Cannot detect I2C chip %02x on bus %d\n", chip_addr,
+		      busnum);
+		return ret;
+	}
+
 	ret = i2c_get_chip(bus, chip_addr, offset_len, devp);
 	if (ret) {
 		debug("Cannot find I2C chip %02x on bus %d\n", chip_addr,
@@ -562,7 +573,7 @@ int i2c_deblock(struct udevice *bus)
 	return ops->deblock(bus);
 }
 
-#if CONFIG_IS_ENABLED(OF_CONTROL)
+#if CONFIG_IS_ENABLED(OF_CONTROL) && !CONFIG_IS_ENABLED(OF_PLATDATA)
 int i2c_chip_ofdata_to_platdata(struct udevice *dev, struct dm_i2c_chip *chip)
 {
 	int addr;
@@ -584,7 +595,7 @@ int i2c_chip_ofdata_to_platdata(struct udevice *dev, struct dm_i2c_chip *chip)
 
 static int i2c_post_probe(struct udevice *dev)
 {
-#if CONFIG_IS_ENABLED(OF_CONTROL)
+#if CONFIG_IS_ENABLED(OF_CONTROL) && !CONFIG_IS_ENABLED(OF_PLATDATA)
 	struct dm_i2c_bus *i2c = dev_get_uclass_priv(dev);
 
 	i2c->speed_hz = dev_read_u32_default(dev, "clock-frequency", 100000);
@@ -597,7 +608,7 @@ static int i2c_post_probe(struct udevice *dev)
 
 static int i2c_child_post_bind(struct udevice *dev)
 {
-#if CONFIG_IS_ENABLED(OF_CONTROL)
+#if CONFIG_IS_ENABLED(OF_CONTROL) && !CONFIG_IS_ENABLED(OF_PLATDATA)
 	struct dm_i2c_chip *plat = dev_get_parent_platdata(dev);
 
 	if (!dev_of_valid(dev))
@@ -612,7 +623,7 @@ UCLASS_DRIVER(i2c) = {
 	.id		= UCLASS_I2C,
 	.name		= "i2c",
 	.flags		= DM_UC_FLAG_SEQ_ALIAS,
-#if CONFIG_IS_ENABLED(OF_CONTROL)
+#if CONFIG_IS_ENABLED(OF_CONTROL) && !CONFIG_IS_ENABLED(OF_PLATDATA)
 	.post_bind	= dm_scan_fdt_dev,
 #endif
 	.post_probe	= i2c_post_probe,

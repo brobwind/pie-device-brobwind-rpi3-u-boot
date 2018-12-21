@@ -8,7 +8,6 @@
 
 #include "rockchip-common.h"
 
-#define CONFIG_NR_DRAM_BANKS		1
 #define CONFIG_SYS_MALLOC_LEN		(32 << 20)
 #define CONFIG_SYS_CBSIZE		1024
 #define CONFIG_SKIP_LOWLEVEL_INIT
@@ -39,7 +38,6 @@
 #define CONFIG_SYS_MMCSD_FS_BOOT_PARTITION	1
 #define CONFIG_SYS_SDRAM_BASE		0
 #define SDRAM_MAX_SIZE			0xf8000000
-#define CONFIG_NR_DRAM_BANKS		1
 
 #define CONFIG_SF_DEFAULT_SPEED 20000000
 
@@ -55,7 +53,7 @@
 #include <config_distro_bootcmd.h>
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	ENV_MEM_LAYOUT_SETTINGS \
-	"fdtfile=rockchip/" CONFIG_DEFAULT_DEVICE_TREE ".dtb\0" \
+	"fdtfile=" CONFIG_DEFAULT_FDT_FILE "\0" \
 	"partitions=" PARTS_DEFAULT \
 	BOOTENV
 

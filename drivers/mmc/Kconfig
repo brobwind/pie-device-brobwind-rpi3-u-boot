@@ -111,6 +111,19 @@ config SPL_MMC_UHS_SUPPORT
 	  cards. The IO voltage must be switchable from 3.3v to 1.8v. The bus
 	  frequency can go up to 208MHz (SDR104)
 
+config MMC_HS400_SUPPORT
+	bool "enable HS400 support"
+	select MMC_HS200_SUPPORT
+	help
+	  The HS400 mode is support by some eMMC. The bus frequency is up to
+	  200MHz. This mode requires tuning the IO.
+
+config SPL_MMC_HS400_SUPPORT
+	bool "enable HS400 support in SPL"
+	help
+	  The HS400 mode is support by some eMMC. The bus frequency is up to
+	  200MHz. This mode requires tuning the IO.
+
 config MMC_HS200_SUPPORT
 	bool "enable HS200 support"
 	help
@@ -379,6 +392,17 @@ config MMC_SDHCI_BCM2835
 
 	  If unsure, say N.
 
+config MMC_SDHCI_BCMSTB
+	tristate "SDHCI support for the BCMSTB SD/MMC Controller"
+	depends on MMC_SDHCI
+	help
+	  This selects the Broadcom set-top box SD/MMC controller.
+
+	  If you have a BCMSTB platform with SD or MMC devices,
+	  say Y here.
+
+	  If unsure, say N.
+
 config MMC_SDHCI_CADENCE
 	bool "SDHCI support for the Cadence SD/SDIO/eMMC controller"
 	depends on BLK && DM_MMC
@@ -390,6 +414,15 @@ config MMC_SDHCI_CADENCE
 	  If you have a controller with this interface, say Y here.
 
 	  If unsure, say N.
+
+config MMC_SDHCI_K3_ARASAN
+	bool "Arasan SDHCI controller for TI's K3 based SoCs"
+	depends on ARCH_K3
+	depends on MMC_SDHCI
+	depends on DM_MMC && OF_CONTROL && BLK
+	help
+	  Support for Arasan SDHCI host controller on Texas Instruments'
+	  K3 family based SoC platforms
 
 config MMC_SDHCI_KONA
 	bool "SDHCI support on Broadcom KONA platform"
@@ -505,7 +538,7 @@ config MMC_SDHCI_TEGRA
 
 config MMC_SDHCI_ZYNQ
 	bool "Arasan SDHCI controller support"
-	depends on ARCH_ZYNQ || ARCH_ZYNQMP
+	depends on ARCH_ZYNQ || ARCH_ZYNQMP || ARCH_VERSAL
 	depends on DM_MMC && OF_CONTROL && BLK
 	depends on MMC_SDHCI
 	help
@@ -533,6 +566,10 @@ config MMC_SUNXI
 	  Allwinner sunxi SoCs.
 
 config MMC_SUNXI_HAS_NEW_MODE
+	bool
+	depends on MMC_SUNXI
+
+config MMC_SUNXI_HAS_MODE_SWITCH
 	bool
 	depends on MMC_SUNXI
 
@@ -564,6 +601,17 @@ config FTSDC010_SDIO
 	depends on FTSDC010
 	help
 		This can enable ftsdc010 sdio function.
+
+config MMC_MTK
+	bool "MediaTek SD/MMC Card Interface support"
+	depends on ARCH_MEDIATEK
+	depends on BLK && DM_MMC
+	depends on OF_CONTROL
+	help
+	  This selects the MediaTek(R) Secure digital and Multimedia card Interface.
+	  If you have a machine with a integrated SD/MMC card reader, say Y or M here.
+	  This is needed if support for any SD/SDIO/MMC devices is required.
+	  If unsure, say N.
 
 endif
 

@@ -96,6 +96,12 @@ config SYS_I2C_CADENCE
 	  Say yes here to select Cadence I2C Host Controller. This controller is
 	  e.g. used by Xilinx Zynq.
 
+config SYS_I2C_DAVINCI
+	bool "Davinci I2C Controller"
+	depends on (ARCH_KEYSTONE || ARCH_DAVINCI)
+	help
+	  Say yes here to add support for Davinci and Keystone I2C controller
+
 config SYS_I2C_DW
 	bool "Designware I2C Controller"
 	default n
@@ -409,6 +415,13 @@ config SYS_I2C_UNIPHIER_F
 	help
 	  Support for UniPhier FIFO-builtin I2C controller driver.
 	  This I2C controller is used on PH1-Pro4 or newer UniPhier SoCs.
+
+config SYS_I2C_VERSATILE
+	bool "Arm Ltd Versatile I2C bus driver"
+	depends on DM_I2C && (TARGET_VEXPRESS_CA15_TC2 || TARGET_VEXPRESS64_JUNO)
+	help
+	  Add support for the Arm Ltd Versatile Express I2C driver. The I2C host
+	  controller is present in the development boards manufactured by Arm Ltd.
 
 config SYS_I2C_MVTWSI
 	bool "Marvell I2C driver"

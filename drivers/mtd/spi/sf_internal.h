@@ -32,6 +32,7 @@ enum spi_nor_option_flags {
 /* CFI Manufacture ID's */
 #define SPI_FLASH_CFI_MFR_SPANSION	0x01
 #define SPI_FLASH_CFI_MFR_STMICRO	0x20
+#define SPI_FLASH_CFI_MFR_MICRON	0x2C
 #define SPI_FLASH_CFI_MFR_MACRONIX	0xc2
 #define SPI_FLASH_CFI_MFR_SST		0xbf
 #define SPI_FLASH_CFI_MFR_WINBOND	0xef
@@ -168,6 +169,9 @@ int spi_flash_cmd_write(struct spi_slave *spi, const u8 *cmd, size_t cmd_len,
 
 /* Flash erase(sectors) operation, support all possible erase commands */
 int spi_flash_cmd_erase_ops(struct spi_flash *flash, u32 offset, size_t len);
+
+/* Get software write-protect value (BP bits) */
+int spi_flash_cmd_get_sw_write_prot(struct spi_flash *flash);
 
 /* Lock stmicro spi flash region */
 int stm_lock(struct spi_flash *flash, u32 ofs, size_t len);

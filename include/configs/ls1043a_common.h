@@ -27,14 +27,17 @@
 
 #define CONFIG_REMAKE_ELF
 #define CONFIG_FSL_LAYERSCAPE
-#define CONFIG_MP
 #define CONFIG_GICV2
 
 #include <asm/arch/stream_id_lsch2.h>
 #include <asm/arch/config.h>
 
 /* Link Definitions */
+#ifdef CONFIG_TFABOOT
+#define CONFIG_SYS_INIT_SP_ADDR		CONFIG_SYS_TEXT_BASE
+#else
 #define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_FSL_OCRAM_BASE + 0xfff0)
+#endif
 
 #define CONFIG_SKIP_LOWLEVEL_INIT
 
@@ -61,7 +64,6 @@
 
 /* SD boot SPL */
 #ifdef CONFIG_SD_BOOT
-#define CONFIG_SPL_TARGET		"u-boot-with-spl.bin"
 
 #define CONFIG_SPL_TEXT_BASE		0x10000000
 #define CONFIG_SPL_MAX_SIZE		0x17000
@@ -91,7 +93,6 @@
 /* NAND SPL */
 #ifdef CONFIG_NAND_BOOT
 #define CONFIG_SPL_PBL_PAD
-#define CONFIG_SPL_TARGET		"u-boot-with-spl.bin"
 #define CONFIG_SPL_TEXT_BASE		0x10000000
 #define CONFIG_SPL_MAX_SIZE		0x1a000
 #define CONFIG_SPL_STACK		0x1001d000
@@ -122,7 +123,8 @@
 
 /* IFC */
 #ifndef SPL_NO_IFC
-#if !defined(CONFIG_QSPI_BOOT) && !defined(CONFIG_SD_BOOT_QSPI)
+#if defined(CONFIG_TFABOOT) || \
+	(!defined(CONFIG_QSPI_BOOT) && !defined(CONFIG_SD_BOOT_QSPI))
 #define CONFIG_FSL_IFC
 /*
  * CONFIG_SYS_FLASH_BASE has the final address (core view)
@@ -135,9 +137,6 @@
 #define CONFIG_SYS_FLASH_BASE_PHYS_EARLY	0x00000000
 
 #ifdef CONFIG_MTD_NOR_FLASH
-#define CONFIG_FLASH_CFI_DRIVER
-#define CONFIG_SYS_FLASH_CFI
-#define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
 #define CONFIG_SYS_FLASH_QUIET_TEST
 #define CONFIG_FLASH_SHOW_PROGRESS	45	/* count down from 45/5: 9..1 */
 #endif
@@ -188,6 +187,16 @@
 #ifdef CONFIG_SYS_DPAA_FMAN
 #define CONFIG_SYS_FM_MURAM_SIZE	0x60000
 
+#ifdef CONFIG_TFABOOT
+#define CONFIG_SYS_FMAN_FW_ADDR		0x900000
+#define CONFIG_SYS_QE_FW_ADDR		0x940000
+
+#define CONFIG_ENV_SPI_BUS		0
+#define CONFIG_ENV_SPI_CS		0
+#define CONFIG_ENV_SPI_MAX_HZ		1000000
+#define CONFIG_ENV_SPI_MODE		0x03
+
+#else
 #ifdef CONFIG_NAND_BOOT
 /* Store Fman ucode at offeset 0x900000(72 blocks). */
 #define CONFIG_SYS_QE_FMAN_FW_IN_NAND
@@ -213,6 +222,7 @@
 /* FMan fireware Pre-load address */
 #define CONFIG_SYS_FMAN_FW_ADDR		0x60900000
 #define CONFIG_SYS_QE_FW_ADDR		0x60940000
+#endif
 #endif
 #define CONFIG_SYS_QE_FMAN_FW_LENGTH	0x10000
 #define CONFIG_SYS_FDT_PAD		(0x3000 + CONFIG_SYS_QE_FMAN_FW_LENGTH)
@@ -306,6 +316,14 @@
 
 
 #undef CONFIG_BOOTCOMMAND
+#ifdef CONFIG_TFABOOT
+#define QSPI_NOR_BOOTCOMMAND "run distro_bootcmd; run qspi_bootcmd; "	\
+			   "env exists secureboot && esbc_halt;"
+#define SD_BOOTCOMMAND "run distro_bootcmd; run sd_bootcmd; "  \
+			   "env exists secureboot && esbc_halt;"
+#define IFC_NOR_BOOTCOMMAND "run distro_bootcmd; run nor_bootcmd; "	\
+			   "env exists secureboot && esbc_halt;"
+#else
 #if defined(CONFIG_QSPI_BOOT) || defined(CONFIG_SD_BOOT_QSPI)
 #define CONFIG_BOOTCOMMAND "run distro_bootcmd; run qspi_bootcmd; "	\
 			   "env exists secureboot && esbc_halt;"
@@ -315,6 +333,7 @@
 #else
 #define CONFIG_BOOTCOMMAND "run distro_bootcmd; run nor_bootcmd; "	\
 			   "env exists secureboot && esbc_halt;"
+#endif
 #endif
 #endif
 

@@ -31,7 +31,6 @@
  */
 
 /* SDRAM */
-#define CONFIG_NR_DRAM_BANKS		1
 #define CONFIG_SYS_SDRAM_BASE		0x20000000
 #define CONFIG_SYS_SDRAM_SIZE		0x08000000	/* 128 megs */
 
@@ -45,7 +44,6 @@
 
 /* NAND flash */
 #ifdef CONFIG_CMD_NAND
-#define CONFIG_NAND_ATMEL
 #define CONFIG_SYS_MAX_NAND_DEVICE	1
 #define CONFIG_SYS_NAND_BASE		0x40000000
 #define CONFIG_SYS_NAND_DBW_8		1
@@ -55,9 +53,6 @@
 #define CONFIG_SYS_NAND_MASK_CLE	(1 << 22)
 #define CONFIG_SYS_NAND_ENABLE_PIN	AT91_PIN_PD4
 #define CONFIG_SYS_NAND_READY_PIN	AT91_PIN_PD5
-
-#define CONFIG_MTD_DEVICE
-#define CONFIG_MTD_PARTITIONS
 #endif
 
 /* PMECC & PMERRLOC */
@@ -90,8 +85,9 @@
 #define CONFIG_ENV_OFFSET_REDUND	0x100000
 #define CONFIG_ENV_SIZE		0x20000		/* 1 sector = 128 kB */
 #define CONFIG_BOOTCOMMAND	"nand read " \
-				"0x22000000 0x200000 0x300000; " \
-				"bootm 0x22000000"
+				"0x22000000 0x200000 0x600000; " \
+				"nand read 0x21000000 0x180000 0x20000; " \
+				"bootz 0x22000000 - 0x21000000"
 #elif defined(CONFIG_SPI_BOOT)
 /* bootstrap + u-boot + env + linux in spi flash */
 #define CONFIG_ENV_OFFSET	0x5000

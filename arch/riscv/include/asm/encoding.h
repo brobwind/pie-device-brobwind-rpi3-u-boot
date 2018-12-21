@@ -7,6 +7,12 @@
 #ifndef RISCV_CSR_ENCODING_H
 #define RISCV_CSR_ENCODING_H
 
+#ifdef CONFIG_RISCV_SMODE
+#define MODE_PREFIX(__suffix)	s##__suffix
+#else
+#define MODE_PREFIX(__suffix)	m##__suffix
+#endif
+
 #define MSTATUS_UIE	0x00000001
 #define MSTATUS_SIE	0x00000002
 #define MSTATUS_HIE	0x00000004
@@ -128,6 +134,7 @@
 	((SUPERVISOR) ? PTE_SR(PTE) : PTE_UR(PTE)))
 
 #ifdef __riscv
+
 #ifdef CONFIG_64BIT
 # define MSTATUS_SD MSTATUS64_SD
 # define SSTATUS_SD SSTATUS64_SD
@@ -141,53 +148,10 @@
 # define MCAUSE_INT MCAUSE32_INT
 # define MCAUSE_CAUSE MCAUSE32_CAUSE
 #endif
+
 #define RISCV_PGSHIFT 12
 #define RISCV_PGSIZE BIT(RISCV_PGSHIFT)
 
-#ifndef __ASSEMBLER__
+#endif /* __riscv */
 
-#ifdef __GNUC__
-
-#define read_csr(reg) ({ unsigned long __tmp; \
-	asm volatile ("csrr %0, " #reg : "=r"(__tmp)); \
-	__tmp; })
-
-#define write_csr(reg, _val) ({ \
-typeof(_val) (val) = (_val); \
-if (__builtin_constant_p(val) && (unsigned long)(val) < 32) \
-	asm volatile ("csrw " #reg ", %0" :: "i"(val)); \
-else \
-	asm volatile ("csrw " #reg ", %0" :: "r"(val)); })
-
-#define swap_csr(reg, _val) ({ unsigned long __tmp; \
-typeof(_val) (val) = (_val); \
-if (__builtin_constant_p(val) && (unsigned long)(val) < 32) \
-	asm volatile ("csrrw %0, " #reg ", %1" : "=r"(__tmp) : "i"(val)); \
-else \
-	asm volatile ("csrrw %0, " #reg ", %1" : "=r"(__tmp) : "r"(val)); \
-	__tmp; })
-
-#define set_csr(reg, _bit) ({ unsigned long __tmp; \
-typeof(_bit) (bit) = (_bit); \
-if (__builtin_constant_p(bit) && (unsigned long)(bit) < 32) \
-	asm volatile ("csrrs %0, " #reg ", %1" : "=r"(__tmp) : "i"(bit)); \
-else \
-	asm volatile ("csrrs %0, " #reg ", %1" : "=r"(__tmp) : "r"(bit)); \
-	__tmp; })
-
-#define clear_csr(reg, _bit) ({ unsigned long __tmp; \
-typeof(_bit) (bit) = (_bit); \
-if (__builtin_constant_p(bit) && (unsigned long)(bit) < 32) \
-	asm volatile ("csrrc %0, " #reg ", %1" : "=r"(__tmp) : "i"(bit)); \
-else \
-	asm volatile ("csrrc %0, " #reg ", %1" : "=r"(__tmp) : "r"(bit)); \
-	__tmp; })
-
-#define rdtime() read_csr(time)
-#define rdcycle() read_csr(cycle)
-#define rdinstret() read_csr(instret)
-
-#endif
-#endif
-#endif
-#endif
+#endif /* RISCV_CSR_ENCODING_H */

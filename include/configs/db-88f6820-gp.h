@@ -10,11 +10,6 @@
  * High Level Configuration Options (easy to change)
  */
 
-/*
- * TEXT_BASE needs to be below 16MiB, since this area is scrubbed
- * for DDR ECC byte filling in the SPL before loading the main
- * U-Boot into it.
- */
 #define CONFIG_SYS_TCLK		250000000	/* 250MHz */
 
 /*
@@ -27,6 +22,12 @@
 #define CONFIG_I2C_MVTWSI_BASE0		MVEBU_TWSI_BASE
 #define CONFIG_SYS_I2C_SLAVE		0x0
 #define CONFIG_SYS_I2C_SPEED		100000
+
+/*
+ * SPI Flash configuration for the environemnt access
+ */
+#define CONFIG_ENV_SPI_BUS		0
+#define CONFIG_ENV_SPI_CS		0
 
 /* SPI NOR flash default params, used by sf commands */
 #define CONFIG_SF_DEFAULT_SPEED		1000000

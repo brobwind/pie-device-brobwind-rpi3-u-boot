@@ -98,7 +98,6 @@
 #endif /* ifdef CONFIG_U_BOOT_HDR_SIZE */
 #endif
 
-#define CONFIG_NR_DRAM_BANKS		1
 #define PHYS_SDRAM			0x80000000
 #define PHYS_SDRAM_SIZE			(1u * 1024 * 1024 * 1024)
 
@@ -107,7 +106,6 @@
 
 #if !defined(CONFIG_SD_BOOT) && !defined(CONFIG_NAND_BOOT) && \
 	!defined(CONFIG_QSPI_BOOT)
-#define CONFIG_U_QE
 #define CONFIG_SYS_QE_FMAN_FW_IN_NOR
 #endif
 
@@ -142,9 +140,6 @@
 					FTIM2_NOR_TWPH(0x0e))
 #define CONFIG_SYS_NOR_FTIM3		0
 
-#define CONFIG_FLASH_CFI_DRIVER
-#define CONFIG_SYS_FLASH_CFI
-#define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
 #define CONFIG_SYS_FLASH_QUIET_TEST
 #define CONFIG_FLASH_SHOW_PROGRESS	45	/* count down from 45/5: 9..1 */
 
@@ -269,7 +264,6 @@
  */
 
 #ifdef CONFIG_TSEC_ENET
-#define CONFIG_MII
 #define CONFIG_MII_DEFAULT_TSEC		1
 #define CONFIG_TSEC1			1
 #define CONFIG_TSEC1_NAME		"eTSEC1"
@@ -504,8 +498,6 @@
 #define CONFIG_ENV_SIZE			0x20000
 #define CONFIG_ENV_SECT_SIZE		0x20000 /* 128K (one sector) */
 #endif
-
-#define CONFIG_MISC_INIT_R
 
 #include <asm/fsl_secure_boot.h>
 #define CONFIG_SYS_BOOTM_LEN	(64 << 20) /* Increase max gunzip size */

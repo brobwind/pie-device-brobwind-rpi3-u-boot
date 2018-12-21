@@ -181,13 +181,10 @@
 
 #if defined(CONFIG_RAMBOOT_SDCARD) || defined(CONFIG_RAMBOOT_SPIFLASH)
 #define CONFIG_SYS_RAMBOOT
-#define CONFIG_SYS_EXTRA_ENV_RELOC
 #else
 #undef CONFIG_SYS_RAMBOOT
 #endif
 
-#define CONFIG_FLASH_CFI_DRIVER
-#define CONFIG_SYS_FLASH_CFI
 #define CONFIG_SYS_FLASH_EMPTY_INFO
 #define CONFIG_SYS_FLASH_AMD_CHECK_DQ7
 
@@ -373,11 +370,6 @@
 #define CONFIG_SYS_I2C_EEPROM_ADDR_LEN	1
 #define CONFIG_SYS_EEPROM_BUS_NUM	1
 
-/*
- * eSPI - Enhanced SPI
- */
-#define CONFIG_HARD_SPI
-
 #if defined(CONFIG_SPI_FLASH)
 #define CONFIG_SF_DEFAULT_SPEED	10000000
 #define CONFIG_SF_DEFAULT_MODE	0
@@ -510,7 +502,6 @@
 
 #if defined(CONFIG_TSEC_ENET)
 
-#define CONFIG_MII		1	/* MII PHY management */
 #define CONFIG_MII_DEFAULT_TSEC	1	/* Allow unregistered phys */
 #define CONFIG_TSEC1	1
 #define CONFIG_TSEC1_NAME	"eTSEC1"

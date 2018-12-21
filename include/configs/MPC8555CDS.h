@@ -112,8 +112,6 @@ extern unsigned long get_clock_freq(void);
 
 #define CONFIG_SYS_MONITOR_BASE	CONFIG_SYS_TEXT_BASE	/* start of monitor */
 
-#define CONFIG_FLASH_CFI_DRIVER
-#define CONFIG_SYS_FLASH_CFI
 #define CONFIG_SYS_FLASH_EMPTY_INFO
 
 /*
@@ -296,7 +294,6 @@ extern unsigned long get_clock_freq(void);
 
 #if defined(CONFIG_TSEC_ENET)
 
-#define CONFIG_MII		1	/* MII PHY management */
 #define CONFIG_TSEC1	1
 #define CONFIG_TSEC1_NAME	"TSEC0"
 #define CONFIG_TSEC2	1

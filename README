@@ -528,25 +528,6 @@ The following options need to be configured:
 		pointer. This is needed for the temporary stack before
 		relocation.
 
-		CONFIG_SYS_MIPS_CACHE_MODE
-
-		Cache operation mode for the MIPS CPU.
-		See also arch/mips/include/asm/mipsregs.h.
-		Possible values are:
-			CONF_CM_CACHABLE_NO_WA
-			CONF_CM_CACHABLE_WA
-			CONF_CM_UNCACHED
-			CONF_CM_CACHABLE_NONCOHERENT
-			CONF_CM_CACHABLE_CE
-			CONF_CM_CACHABLE_COW
-			CONF_CM_CACHABLE_CUW
-			CONF_CM_CACHABLE_ACCELERATED
-
-		CONFIG_SYS_XWAY_EBU_BOOTCFG
-
-		Special option for Lantiq XWAY SoCs for booting from NOR flash.
-		See also arch/mips/cpu/mips32/start.S.
-
 		CONFIG_XWAY_SWAP_BYTES
 
 		Enable compilation of tools/xway-swap-bytes needed for Lantiq
@@ -874,9 +855,6 @@ The following options need to be configured:
 		CONFIG_EFI_PARTITION   GPT partition table, common when EFI is the
 				       bootloader.  Note 2TB partition limit; see
 				       disk/part_efi.c
-		CONFIG_MTD_PARTITIONS  Memory Technology Device partition table.
-
-		If IDE or SCSI support is enabled (CONFIG_IDE or
 		CONFIG_SCSI) you must configure support for at
 		least one non-MTD partition type as well.
 
@@ -979,9 +957,6 @@ The following options need to be configured:
 			CONFIG_SMC_USE_IOFUNCS
 			Define this to use i/o functions instead of macros
 			(some hardware wont work with macros)
-
-		CONFIG_DRIVER_TI_EMAC
-		Support for davinci emac
 
 			CONFIG_SYS_DAVINCI_EMAC_PHY_COUNT
 			Define this if you have more then 3 PHYs.
@@ -1957,14 +1932,6 @@ The following options need to be configured:
 		SPI configuration items (port pins to use, etc). For
 		an example, see include/configs/sacsng.h.
 
-		CONFIG_HARD_SPI
-
-		Enables a hardware SPI driver for general-purpose reads
-		and writes.  As with CONFIG_SOFT_SPI, the board configuration
-		must define a list of chip-select function pointers.
-		Currently supported on some MPC8xxx processors.	 For an
-		example, see include/configs/mpc8349emds.h.
-
 		CONFIG_SYS_SPI_MXC_WAIT
 		Timeout for waiting until spi transfer completed.
 		default: (CONFIG_SYS_HZ/100)     /* 10 ms */
@@ -2433,17 +2400,6 @@ FIT uImage format:
 		for a more detailed description refer to doc/README.update.
 
 - MTD Support (mtdparts command, UBI support)
-		CONFIG_MTD_DEVICE
-
-		Adds the MTD device infrastructure from the Linux kernel.
-		Needed for mtdparts command support.
-
-		CONFIG_MTD_PARTITIONS
-
-		Adds the MTD partitioning infrastructure from the Linux
-		kernel. Needed for UBI support.
-
-- UBI support
 		CONFIG_MTD_UBI_WL_THRESHOLD
 		This parameter defines the maximum difference between the highest
 		erase counter value and the lowest erase counter value of eraseblocks
@@ -3032,11 +2988,6 @@ Configuration Settings:
 	If defined, don't allow the -f switch to env set override variable
 	access flags.
 
-- CONFIG_USE_STDINT
-	If stdint.h is available with your toolchain you can define this
-	option to enable it. You can provide option 'USE_STDINT=1' when
-	building U-Boot to enable this.
-
 The following definitions that deal with the placement and management
 of environment data (variable area); in general, we support the
 following configurations:
@@ -3278,8 +3229,8 @@ Low Level (hardware related) configuration options:
 		a 16 bit bus.
 		Not all NAND drivers use this symbol.
 		Example of drivers that use it:
-		- drivers/mtd/nand/ndfc.c
-		- drivers/mtd/nand/mxc_nand.c
+		- drivers/mtd/nand/raw/ndfc.c
+		- drivers/mtd/nand/raw/mxc_nand.c
 
 - CONFIG_SYS_NDFC_EBC0_CFG
 		Sets the EBC0_CFG register for the NDFC. If not defined
@@ -3396,7 +3347,7 @@ Low Level (hardware related) configuration options:
 - CONFIG_SYS_NAND_NO_SUBPAGE_WRITE
 		Option to disable subpage write in NAND driver
 		driver that uses this:
-		drivers/mtd/nand/davinci_nand.c
+		drivers/mtd/nand/raw/davinci_nand.c
 
 Freescale QE/FMAN Firmware Support:
 -----------------------------------
@@ -3957,6 +3908,17 @@ If CONFIG_REGEX is defined, the variable_name above is evaluated as a
 regular expression. This allows multiple variables to be connected to
 the same callback without explicitly listing them all out.
 
+The signature of the callback functions is:
+
+    int callback(const char *name, const char *value, enum env_op op, int flags)
+
+* name - changed environment variable
+* value - new value of the environment variable
+* op - operation (create, overwrite, or delete)
+* flags - attributes of the environment variable change, see flags H_* in
+  include/search.h
+
+The return value is 0 if the variable change is accepted and 1 otherwise.
 
 Command Line Parsing:
 =====================

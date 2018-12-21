@@ -35,19 +35,13 @@
 
 /* Ethernet driver */
 #if defined(CONFIG_ZYNQ_GEM)
-# define CONFIG_MII
 # define CONFIG_SYS_FAULT_ECHO_LINK_DOWN
 # define CONFIG_BOOTP_MAY_FAIL
-#endif
-
-/* SPI */
-#ifdef CONFIG_ZYNQ_SPI
 #endif
 
 /* QSPI */
 #ifdef CONFIG_ZYNQ_QSPI
 # define CONFIG_SF_DEFAULT_SPEED	30000000
-# define CONFIG_SPI_FLASH_ISSI
 #endif
 
 /* NOR */
@@ -59,17 +53,12 @@
 # define CONFIG_SYS_FLASH_ERASE_TOUT	1000
 # define CONFIG_SYS_FLASH_WRITE_TOUT	5000
 # define CONFIG_FLASH_SHOW_PROGRESS	10
-# define CONFIG_SYS_FLASH_CFI
 # undef CONFIG_SYS_FLASH_EMPTY_INFO
-# define CONFIG_FLASH_CFI_DRIVER
-# undef CONFIG_SYS_FLASH_PROTECTION
-# define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
 #endif
 
 #ifdef CONFIG_NAND_ZYNQ
 #define CONFIG_SYS_MAX_NAND_DEVICE	1
 #define CONFIG_SYS_NAND_ONFI_DETECTION
-#define CONFIG_MTD_DEVICE
 #endif
 
 #ifdef CONFIG_USB_EHCI_ZYNQ
@@ -125,29 +114,14 @@
 # define CONFIG_SYS_EEPROM_SIZE			1024 /* Bytes */
 #endif
 
-/* Total Size of Environment Sector */
-#ifndef CONFIG_ENV_SIZE
-# define CONFIG_ENV_SIZE			(128 << 10)
-#endif
-
 /* Allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
-
-/* Environment */
-#ifndef CONFIG_ENV_IS_NOWHERE
-# define CONFIG_ENV_SECT_SIZE		CONFIG_ENV_SIZE
-# ifndef CONFIG_ENV_OFFSET
-#  define CONFIG_ENV_OFFSET		0xE0000
-# endif
-#endif
 
 /* enable preboot to be loaded before CONFIG_BOOTDELAY */
 #define CONFIG_PREBOOT
 
 /* Boot configuration */
 #define CONFIG_SYS_LOAD_ADDR		0 /* default? */
-
-/* Distro boot enablement */
 
 #ifdef CONFIG_SPL_BUILD
 #define BOOTENV
@@ -246,14 +220,8 @@
 #define CONFIG_CLOCKS
 #define CONFIG_SYS_MAXARGS		32 /* max number of command args */
 
-#ifndef CONFIG_NR_DRAM_BANKS
-# define CONFIG_NR_DRAM_BANKS		1
-#endif
-
 #define CONFIG_SYS_MEMTEST_START	0
 #define CONFIG_SYS_MEMTEST_END		0x1000
-
-#define CONFIG_SYS_MALLOC_LEN		0x1400000
 
 #define CONFIG_SYS_INIT_RAM_ADDR	0xFFFF0000
 #define CONFIG_SYS_INIT_RAM_SIZE	0x1000
@@ -269,10 +237,6 @@
 #define CONFIG_SYS_MMC_MAX_DEVICE	1
 
 #define CONFIG_SYS_LDSCRIPT  "arch/arm/mach-zynq/u-boot.lds"
-
-/* Commands */
-
-/* SPL part */
 
 /* MMC support */
 #ifdef CONFIG_MMC_SDHCI_ZYNQ
@@ -305,8 +269,6 @@
 					CONFIG_SYS_SPI_ARGS_SIZE)
 #endif
 
-/* for booting directly linux */
-
 /* SP location before relocation, must use scratch RAM */
 #define CONFIG_SPL_TEXT_BASE	0x0
 
@@ -327,6 +289,8 @@
 /* BSS setup */
 #define CONFIG_SPL_BSS_START_ADDR	0x100000
 #define CONFIG_SPL_BSS_MAX_SIZE		0x100000
+
+#define CONFIG_SPL_LOAD_FIT_ADDRESS 0x10000000
 
 #define CONFIG_SYS_UBOOT_START	CONFIG_SYS_TEXT_BASE
 

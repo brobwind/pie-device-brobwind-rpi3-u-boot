@@ -58,6 +58,11 @@ config ATMEL_PIO4
 	  may be dedicated as a general purpose I/O or be assigned to
 	  a function of an embedded peripheral.
 
+config DA8XX_GPIO
+	bool "DA8xx GPIO Driver"
+	help
+	  This driver supports the DA8xx GPIO controller
+
 config INTEL_BROADWELL_GPIO
 	bool "Intel Broadwell GPIO driver"
 	depends on DM
@@ -185,6 +190,7 @@ config SANDBOX_GPIO_COUNT
 
 config XILINX_GPIO
 	bool "Xilinx GPIO driver"
+	depends on DM_GPIO
 	help
 	  This config enable the Xilinx GPIO driver for Microblaze.
 
@@ -308,4 +314,12 @@ config MPC8XXX_GPIO
 	  Aside from the standard functions of input/output mode, and output
 	  value setting, the open-drain feature, which can configure individual
 	  GPIOs to work as open-drain outputs, is supported.
+
+config MT7621_GPIO
+	bool "MediaTek MT7621 GPIO driver"
+	depends on DM_GPIO && ARCH_MT7620
+	default y
+	help
+	  Say yes here to support MediaTek MT7621 compatible GPIOs.
+
 endmenu

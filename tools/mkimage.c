@@ -318,6 +318,7 @@ int main(int argc, char **argv)
 	struct image_type_params *tparams = NULL;
 	int pad_len = 0;
 	int dfd;
+	size_t map_len;
 
 	params.cmdname = *argv;
 	params.addr = 0;
@@ -522,6 +523,13 @@ int main(int argc, char **argv)
 			ret = zynqmpbif_copy_image(ifd, &params);
 			if (ret)
 				return ret;
+		} else if (params.type == IH_TYPE_IMX8IMAGE) {
+			/* i.MX8/8X has special Image format */
+			int ret;
+
+			ret = imx8image_copy_image(ifd, &params);
+			if (ret)
+				return ret;
 		} else {
 			copy_file(ifd, params.datafile, pad_len);
 		}
@@ -576,7 +584,8 @@ int main(int argc, char **argv)
 	}
 	params.file_size = sbuf.st_size;
 
-	ptr = mmap(0, sbuf.st_size, PROT_READ|PROT_WRITE, MAP_SHARED, ifd, 0);
+	map_len = sbuf.st_size;
+	ptr = mmap(0, map_len, PROT_READ | PROT_WRITE, MAP_SHARED, ifd, 0);
 	if (ptr == MAP_FAILED) {
 		fprintf (stderr, "%s: Can't map %s: %s\n",
 			params.cmdname, params.imagefile, strerror(errno));
@@ -600,7 +609,7 @@ int main(int argc, char **argv)
 			params.cmdname, tparams->name);
 	}
 
-	(void) munmap((void *)ptr, sbuf.st_size);
+	(void)munmap((void *)ptr, map_len);
 
 	/* We're a bit of paranoid */
 #if defined(_POSIX_SYNCHRONIZED_IO) && \

@@ -9,7 +9,6 @@
 
 #define CONFIG_REMAKE_ELF
 #define CONFIG_FSL_LAYERSCAPE
-#define CONFIG_MP
 #define CONFIG_GICV3
 #define CONFIG_FSL_TZPC_BP147
 
@@ -163,8 +162,6 @@ unsigned long long get_qixis_addr(void);
 /* Physical Memory Map */
 /* fixme: these need to be checked against the board */
 #define CONFIG_CHIP_SELECTS_PER_CTRL	4
-
-#define CONFIG_NR_DRAM_BANKS		3
 
 #define CONFIG_HWCONFIG
 #define HWCONFIG_BUFFER_SIZE		128

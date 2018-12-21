@@ -99,9 +99,6 @@ unsigned long get_board_ddr_clk(void);
 #define CONFIG_SYS_IFC_CCR	0x01000000
 
 #ifndef SYS_NO_FLASH
-#define CONFIG_FLASH_CFI_DRIVER
-#define CONFIG_SYS_FLASH_CFI
-#define CONFIG_SYS_FLASH_USE_BUFFER_WRITE
 #define CONFIG_SYS_FLASH_QUIET_TEST
 #define CONFIG_FLASH_SHOW_PROGRESS	45 /* count down from 45/5: 9..1 */
 
@@ -327,7 +324,6 @@ unsigned long get_board_ddr_clk(void);
 
 /* QSPI device */
 #if defined(CONFIG_QSPI_BOOT) || defined(CONFIG_SD_BOOT_QSPI)
-#define CONFIG_FSL_QSPI
 #define FSL_QSPI_FLASH_SIZE		(1 << 26)
 #define FSL_QSPI_FLASH_NUM		2
 
@@ -464,7 +460,6 @@ unsigned long get_board_ddr_clk(void);
 #define XQSGMII_CARD_PHY4_PORT2_ADDR 0xe
 #define XQSGMII_CARD_PHY4_PORT3_ADDR 0xf
 
-#define CONFIG_MII		/* MII PHY management */
 #define CONFIG_ETHPRIME		"DPMAC1@xgmii"
 #define CONFIG_PHY_GIGE		/* Include GbE speed/duplex detection */
 

@@ -32,12 +32,12 @@
 #endif
 
 /*
- * By default kwbimage.cfg from board specific folder is used
+ * By default the generated mvebu kwbimage.cfg is used
  * If for some board, different configuration file need to be used,
  * CONFIG_SYS_KWD_CONFIG should be defined in board specific header file
  */
 #ifndef CONFIG_SYS_KWD_CONFIG
-#define	CONFIG_SYS_KWD_CONFIG	$(CONFIG_BOARDDIR)/kwbimage.cfg
+#define	CONFIG_SYS_KWD_CONFIG	arch/arm/mach-mvebu/kwbimage.cfg
 #endif /* CONFIG_SYS_KWD_CONFIG */
 
 /* Add target to build it automatically upon "make" */
@@ -47,7 +47,6 @@
 
 /* end of 16M scrubbed by training in bootrom */
 #define CONFIG_SYS_INIT_SP_ADDR		0x00FF0000
-#define CONFIG_NR_DRAM_BANKS_MAX	2
 
 #define MV_UART_CONSOLE_BASE		MVEBU_UART0_BASE
 
@@ -73,7 +72,6 @@
  * Ethernet Driver configuration
  */
 #ifdef CONFIG_CMD_NET
-#define CONFIG_MII		/* expose smi ove miiphy interface */
 #define CONFIG_ENV_OVERWRITE	/* ethaddr can be reprogrammed */
 #define CONFIG_ARP_TIMEOUT	200
 #define CONFIG_NET_RETRY_COUNT	50

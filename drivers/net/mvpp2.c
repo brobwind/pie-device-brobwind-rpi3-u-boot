@@ -35,18 +35,6 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-/* Some linux -> U-Boot compatibility stuff */
-#define netdev_err(dev, fmt, args...)		\
-	printf(fmt, ##args)
-#define netdev_warn(dev, fmt, args...)		\
-	printf(fmt, ##args)
-#define netdev_info(dev, fmt, args...)		\
-	printf(fmt, ##args)
-#define netdev_dbg(dev, fmt, args...)		\
-	printf(fmt, ##args)
-
-#define ETH_ALEN	6		/* Octets in one ethernet addr	*/
-
 #define __verify_pcpu_ptr(ptr)						\
 do {									\
 	const void __percpu *__vpp_verify = (typeof((ptr) + 0))NULL;	\
@@ -68,7 +56,6 @@ do {									\
 #define NET_SKB_PAD	max(32, MVPP2_CPU_D_CACHE_LINE_SIZE)
 
 #define CONFIG_NR_CPUS		1
-#define ETH_HLEN		ETHER_HDR_SIZE	/* Total octets in header */
 
 /* 2(HW hdr) 14(MAC hdr) 4(CRC) 32(extra for cache prefetch) */
 #define WRAP			(2 + ETH_HLEN + 4 + 32)
@@ -4805,9 +4792,9 @@ static int phy_info_parse(struct udevice *dev, struct mvpp2_port *port)
 static void mvpp2_gpio_init(struct mvpp2_port *port)
 {
 	if (dm_gpio_is_valid(&port->phy_reset_gpio)) {
-		dm_gpio_set_value(&port->phy_reset_gpio, 0);
-		udelay(1000);
 		dm_gpio_set_value(&port->phy_reset_gpio, 1);
+		mdelay(10);
+		dm_gpio_set_value(&port->phy_reset_gpio, 0);
 	}
 
 	if (dm_gpio_is_valid(&port->phy_tx_disable_gpio))

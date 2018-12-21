@@ -68,25 +68,26 @@ config CC_COVERAGE
 
 config DISTRO_DEFAULTS
 	bool "Select defaults suitable for booting general purpose Linux distributions"
-	imply USE_BOOTCOMMAND
-	select CMD_BOOTZ if ARM && !ARM64
+	select AUTO_COMPLETE
+	select CMDLINE_EDITING
 	select CMD_BOOTI if ARM64
+	select CMD_BOOTZ if ARM && !ARM64
 	select CMD_DHCP if CMD_NET
-	select CMD_PING if CMD_NET
-	select CMD_PXE if NET
 	select CMD_ENV_EXISTS
 	select CMD_EXT2
 	select CMD_EXT4
 	select CMD_FAT
 	select CMD_FS_GENERIC
-	imply CMD_MII if NET
 	select CMD_PART if PARTITIONS
-	select HUSH_PARSER
-	select CMDLINE_EDITING
-	select AUTO_COMPLETE
-	select SYS_LONGHELP
-	select SUPPORT_RAW_INITRD
+	select CMD_PING if CMD_NET
+	select CMD_PXE if NET
 	select ENV_VARS_UBOOT_CONFIG
+	select HUSH_PARSER
+	select SUPPORT_RAW_INITRD
+	select SYS_LONGHELP
+	imply CMD_MII if NET
+	imply USB_STORAGE
+	imply USE_BOOTCOMMAND
 	help
 	  Select this to enable various options and commands which are suitable
 	  for building u-boot for booting general purpose Linux distributions.
@@ -104,6 +105,12 @@ config ENV_VARS_UBOOT_CONFIG
 	  - CONFIG_SYS_VENDOR
 	  - CONFIG_SYS_SOC
 
+config NR_DRAM_BANKS
+	int "Number of DRAM banks"
+	default 4
+	help
+	  This defines the number of DRAM banks.
+
 config SYS_BOOT_GET_CMDLINE
 	bool "Enable kernel command line setup"
 	help
@@ -119,6 +126,7 @@ config SYS_BOOT_GET_KBD
 config SYS_MALLOC_F
 	bool "Enable malloc() pool before relocation"
 	default y if DM
+
 	help
 	  Before relocation, memory is very limited on many platforms. Still,
 	  we can provide a small malloc() pool if needed. Driver model in
@@ -129,6 +137,7 @@ config SYS_MALLOC_F_LEN
 	hex "Size of malloc() pool before relocation"
 	depends on SYS_MALLOC_F
 	default 0x1000 if AM33XX
+	default 0x2800 if SANDBOX
 	default 0x400
 	help
 	  Before relocation, memory is very limited on many platforms. Still,
@@ -136,25 +145,32 @@ config SYS_MALLOC_F_LEN
 	  particular needs this to operate, so that it can allocate the
 	  initial serial device and any others that are needed.
 
+config SYS_MALLOC_LEN
+	hex "Define memory for Dynamic allocation"
+	depends on ARCH_ZYNQ || ARCH_VERSAL
+	help
+	  This defines memory to be allocated for Dynamic allocation
+	  TODO: Use for other architectures
+
 config SPL_SYS_MALLOC_F_LEN
-        hex "Size of malloc() pool in SPL before relocation"
-        depends on SYS_MALLOC_F
-        default SYS_MALLOC_F_LEN
-        help
-          Before relocation, memory is very limited on many platforms. Still,
-          we can provide a small malloc() pool if needed. Driver model in
-          particular needs this to operate, so that it can allocate the
-          initial serial device and any others that are needed.
+	hex "Size of malloc() pool in SPL before relocation"
+	depends on SYS_MALLOC_F
+	default SYS_MALLOC_F_LEN
+	help
+	  Before relocation, memory is very limited on many platforms. Still,
+	  we can provide a small malloc() pool if needed. Driver model in
+	  particular needs this to operate, so that it can allocate the
+	  initial serial device and any others that are needed.
 
 config TPL_SYS_MALLOC_F_LEN
-        hex "Size of malloc() pool in TPL before relocation"
-        depends on SYS_MALLOC_F
-        default SYS_MALLOC_F_LEN
-        help
-          Before relocation, memory is very limited on many platforms. Still,
-          we can provide a small malloc() pool if needed. Driver model in
-          particular needs this to operate, so that it can allocate the
-          initial serial device and any others that are needed.
+	hex "Size of malloc() pool in TPL before relocation"
+	depends on SYS_MALLOC_F
+	default SYS_MALLOC_F_LEN
+	help
+	  Before relocation, memory is very limited on many platforms. Still,
+	  we can provide a small malloc() pool if needed. Driver model in
+	  particular needs this to operate, so that it can allocate the
+	  initial serial device and any others that are needed.
 
 menuconfig EXPERT
 	bool "Configure standard U-Boot features (expert users)"
@@ -237,8 +253,8 @@ if FIT
 
 config FIT_ENABLE_SHA256_SUPPORT
 	bool "Support SHA256 checksum of FIT image contents"
-	select SHA256
 	default y
+	select SHA256
 	help
 	  Enable this to support SHA256 checksum of FIT image contents. A
 	  SHA256 checksum is a 256-bit (32-byte) hash value used to check that
@@ -252,8 +268,8 @@ config FIT_ENABLE_SHA256_SUPPORT
 config FIT_SIGNATURE
 	bool "Enable signature verification of FIT uImages"
 	depends on DM
-	select RSA
 	select HASH
+	select RSA
 	help
 	  This option enables signature verification of FIT uImages,
 	  using a hash signed and verified using RSA. If
@@ -266,6 +282,24 @@ config FIT_SIGNATURE
 	  unsigned images cannot be loaded. If a board needs the legacy image
 	  format support in this case, enable it using
 	  CONFIG_IMAGE_FORMAT_LEGACY.
+
+config FIT_SIGNATURE_MAX_SIZE
+	hex "Max size of signed FIT structures"
+	depends on FIT_SIGNATURE
+	default 0x10000000
+	help
+	  This option sets a max size in bytes for verified FIT uImages.
+	  A sane value of 256MB protects corrupted DTB structures from overlapping
+	  device memory. Assure this size does not extend past expected storage
+	  space.
+
+config FIT_ENABLE_RSASSA_PSS_SUPPORT
+	bool "Support rsassa-pss signature scheme of FIT image contents"
+	depends on FIT_SIGNATURE
+	default n
+	help
+	  Enable this to support the pss padding algorithm as described
+	  in the rfc8017 (https://tools.ietf.org/html/rfc8017).
 
 config FIT_VERBOSE
 	bool "Show verbose messages when FIT images fail"
@@ -430,7 +464,7 @@ config SYS_EXTRA_OPTIONS
 config SYS_TEXT_BASE
 	depends on !NIOS2 && !XTENSA
 	depends on !EFI_APP
-	default 0x80800000 if ARCH_OMAP2PLUS
+	default 0x80800000 if ARCH_OMAP2PLUS || ARCH_K3
 	default 0x4a000000 if ARCH_SUNXI && !MACH_SUN9I && !MACH_SUN8I_V3S
 	default 0x2a000000 if ARCH_SUNXI && MACH_SUN9I
 	default 0x42e00000 if ARCH_SUNXI && MACH_SUN8I_V3S
