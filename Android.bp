@@ -57,6 +57,7 @@ cc_binary_host {
         "tools/image-host.c",
         "tools/imagetool.c",
         "tools/imx8image.c",
+        "tools/imx8mimage.c",
         "tools/imximage.c",
         "tools/kwbimage.c",
         "tools/libfdt/fdt.c",

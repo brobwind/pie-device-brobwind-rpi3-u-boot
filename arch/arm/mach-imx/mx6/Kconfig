@@ -182,6 +182,7 @@ config TARGET_DISPLAY5
 config TARGET_EMBESTMX6BOARDS
 	bool "embestmx6boards"
 	select BOARD_LATE_INIT
+	select SUPPORT_SPL
 
 config TARGET_GE_BX50V3
 	bool "General Electric Bx50v3"
@@ -262,7 +263,7 @@ config TARGET_MX6DL_MAMOJ
 	select SPL_PINCTRL if SPL
 	select SPL_SEPARATE_BSS if SPL
 	select SPL_SERIAL_SUPPORT if SPL
-	select SPL_USB_GADGET_SUPPORT if SPL
+	select SPL_USB_GADGET if SPL
 	select SPL_USB_HOST_SUPPORT if SPL
 	select SPL_USB_SDP_SUPPORT if SPL
 	select SPL_WATCHDOG_SUPPORT if SPL

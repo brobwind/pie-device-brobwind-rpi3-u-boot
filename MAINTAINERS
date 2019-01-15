@@ -123,7 +123,7 @@ F:	drivers/spi/bcmstb_spi.c
 ARM FREESCALE IMX
 M:	Stefano Babic <sbabic@denx.de>
 M:	Fabio Estevam <fabio.estevam@nxp.com>
-R:	NXP Linux Team <linux-imx@nxp.com>
+R:	NXP i.MX U-Boot Team <uboot-imx@nxp.com>
 S:	Maintained
 T:	git git://git.denx.de/u-boot-imx.git
 F:	arch/arm/cpu/arm1136/mx*/
@@ -511,6 +511,24 @@ M:	Daniel Schwierzeck <daniel.schwierzeck@gmail.com>
 S:	Maintained
 T:	git git://git.denx.de/u-boot-mips.git
 F:	arch/mips/
+
+MIPS MSCC
+M:	Gregory CLEMENT <gregory.clement@bootlin.com>
+M:	Lars Povlsen <lars.povlsen@microchip.com>
+M:	Horatiu Vultur <horatiu.vultur@microchip.com>
+S:	Maintained
+F:	arch/mips/mach-mscc/
+F:	arch/mips/dts/luton*
+F:	arch/mips/dts/mscc*
+F:	arch/mips/dts/ocelot*
+F:	board/mscc/
+F:	configs/mscc*
+F:	include/configs/vcoreiii.h
+
+MIPS JZ4780
+M:	Ezequiel Garcia <ezequiel@collabora.com>
+S:	Maintained
+F:	arch/mips/mach-jz47xx/
 
 MMC
 M:	Jaehoon Chung <jh80.chung@samsung.com>
